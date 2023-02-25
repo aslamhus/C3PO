@@ -1,0 +1,38 @@
+.body .head {
+  animation: head-shake 5s ease alternate infinite;
+}
+/* .body .left-arm {
+  animation: head-shake 2s ease alternate infinite;
+}
+
+.body .right-arm {
+  animation: head-shake 2s ease alternate infinite;
+}
+
+.body-part.left-leg {
+  animation: head-shake 2s ease alternate infinite;
+}
+
+.body-part.right-leg {
+  animation: head-shake 2s ease alternate infinite;
+} */
+/* 
+@keyframes head-shake {
+  10% {
+    transform: rotate(-1deg);
+  }
+  30% {
+    transform: rotate(2deg);
+  }
+  50% {
+    transform: rotate(-0.55deg);
+  }
+  70% {
+    transform: rotate(0deg);
+  }
+} */
+
+@keyframes left-leg-adjust {
+  10% {
+  }
+}

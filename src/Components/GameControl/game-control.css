@@ -1,0 +1,141 @@
+.game-control-container {
+  --game-control-bg: rgb(28, 28, 28);
+  position: relative;
+  z-index: 4;
+  width: 100%;
+  height: 100%;
+
+  background: var(--game-control-bg);
+  display: flex;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  transform: translateX(100%);
+  transition: transform 0.5s ease-out;
+}
+.game-control-container.show {
+  transform: translateX(0%);
+}
+.game-control-container.hide {
+  transform: translateX(100%);
+}
+.game-control-container,
+.game-control-container * {
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+.game-control {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.game-control-container .control-row {
+  margin: 0.25rem;
+  flex-basis: 33%;
+  width: 90%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/** global shadow for all game control elements */
+.game-control-container .shadow {
+  --border-color: rgb(63, 63, 63);
+  /* border-top: 5px solid var(--border-color);
+  border-bottom: 5px solid var(--border-color);
+  border-right: 5px solid transparent;
+  border-left: 5px solid transparent; */
+  /* border: 3px solid gray; */
+  box-shadow: 4px 4px 10px 0px rgb(0, 0, 0), -2px -2px 10px 0 rgba(250, 250, 250, 0.2);
+}
+
+/** game control edge **/
+.game-control-edge {
+  --game-control-edge-size: 20px;
+  --game-control-edge-border-size: 5px;
+  --game-control-edge-border-color: rgb(94, 94, 94);
+  position: absolute;
+  top: 0;
+  left: calc(-1 * var(--game-control-edge-size));
+  width: var(--game-control-edge-size);
+  background: var(--game-control-bg);
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  border: none;
+
+  border-left: var(--game-control-edge-border-size) solid var(--game-control-edge-border-color);
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+.game-control-edge::after,
+.game-control-edge::before {
+  --cut-out-size: 100px;
+  content: '';
+  position: absolute;
+  width: var(--game-control-edge-size);
+  background: white;
+  height: var(--cut-out-size);
+  top: 50%;
+  left: calc(-1 * var(--game-control-edge-border-size));
+  transform-origin: 0 0;
+  transform: translateY(calc(var(--cut-out-size) / -1)) skew(30deg) rotate(30deg);
+  border-right: var(--game-control-edge-border-size) solid var(--game-control-edge-border-color);
+  border-top: var(--game-control-edge-border-size) solid var(--game-control-edge-border-color);
+}
+.game-control-edge::before {
+  transform: translateY(calc(var(--cut-out-size) / -1)) skew(-30deg) rotate(-30deg)
+    translateY(var(--cut-out-size));
+  border-bottom: var(--game-control-edge-border-size) solid var(--game-control-edge-border-color);
+}
+
+@media only screen and (orientation: landscape) {
+  .game-control-container {
+    margin-left: 2rem;
+    width: 50%;
+  }
+  .game-control {
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 2/3;
+  }
+}
+@media only screen and (orientation: portrait) {
+  .game-control {
+    flex-direction: row;
+  }
+  .game-control .control-row {
+    flex-direction: column;
+    flex-basis: 10%;
+  }
+  .game-control-edge {
+    top: calc(-1 * var(--game-control-edge-size));
+    left: 0;
+    width: 100%;
+    height: var(--game-control-edge-size);
+    border: none;
+    border-top: var(--game-control-edge-border-size) solid var(--game-control-edge-border-color);
+  }
+  .game-control-edge::after,
+  .game-control-edge::before {
+    background: white;
+    top: calc(-1 * var(--game-control-edge-border-size));
+    left: 50%;
+    width: var(--cut-out-size);
+    height: var(--game-control-edge-size);
+    transform-origin: 0 0;
+    transform: translateX(calc(var(--cut-out-size) / -1)) skew(30deg) rotate(0deg);
+    border: none;
+    border-bottom: var(--game-control-edge-border-size) solid var(--game-control-edge-border-color);
+    border-left: var(--game-control-edge-border-size) solid var(--game-control-edge-border-color);
+  }
+  .game-control-edge::before {
+    transform: skew(-30deg) rotate(0deg);
+    border-right: var(--game-control-edge-border-size) solid var(--game-control-edge-border-color);
+  }
+}

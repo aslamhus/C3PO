@@ -1,0 +1,93 @@
+.game-control-container .radar-container {
+  min-width: 100px;
+  min-height: 100px;
+}
+.game-control-container .radar-container * {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.game-control-container .radar {
+  position: relative;
+  --radar-bg: rgb(33, 69, 28);
+  --radar-array-color: rgba(100, 147, 49, 0.471);
+  width: auto;
+  height: auto;
+  aspect-ratio: 1;
+  background: var(--radar-bg);
+  border-radius: 50%;
+  border: 2px solid black;
+  box-shadow: 0px 0px 0px 5px rgb(61, 61, 61);
+  margin: 10px;
+}
+.game-control-container .radar .outer-circle,
+.game-control-container .radar .inner-circle,
+.game-control-container .radar .central-dot,
+.game-control-container .radar .pulse-circle {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid var(--radar-array-color);
+}
+
+.game-control-container .radar .outer-circle {
+  transform: scale(0.6);
+}
+.game-control-container .radar .central-dot {
+  transform: scale(0.1);
+  background: var(--radar-array-color);
+}
+/** pulse circle hover **/
+.game-control-container .radar .pulse-circle {
+  transform: scale(0);
+  /* b: var(--radar-array-color); */
+}
+.game-control-container .radar:hover {
+  opacity: 0.9;
+  cursor: pointer;
+}
+.radar:active .pulse-circle {
+  cursor: pointer;
+  animation: pulseRadar 1.5s linear infinite;
+}
+
+@keyframes pulseRadar {
+  0% {
+    opacity: 1;
+    transform: scale(0);
+  }
+  30% {
+    transform: scale(1.1);
+  }
+  31% {
+    opacity: 0;
+    transform: scale(0);
+  }
+}
+/** lines **/
+.game-control-container .radar .lines {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+.game-control-container .radar .lines .line {
+  position: absolute;
+  border: 1px solid var(--radar-array-color);
+  width: 0;
+  height: 100%;
+  top: 0;
+  left: 50%;
+  margin-left: -1px;
+}
+.game-control-container .radar .lines div:nth-of-type(1) {
+  transform: rotate(45deg);
+}
+.game-control-container .radar .lines div:nth-of-type(2) {
+  transform: rotate(90deg);
+}
+.game-control-container .radar .lines div:nth-of-type(3) {
+  transform: rotate(135deg);
+}
+.game-control-container .radar .lines div:nth-of-type(4) {
+  transform: rotate(180deg);
+}

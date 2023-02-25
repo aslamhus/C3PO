@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
+
+.speech-bubble-container {
+  /* background: green; */
+  position: absolute;
+  top: 0;
+  z-index: -2;
+  flex-grow: 1;
+  align-self: stretch;
+  right: 5%;
+}
+.speech-bubble {
+  position: relative;
+  z-index: -1;
+  --border-size: 5px;
+  --border-color: black;
+  background: green;
+  /* top: 10px; */
+  display: inline-block;
+  padding: 2rem 2rem;
+  min-width: 200px;
+  border: var(--border-size) solid var(--border-color);
+  border-radius: 60px;
+  font-size: calc(50vw / 10);
+  font-family: 'Bangers', cursive;
+  text-align: center;
+  background: white;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+@media only screen and (orientation: landscape) {
+  .speech-bubble {
+    /* top: unset;
+    bottom: 60%; */
+  }
+}
+.bubble-arrow {
+  --transform: skew(-40deg) perspective(20px);
+  --border-top-size: 70px;
+  --border-right-size: 35px;
+  --border-bottom-size: 25px;
+  --border-left-size: 25px;
+  position: absolute;
+  top: 100%;
+  right: 30%;
+  border-top: var(--border-top-size) solid var(--border-color);
+  border-right: var(--border-right-size) solid transparent;
+  border-bottom: var(--border-bottom-size) solid transparent;
+  border-left: var(--border-left-size) solid transparent;
+  transform: var(--transform);
+}
+.bubble-arrow::after {
+  content: '';
+  position: absolute;
+  top: calc(var(--border-top-size) * -1);
+  left: -28px;
+  transform-origin: 50% 0;
+  transform: scale(0.7);
+  width: 0;
+  height: 0;
+  border-top: var(--border-top-size) solid white;
+  border-right: var(--border-right-size) solid transparent;
+  border-bottom: var(--border-bottom-size) solid transparent;
+  border-left: var(--border-left-size) solid transparent;
+}
+
+@media only screen and (orientation: portrait) {
+  .speech-bubble {
+    padding: 1rem 1rem;
+    right: unset;
+    left: 2.5%;
+  }
+  .bubble-arrow {
+    --border-top-size: 30px;
+    --border-right-size: 35px;
+    --border-bottom-size: 25px;
+    --border-left-size: 25px;
+  }
+}

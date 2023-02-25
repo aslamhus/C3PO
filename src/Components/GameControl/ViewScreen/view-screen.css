@@ -1,0 +1,14 @@
+.control-view-screen {
+  flex-basis: 60%;
+  width: 90%;
+  height: 90%;
+  background: rgba(59, 59, 59, 0.292);
+  border-radius: 20px;
+  border: 3px solid black;
+  /* margin: 1rem; */
+}
+
+.control-view-screen.on {
+  transition: all 0.35s linear;
+  background: rgb(8, 47, 15);
+}

@@ -1,0 +1,58 @@
+.control-strip-group {
+  width: 100%;
+  height: 100%;
+}
+.panel {
+  --panel-margin: 15px;
+  margin: var(--panel-margin);
+  /* border-radius: 10px; */
+  overflow: hidden;
+}
+.panel .panel-bg {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  color: rgb(150, 77, 77);
+  color: rgb(216, 216, 114);
+  background: #152a4a;
+  background: rgb(11, 27, 46);
+  background: linear-gradient(135deg, rgb(35, 35, 35) 50%, rgb(73, 73, 73) 100%);
+}
+
+.control-strip-group .large-panel {
+  width: calc(100% - var(--panel-margin) * 2);
+  height: calc(50% - var(--panel-margin) * 2);
+  border-radius: 0;
+}
+.control-strip-group .large-panel .panel-bg {
+  display: flex;
+  padding: 0.25rem;
+}
+.control-strip-group .small-panel {
+  width: calc(100% - var(--panel-margin) * 2);
+  height: calc(25% - var(--panel-margin) * 2);
+  border-radius: 0 0 30px 30px;
+}
+/** control buttons **/
+.control-button {
+  width: 40%;
+  aspect-ratio: 5/1;
+  height: auto;
+  margin: 20px;
+  border: 3px solid rgb(30, 30, 30) !important;
+}
+.control-button:nth-of-type(1) {
+  background: gray;
+}
+.control-button:nth-of-type(2) {
+  background: rgb(68, 68, 68);
+}
+@media only screen and (orientation: portrait) {
+  .control-button {
+    width: 50%;
+    aspect-ratio: 2/5;
+    height: auto;
+    margin: 5px;
+    border: 5px solid black;
+  }
+}

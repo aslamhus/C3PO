@@ -14,14 +14,6 @@ export default function SpeechBubble({ speech, isVisible }) {
     bubbleRef.current = el;
   };
 
-  const getBubbleLeftPosition = () => {
-    console.log('gameStage c3po', gameStageState.c3poRef);
-    if (gameStageState.c3poRef?.current) {
-      return '12px';
-    }
-    return '0px';
-  };
-
   const parseSpeech = (speech) => ({ __html: speech });
 
   const hideBubble = async () => {
@@ -60,7 +52,7 @@ export default function SpeechBubble({ speech, isVisible }) {
         style={{
           transform: 'scale(0)',
           display: show ? '' : 'none',
-          left: getBubbleLeftPosition(),
+          // left: getBubbleLeftPosition(),
         }}
       >
         <span dangerouslySetInnerHTML={parseSpeech(bubbleText)}></span>

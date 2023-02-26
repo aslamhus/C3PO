@@ -1,3 +1,5 @@
 node_modules
 .DS_Store
 c-3P0.psd
+assets
+assets/*

@@ -11,7 +11,6 @@ export default function AskQuestion({}) {
   } = useAskQuestion();
 
   useEffect(() => {
-    console.log('show!', show, promptDelay);
     if (show && !_show) {
       if (timeout) {
         clearTimeout(timeout);

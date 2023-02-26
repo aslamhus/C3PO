@@ -1,0 +1,15 @@
+.star-wars-loader {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.star-wars-loader p {
+  margin-top: 0.5rem;
+  text-align: center;
+}

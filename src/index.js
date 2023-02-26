@@ -4,8 +4,4 @@ import App from './App.js';
 import GameStageProvider from './Components/GameStage/GameStageProvider.js';
 const renderDiv = document.getElementById('render');
 const root = createRoot(renderDiv);
-root.render(
-  <GameStageProvider>
-    <App />
-  </GameStageProvider>
-);
+root.render(<App />);

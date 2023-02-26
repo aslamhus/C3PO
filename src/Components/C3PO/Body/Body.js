@@ -7,10 +7,11 @@ import './movements.css';
 const showBoundingBox = true;
 
 const Body = React.forwardRef((props, ref) => {
+  const { children, style } = props;
   return (
-    <div className="body-container">
+    <div className="body-container" style={style}>
       <div ref={ref} className="body">
-        {props.children}
+        {children}
         <div className="head">
           <BodyPart className="head" src={bodyParts.head} />
           <BodyPart className="left-eye" src={bodyParts.leftEye} />

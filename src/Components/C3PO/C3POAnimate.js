@@ -296,6 +296,25 @@ class C3POAnimate {
     torsoBreathe.to(head, { y: '+=0.5', duration: 1.25, delay: 0.5 }, 'breatheIn');
     return torsoBreathe;
   }
+
+  animate(bodyPart, options) {
+    return new Promise((resolve) => {
+      console.log('bodyPart', bodyPart);
+      if (!(bodyPart instanceof HTMLElement)) {
+        throw new Error('bodyPart must be instance of HTMLElement');
+      }
+      const { onComplete, ...animateOptions } = options;
+      gsap.to(bodyPart, {
+        ...animateOptions,
+        onComplete: () => {
+          if (onComplete instanceof Function) {
+            onComplete();
+          }
+          resolve('complete');
+        },
+      });
+    });
+  }
 }
 
 export default C3POAnimate;

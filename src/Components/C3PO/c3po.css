@@ -1,10 +1,5 @@
 .c3po-container {
-  /* max-width: 100%; */
-  /* min-width: 400px; */
   position: relative;
-  /* width: 100%; */
-  flex-basis: 50%;
-  flex-grow: 1;
   height: 100%;
   display: flex;
   flex-direction: column;

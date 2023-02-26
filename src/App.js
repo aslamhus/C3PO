@@ -1,21 +1,26 @@
 import React, { useRef } from 'react';
 import C3PO from './Components/C3PO/index.js';
+import GameStage from './Components/GameStage/GameStage.js';
+import GameStageProvider from './Components/GameStage/GameStageProvider.js';
 import GameControl from './Components/GameControl';
 import GameControlContextProvider from './Components/GameControl/Context/GameControlContextProvider';
 import AskQuestionProvider from './Components/GameControl/AskQuestion/Context/AskQuestionProvider.js';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
 
 export default function App() {
-  const c3poRef = useRef();
-
   return (
     <div className="c3po-app">
-      <C3PO ref={c3poRef}></C3PO>
-      <GameControlContextProvider>
-        <AskQuestionProvider>
-          <GameControl c3poRef={c3poRef}></GameControl>
-        </AskQuestionProvider>
-      </GameControlContextProvider>
+      <GameStageProvider>
+        <GameStage>
+          <C3PO></C3PO>
+        </GameStage>
+        <GameControlContextProvider>
+          <AskQuestionProvider>
+            <GameControl></GameControl>
+          </AskQuestionProvider>
+        </GameControlContextProvider>
+      </GameStageProvider>
     </div>
   );
 }

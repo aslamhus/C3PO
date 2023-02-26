@@ -1,10 +1,12 @@
-const C3PO = {
+export const C3POStates = {
   REST: 'rest',
+  HIDDEN: 'hidden',
+  SHOW: 'show',
 };
 
 export const initialState = {
   loaded: false,
-  c3poState: C3PO.REST,
+  c3poState: C3POStates.HIDDEN,
   c3poRef: null,
   c3poAnimateRef: null,
   speech: '',
@@ -23,6 +25,12 @@ export const reducer = (state, action) => {
       return {
         ...state,
         speech: action.payload,
+      };
+
+    case 'updateC3poState':
+      return {
+        ...state,
+        c3poState: C3POStates[action.payload],
       };
   }
   return action;

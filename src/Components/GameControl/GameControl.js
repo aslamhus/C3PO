@@ -6,24 +6,32 @@ import AskQuestion from './AskQuestion/AskQuestion';
 import Translator from '../Translator/Translator';
 import { useGameControl } from './hooks/useGameControl';
 import { useGameStage } from '../GameStage/hooks/useGameStage';
+import * as actions from './actions';
 import './game-control.css';
 
-export default function GameControl({ children, c3poRef }) {
+export default function GameControl({ children }) {
   const {
+    gameStageState: { loaded, c3poAnimateRef },
     speak,
-    c3poAnimateRef,
-    gameStageState: { loaded },
-  } = useGameStage({ c3poRef });
+    showC3PO,
+  } = useGameStage();
 
   const { gameState, askQuestion, toggleViewScreen, toggleControls } = useGameControl({ speak });
 
-  const handleResponse = (answer) => {
-    c3poAnimateRef.current.wave();
-    if (answer) {
-      speak(`Thank goodness!`);
-    } else {
-      speak("Oh, I'm terribly sorry");
-    }
+  // const handleResponse = (answer) => {
+  //   c3poAnimateRef.current.wave();
+  //   if (answer) {
+  //     speak(`Thank goodness!`);
+  //   } else {
+  //     speak("Oh, I'm terribly sorry");
+  //   }
+  // };
+
+  const beginGame = async () => {
+    // speak('Oh, I say!');
+    showC3PO();
+    console.log('c3poAnimateRef', c3poAnimateRef);
+    actions.peekAbooEntrance(c3poAnimateRef, speak);
   };
 
   useEffect(() => {
@@ -50,22 +58,7 @@ export default function GameControl({ children, c3poRef }) {
        * 12) c3po animation, try again?
        *
        *   */
-      speak('Oh, I say!');
-      setTimeout(() => {
-        setTimeout(() => {
-          toggleControls(true);
-          setTimeout(() => toggleViewScreen(true), 500);
-        }, 1500);
-        askQuestion({
-          question:
-            'Serioiusy long message here. Can you help me figure out the CSS? Thanks! I really appreciate it.',
-          responses: [
-            { title: 'Yes', value: true },
-            { title: 'No', value: false },
-          ],
-          promptDelay: 2.2,
-        }).then(handleResponse);
-      }, 2000);
+      beginGame();
     }
   }, [loaded]);
 

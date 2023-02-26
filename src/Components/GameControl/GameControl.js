@@ -29,9 +29,10 @@ export default function GameControl({ children }) {
 
   const beginGame = async () => {
     // speak('Oh, I say!');
+    const { current: c3po } = c3poAnimateRef;
+    await actions.exitStageLeft(c3po);
     showC3PO();
-    console.log('c3poAnimateRef', c3poAnimateRef);
-    actions.peekAbooEntrance(c3poAnimateRef, speak);
+    await actions.peekAbooEntrance(c3po, speak);
   };
 
   useEffect(() => {

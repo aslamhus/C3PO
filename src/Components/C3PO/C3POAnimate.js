@@ -10,6 +10,9 @@ class C3POAnimate {
     this.timeline = gsap.timeline();
     this.breatheTimeline = gsap.timeline({ repeat: -1, yoyo: true });
     this.bodyParts = {
+      body: {
+        body: this.body,
+      },
       head: {
         head: this.body.querySelector('.head'),
         leftEye: this.body.querySelector('.left-eye'),
@@ -299,7 +302,6 @@ class C3POAnimate {
 
   animate(bodyPart, options) {
     return new Promise((resolve) => {
-      console.log('bodyPart', bodyPart);
       if (!(bodyPart instanceof HTMLElement)) {
         throw new Error('bodyPart must be instance of HTMLElement');
       }

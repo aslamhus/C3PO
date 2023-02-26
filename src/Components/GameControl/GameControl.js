@@ -57,7 +57,8 @@ export default function GameControl({ children, c3poRef }) {
           setTimeout(() => toggleViewScreen(true), 500);
         }, 1500);
         askQuestion({
-          question: 'Sylvan is that you?',
+          question:
+            'Serioiusy long message here. Can you help me figure out the CSS? Thanks! I really appreciate it.',
           responses: [
             { title: 'Yes', value: true },
             { title: 'No', value: false },
@@ -69,21 +70,23 @@ export default function GameControl({ children, c3poRef }) {
   }, [loaded]);
 
   return (
-    <div className={`game-control-container${gameState?.controls ? ' show' : ' hide'}`}>
-      <div className="game-control-edge"></div>
-      <div className="game-control">
-        <div className="control-row">
-          <ControlStripGroup className="shadow" />
-          <Radar className="shadow" />
-        </div>
-        <ViewScreen on={gameState.viewScreen}>
-          <AskQuestion />
-          <Translator />
-          {children}
-        </ViewScreen>
-        <div className="control-row">
-          <Radar className="shadow" />
-          <ControlStripGroup className="shadow" />
+    <div className="game-control-flex-wrap">
+      <div className={`game-control-container${gameState?.controls ? ' show' : ' hide'}`}>
+        <div className="game-control-edge"></div>
+        <div className="game-control">
+          <div className="control-row">
+            <ControlStripGroup className="shadow" />
+            <Radar className="shadow" />
+          </div>
+          <ViewScreen on={gameState.viewScreen}>
+            <AskQuestion />
+            <Translator />
+            {children}
+          </ViewScreen>
+          <div className="control-row">
+            <Radar className="shadow" />
+            <ControlStripGroup className="shadow" />
+          </div>
         </div>
       </div>
     </div>

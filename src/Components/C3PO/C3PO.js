@@ -12,7 +12,7 @@ const C3PO = React.forwardRef((props, ref) => {
   return (
     <>
       <div className="c3po-container">
-        {/* <img src={c3po} style={{ opacity: 0.5, position: 'relative', zIndex: 0 }}></img> */}
+        <img src={c3po} className="c3po-reference"></img>
 
         <Body ref={ref}>
           <SpeechBubble speech={viewScreenState?.speech} />

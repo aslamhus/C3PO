@@ -9,8 +9,8 @@ const showBoundingBox = true;
 const Body = React.forwardRef((props, ref) => {
   return (
     <div className="body-container">
-      {props.children}
       <div ref={ref} className="body">
+        {props.children}
         <div className="head">
           <BodyPart className="head" src={bodyParts.head} />
           <BodyPart className="left-eye" src={bodyParts.leftEye} />

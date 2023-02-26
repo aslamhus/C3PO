@@ -1,48 +1,52 @@
 @import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
 
 .speech-bubble-container {
-  /* background: green; */
   position: absolute;
-  top: 0;
+  bottom: 75%;
+  left: 20%;
   z-index: -2;
-  flex-grow: 1;
-  align-self: stretch;
-  right: 5%;
+  width: 40vw;
+  height: 25%;
+  transform: translateY(-100%);
+  /* background: green; */
 }
 .speech-bubble {
-  position: relative;
+  position: absolute;
   z-index: -1;
   --border-size: 5px;
   --border-color: black;
-  background: green;
   /* top: 10px; */
+  right: 0;
   display: inline-block;
-  padding: 2rem 2rem;
-  min-width: 200px;
+  padding: 3% 10%;
+  margin: 0;
+  /* height: 50%; */
+  min-width: 80%;
   border: var(--border-size) solid var(--border-color);
   border-radius: 60px;
-  font-size: calc(50vw / 10);
+  font-size: calc(2.5vw);
   font-family: 'Bangers', cursive;
   text-align: center;
   background: white;
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
 }
-@media only screen and (orientation: landscape) {
+@media only screen and (orientation: portrait) {
   .speech-bubble {
     /* top: unset;
     bottom: 60%; */
+    min-width: 200px;
   }
 }
 .bubble-arrow {
   --transform: skew(-40deg) perspective(20px);
-  --border-top-size: 70px;
-  --border-right-size: 35px;
-  --border-bottom-size: 25px;
-  --border-left-size: 25px;
+  --border-top-size: calc(100vh / 10);
+  --border-right-size: calc(100vh / 20);
+  --border-bottom-size: calc(100vh / 30);
+  --border-left-size: calc(100vh / 30);
   position: absolute;
   top: 100%;
-  right: 30%;
+  right: 35%;
   border-top: var(--border-top-size) solid var(--border-color);
   border-right: var(--border-right-size) solid transparent;
   border-bottom: var(--border-bottom-size) solid transparent;
@@ -53,7 +57,7 @@
   content: '';
   position: absolute;
   top: calc(var(--border-top-size) * -1);
-  left: -28px;
+  left: calc(-1 * 100vh / 28);
   transform-origin: 50% 0;
   transform: scale(0.7);
   width: 0;

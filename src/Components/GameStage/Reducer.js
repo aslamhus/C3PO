@@ -10,6 +10,9 @@ export const initialState = {
   c3poRef: null,
   c3poAnimateRef: null,
   speech: '',
+  showSpeechBubble: false,
+  showSpeechBubbleAnimationDuration: 0.5,
+  showBinary: false,
 };
 
 export const reducer = (state, action) => {
@@ -32,6 +35,22 @@ export const reducer = (state, action) => {
         ...state,
         c3poState: C3POStates[action.payload],
       };
+    case 'hideSpeechBubble':
+      return {
+        ...state,
+        showSpeechBubble: false,
+      };
+    case 'showSpeechBubble':
+      return {
+        ...state,
+        showSpeechBubble: true,
+      };
+    case 'showBinary':
+      return {
+        ...state,
+        showBinary: true,
+      };
+    default:
+      throw new Error('unrecognised dispatch type');
   }
-  return action;
 };

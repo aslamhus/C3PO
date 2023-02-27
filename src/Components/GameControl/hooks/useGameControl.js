@@ -15,5 +15,7 @@ export const useGameControl = ({ speak }) => {
 
   const toggleControls = (bool) => dispatch({ type: 'toggleControls', payload: bool });
 
-  return { gameState, askQuestion, toggleViewScreen, toggleControls };
+  const toggleTranslator = (bool) => dispatch({ type: 'toggleTranslator', payload: bool });
+
+  return { gameState, askQuestion, toggleViewScreen, toggleControls, toggleTranslator };
 };

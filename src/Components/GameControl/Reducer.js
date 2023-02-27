@@ -5,6 +5,7 @@ export const initialState = {
   state: 'initial',
   viewScreen: false,
   controls: false,
+  showTranslator: false,
 };
 
 export const reducer = (state = initialState, action) => {
@@ -18,6 +19,11 @@ export const reducer = (state = initialState, action) => {
       return {
         ...state,
         controls: action.payload,
+      };
+    case 'toggleTranslator':
+      return {
+        ...state,
+        showTranslator: action.payload,
       };
     default:
       return initialState;

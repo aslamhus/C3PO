@@ -1,0 +1,11 @@
+.clock {
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 0.5rem;
+  display: inline-block;
+  font-size: 1.25rem;
+  width: 150px;
+  color: rgba(255, 255, 255, 0.548);
+  text-align: center;
+  margin-right: 0.5rem;
+  letter-spacing: 2px;
+}

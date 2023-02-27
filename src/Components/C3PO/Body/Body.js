@@ -10,8 +10,8 @@ const Body = React.forwardRef((props, ref) => {
   const { children, style } = props;
   return (
     <div className="body-container" style={style}>
+      {children}
       <div ref={ref} className="body">
-        {children}
         <div className="head">
           <BodyPart className="head" src={bodyParts.head} />
           <BodyPart className="left-eye" src={bodyParts.leftEye} />

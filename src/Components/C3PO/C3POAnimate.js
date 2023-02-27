@@ -224,7 +224,11 @@ class C3POAnimate {
   proposeIdea(duration = 1) {
     return new Promise((resolve) => {
       const { leftShoulder, rightShoulder } = this.bodyParts;
-      const thinkTimeline = gsap.timeline();
+      const thinkTimeline = gsap.timeline({
+        onComplete: () => {
+          resolve(true);
+        },
+      });
       thinkTimeline.to(leftShoulder.joint, { scaleY: -1, rotate: '10deg', duration: 0.1 }, 0);
       thinkTimeline.to(leftShoulder.arm, { rotate: '-20deg', scale: 0.9, duration }, 0);
       thinkTimeline.to(
@@ -239,17 +243,56 @@ class C3POAnimate {
       thinkTimeline.to(rightShoulder.hand, { scale: 0.8, x: '5px' }, 0);
       thinkTimeline.addLabel('raiseArm', '>');
       /** head scratch */
-      const headScratchTimeline = gsap.timeline({ yoyo: true, repeat: -1 }, 0);
-      headScratchTimeline.to(rightShoulder.forearm, { rotation: '+=1', duration: 0.5 }, 0);
-      headScratchTimeline.to(rightShoulder.hand, { rotation: '+=2', duration: 0.5 }, 0);
-      headScratchTimeline.to(rightShoulder.forearm, { rotation: '-=1', duration: 0.5 }, 0.5);
-      headScratchTimeline.to(rightShoulder.hand, { rotation: '-=2', duration: 0.5 }, 0.5);
-      headScratchTimeline.to(rightShoulder.hand, { opacity: 1, duration: 2 });
-      thinkTimeline.add(headScratchTimeline, 'raiseArm');
-      this.timeline.add(thinkTimeline);
 
-      this.timeline.play().then(() => resolve(true));
+      thinkTimeline.play();
     });
+  }
+
+  headScratch() {
+    // first check if c3po is proposing an idea
+    const headScratchTimeline = gsap.timeline({ yoyo: true, repeat: -1 }, 0);
+    headScratchTimeline.to(rightShoulder.forearm, { rotation: '+=1', duration: 0.5 }, 0);
+    headScratchTimeline.to(rightShoulder.hand, { rotation: '+=2', duration: 0.5 }, 0);
+    headScratchTimeline.to(rightShoulder.forearm, { rotation: '-=1', duration: 0.5 }, 0.5);
+    headScratchTimeline.to(rightShoulder.hand, { rotation: '-=2', duration: 0.5 }, 0.5);
+    headScratchTimeline.to(rightShoulder.hand, { opacity: 1, duration: 2 });
+    headScratchTimeline.play();
+    thinkTimeline.add(headScratchTimeline, 'raiseArm');
+  }
+
+  /**
+   *
+   * Walk to center
+   *
+   * @param {HTMLElement} gameStage - the game stage container. Needed to find its center point.
+   */
+  async walkToCenter(gameStage) {
+    // rest
+    this.rest();
+    // get positions
+    const { leftShoulder, rightShoulder } = this.bodyParts;
+    const gameStageBounds = gameStage.getBoundingClientRect();
+    const bodyBounds = this.body.getBoundingClientRect();
+    const centerX = gameStageBounds.width / 2 - bodyBounds.width;
+    // build timeline
+    const walkTimeline = gsap.timeline();
+    const distance = centerX - bodyBounds.x;
+    const totalDuration = 2;
+    const steps = 7;
+
+    for (let i = 1; i <= steps; i++) {
+      const x = distance / steps;
+      const duration = totalDuration / steps;
+      const isEven = i % 2 == 0;
+      walkTimeline.to(this.body, {
+        x: `+=${x}`,
+        y: isEven ? '-20' : '+10',
+        duration,
+        ease: true,
+      });
+    }
+    // walkTimeline.to(this.body, { x: centerX, rotate: '0deg' });
+    return walkTimeline.play();
   }
 
   breathe() {

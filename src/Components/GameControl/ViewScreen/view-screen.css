@@ -1,11 +1,16 @@
 .control-view-screen {
-  flex-basis: 60%;
+  font-family: var(--view-screen-font);
+  flex-basis: 80%;
+  flex-grow: 0.8;
   width: 90%;
   height: 90%;
   background: rgba(59, 59, 59, 0.292);
   border-radius: 20px;
   border: 3px solid black;
-  /* margin: 1rem; */
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 
 .control-view-screen.on {

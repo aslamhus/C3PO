@@ -4,6 +4,16 @@ export const C3POStates = {
   SHOW: 'show',
 };
 
+export const GAME_STAGE_ACTIONS = {
+  loaded: 'loaded',
+  speak: 'speak',
+  updateC3poState: 'updateC3poState',
+  hideSpeechBubble: 'hideSpeechBubble',
+  showSpeechBubble: 'showSpeechBubble',
+  showBinary: 'showBinary',
+  guessLetter: 'guessLetter',
+};
+
 export const initialState = {
   loaded: false,
   c3poState: C3POStates.HIDDEN,
@@ -49,6 +59,12 @@ export const reducer = (state, action) => {
       return {
         ...state,
         showBinary: true,
+      };
+
+    case 'guessLetter':
+      return {
+        ...state,
+        guessLetter: action.payload,
       };
     default:
       throw new Error('unrecognised dispatch type');

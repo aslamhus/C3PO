@@ -2,10 +2,11 @@ import React, { useContext, useEffect, useRef } from 'react';
 import C3POAnimate from '../../C3PO/C3POAnimate';
 import { GameStageContext } from '../context';
 import { C3POStates } from '../Reducer';
+import { GAME_STAGE_ACTIONS } from '../Reducer';
 
 let resolver;
 export const useGameStage = () => {
-  const [gameStageState, dispatch] = useContext(GameStageContext);
+  const [state, dispatch] = useContext(GameStageContext);
 
   const speak = (words) => {
     dispatch({ type: 'speak', payload: words });
@@ -18,9 +19,10 @@ export const useGameStage = () => {
     });
   };
 
-  const dismissSpeechBubble = () => dispatch({ type: 'hideSpeechBubble' });
+  const dismissSpeechBubble = () => dispatch({ type: GAME_STAGE_ACTIONS.hideSpeechBubble });
 
-  const showC3PO = () => dispatch({ type: 'updateC3poState', payload: C3POStates.SHOW });
+  const showC3PO = () =>
+    dispatch({ type: GAME_STAGE_ACTIONS.updateC3poState, payload: C3POStates.SHOW });
 
   const getGameStage = () => {
     if (gameStageState.loaded && gameStageState.c3poRef?.current) {
@@ -29,15 +31,19 @@ export const useGameStage = () => {
     throw new Error('game stage has not loaded');
   };
 
-  const showBinary = () => dispatch({ type: 'showBinary' });
+  const showBinary = () => dispatch({ type: GAME_STAGE_ACTIONS.showBinary });
+
+  const guessLetter = (letter, binary) =>
+    dispatch({ type: GAME_STAGE_ACTIONS.guessLetter, payload: [letter, binary] });
 
   return {
-    gameStageState,
+    state,
     showC3PO,
     speak,
     dismissSpeechBubble,
     getGameStage,
     showBinary,
+    guessLetter,
     dispatch,
   };
 };

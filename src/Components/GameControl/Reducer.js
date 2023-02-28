@@ -1,30 +1,63 @@
-export const SHOW_CONFIRM = 'SHOW_CONFIRM';
-export const HIDE_CONFIRM = 'HIDE_CONFIRM';
+import React from 'react';
+
+export const GAME_CONTROL_ACTIONS = {
+  toggleViewScreen: 'toggleViewScreen',
+  toggleControls: 'toggleControls',
+  toggleTranslator: 'toggleTranslator',
+  setPrimaryControlStripComponent: 'setPrimaryControlStripComponent',
+  setSecondaryControlStripComponent: 'setSecondaryControlStripComponent',
+};
 
 export const initialState = {
   state: 'initial',
   viewScreen: false,
   controls: false,
   showTranslator: false,
+  primaryControlStripComponent: null,
+  secondaryControlStripComponent: null,
 };
 
 export const reducer = (state = initialState, action) => {
-  switch (action.type) {
+  const { options, payload, type } = action;
+  switch (type) {
     case 'toggleViewScreen':
       return {
         ...state,
-        viewScreen: action.payload,
+        viewScreen: payload,
       };
     case 'toggleControls':
       return {
         ...state,
-        controls: action.payload,
+        controls: payload,
       };
     case 'toggleTranslator':
       return {
         ...state,
-        showTranslator: action.payload,
+        showTranslator: payload,
       };
+
+    case 'setPrimaryControlStripComponent':
+    case 'setSecondaryControlStripComponent':
+      const { primaryControlStripComponent } = state;
+      const update = {};
+      const component = options.overwrite ? (
+        payload
+      ) : (
+        <>
+          {primaryControlStripComponent}
+          {payload}
+        </>
+      );
+      if (action.type == 'setPrimaryControlStripComponent') {
+        update.primaryControlStripComponent = component;
+      } else {
+        update.secondaryControlStripComponent = component;
+      }
+      return {
+        ...state,
+        ...update,
+      };
+
     default:
       return initialState;
   }

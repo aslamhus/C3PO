@@ -5,6 +5,7 @@ import { GameStageContext } from '../GameStage/context';
 import Body from './Body/Body';
 import C3POAnimate from './C3POAnimate';
 import './c3po.css';
+import { GAME_STAGE_ACTIONS } from '../GameStage/Reducer';
 
 const C3PO = React.forwardRef((props, ref) => {
   const [
@@ -35,7 +36,7 @@ const C3PO = React.forwardRef((props, ref) => {
     c3poAnimateRef.current = new C3POAnimate(c3poRef);
     setTimeout(() => {
       dispatch({
-        type: 'loaded',
+        type: GAME_STAGE_ACTIONS.loaded,
         payload: {
           c3poRef: c3poRef,
           c3poAnimateRef,
@@ -84,7 +85,7 @@ const C3PO = React.forwardRef((props, ref) => {
             arrowPosition={speechBubblePositions.arrow}
             onBeforeShowSpeechBubble={setSpeechBubblePosition}
             showAnimationDuration={showSpeechBubbleAnimationDuration}
-            onShowSpeechBubble={() => dispatch({ type: 'showSpeechBubble' })}
+            onShowSpeechBubble={() => dispatch({ type: GAME_STAGE_ACTIONS.showSpeechBubble })}
           />
         </Body>
       </div>

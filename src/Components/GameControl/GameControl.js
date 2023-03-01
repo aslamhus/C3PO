@@ -129,11 +129,12 @@ export default function GameControl({ children }) {
             <AskQuestion />
             <Translator
               onLoad={translator.handleLoad}
-              onPressLetter={(letter, binary) => {
-                stage.guessLetter(letter, binary);
-                translator.handlePressLetter(letter, binary);
+              onPressChar={(char, binary) => {
+                stage.speak(`${char} is ${binary}... let's see!`);
+                stage.guessChar(char, binary);
+                translator.handlePressChar(char, binary);
               }}
-              letterCase={translator.letterCase}
+              charGroup={translator.charGroup}
               show={control.state.showTranslator}
             />
             {children}

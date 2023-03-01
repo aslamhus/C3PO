@@ -11,7 +11,7 @@ export const GAME_STAGE_ACTIONS = {
   hideSpeechBubble: 'hideSpeechBubble',
   showSpeechBubble: 'showSpeechBubble',
   showBinary: 'showBinary',
-  guessLetter: 'guessLetter',
+  guessChar: 'guessChar',
 };
 
 export const initialState = {
@@ -61,10 +61,10 @@ export const reducer = (state, action) => {
         showBinary: true,
       };
 
-    case 'guessLetter':
+    case 'guessChar':
       return {
         ...state,
-        guessLetter: action.payload,
+        guessChar: action.payload,
       };
     default:
       throw new Error('unrecognised dispatch type');

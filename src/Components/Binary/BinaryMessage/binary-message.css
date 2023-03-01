@@ -1,4 +1,9 @@
 .binary-message {
+  position: relative;
+  z-index: 5;
+  padding: 1rem;
+  background: white;
+  border: 2px solid black;
   position: absolute;
   bottom: 5%;
   right: 0;
@@ -8,16 +13,9 @@
   flex-wrap: wrap;
   user-select: none;
   -webkit-user-select: none;
+  max-height: 80%;
 }
-.binary-message div {
-  position: relative;
-  width: 25%;
-  box-sizing: border-box;
-  /* background: lightblue; */
-  display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-}
+
 .binary-message div img {
   object-fit: contain;
   object-position: bottom;

@@ -1,14 +1,15 @@
 import React, { useRef, useState, useEffect } from 'react';
-import gsap from 'gsap';
+import Char from './Char/Char';
 import { characterToBinaryDict } from './binaryDict';
+import gsap from 'gsap';
 import './translator.css';
 
-export default function Translator({ letterCase = 'lowercase', show, onPressLetter, onLoad }) {
+export default function Translator({ charGroup = 'lowercase', show, onPressChar, onLoad }) {
   const translatorRef = useRef();
 
-  const handleClickLetter = (letter, binary) => {
-    if (onPressLetter instanceof Function) {
-      onPressLetter(letter, binary);
+  const handlePressChar = (char, binary) => {
+    if (onPressChar instanceof Function) {
+      onPressChar(char, binary);
     }
   };
 
@@ -30,24 +31,15 @@ export default function Translator({ letterCase = 'lowercase', show, onPressLett
 
   return (
     <div ref={translatorRef} className="translator-container" style={{ opacity: 0 }}>
-      {Object.entries(characterToBinaryDict[letterCase]).map((entry, index) => {
-        const [letter, binary] = entry;
+      {Object.entries(characterToBinaryDict[charGroup]).map((entry, index) => {
+        const [char, binary] = entry;
         return (
           <React.Fragment key={binary}>
-            <Letter onClick={handleClickLetter} letter={letter} binary={binary}></Letter>
-            {letter == 'd' && <div className="break"></div>}
+            <Char onClick={handlePressChar} char={char} binary={binary} />
+            {char == 'd' && <div className="break"></div>}
           </React.Fragment>
         );
       })}
     </div>
   );
 }
-
-const Letter = ({ onClick, letter, binary }) => {
-  return (
-    <div onClick={() => onClick(letter, binary)} key={binary} className="binary">
-      <h3 className="letter">{letter}</h3>
-      <h4 className="byte">{binary}</h4>
-    </div>
-  );
-};

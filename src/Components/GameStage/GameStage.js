@@ -5,13 +5,13 @@ import BinaryMessage from '../Binary/BinaryMessage';
 import './game-stage.css';
 
 export default function GameStage(props) {
-  const [{ loaded, showBinary, guessLetter }] = useContext(GameStageContext);
+  const [{ loaded, showBinary, guessChar }] = useContext(GameStageContext);
 
   return (
     <div className="game-stage">
       {props.children}
       {!loaded && <StarWarsLoader />}
-      <BinaryMessage show={showBinary} guessLetter={guessLetter}></BinaryMessage>
+      <BinaryMessage show={showBinary} guessChar={guessChar}></BinaryMessage>
     </div>
   );
 }

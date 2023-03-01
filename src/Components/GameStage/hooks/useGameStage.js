@@ -1,5 +1,4 @@
-import React, { useContext, useEffect, useRef } from 'react';
-import C3POAnimate from '../../C3PO/C3POAnimate';
+import React, { useContext } from 'react';
 import { GameStageContext } from '../context';
 import { C3POStates } from '../Reducer';
 import { GAME_STAGE_ACTIONS } from '../Reducer';
@@ -12,7 +11,7 @@ export const useGameStage = () => {
     dispatch({ type: 'speak', payload: words });
     return new Promise((resolve) => {
       resolver = resolve;
-      const delay = gameStageState.showSpeechBubbleAnimationDuration;
+      const delay = state.showSpeechBubbleAnimationDuration;
       setTimeout(() => {
         resolver(true);
       }, delay * 1000 + 500);
@@ -25,16 +24,16 @@ export const useGameStage = () => {
     dispatch({ type: GAME_STAGE_ACTIONS.updateC3poState, payload: C3POStates.SHOW });
 
   const getGameStage = () => {
-    if (gameStageState.loaded && gameStageState.c3poRef?.current) {
-      return gameStageState.c3poRef.current.closest('.game-stage');
+    if (state.loaded && state.c3poRef?.current) {
+      return state.c3poRef.current.closest('.game-stage');
     }
     throw new Error('game stage has not loaded');
   };
 
   const showBinary = () => dispatch({ type: GAME_STAGE_ACTIONS.showBinary });
 
-  const guessLetter = (letter, binary) =>
-    dispatch({ type: GAME_STAGE_ACTIONS.guessLetter, payload: [letter, binary] });
+  const guessChar = (char, binary) =>
+    dispatch({ type: GAME_STAGE_ACTIONS.guessChar, payload: [char, binary] });
 
   return {
     state,
@@ -43,7 +42,7 @@ export const useGameStage = () => {
     dismissSpeechBubble,
     getGameStage,
     showBinary,
-    guessLetter,
+    guessChar,
     dispatch,
   };
 };

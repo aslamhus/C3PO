@@ -1,3 +1,23 @@
-.decoded {
-  border: 2px solid green;
+.binary-message div {
+  align-self: start;
+  position: relative;
+  min-width: 0;
+  flex-basis: 25%;
+  height: auto;
+  box-sizing: border-box;
+  height: 24px;
+}
+.binary-message div.decoded {
+  /* border: 2px solid green; */
+  /* text-align: left; */
+  display: flex;
+  flex-basis: auto;
+  align-items: flex-end;
+}
+
+.binary-message .decoded p {
+  /* padding: 0.25rem; */
+  margin: 0;
+  text-align: left;
+  /* line-height: 0; */
 }

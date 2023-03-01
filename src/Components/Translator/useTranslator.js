@@ -17,38 +17,38 @@ import React, { useRef, useState } from 'react';
  *
  */
 export const useTranslator = ({ setControlStripComponent }) => {
-  const [letterCase, _setLetterCase] = useState('lowercase');
-  const letterCaseRef = useRef(letterCase);
+  const [charGroup, _setCharGroup] = useState('lowercase');
+  const charGroupRef = useRef(charGroup);
 
-  const setLetterCase = (value) => {
-    _setLetterCase(value);
-    letterCaseRef.current = value;
+  const setCharGroup = (value) => {
+    _setCharGroup(value);
+    charGroupRef.current = value;
   };
 
   const updateControlStripComponent = () => {
     setControlStripComponent(
       <>
         <button onClick={toggleLetterCase}>
-          {letterCaseRef.current == 'lowercase' ? 'AZ' : 'az'}
+          {charGroupRef.current == 'lowercase' ? 'AZ' : 'az'}
         </button>
-        <button onClick={toggleLetterCase}>123</button>
-        <button onClick={toggleLetterCase}>#+=</button>
+        <button onClick={() => setCharGroup('numbers')}>123</button>
+        <button onClick={() => setCharGroup('punctuation')}>#+=</button>
       </>
     );
   };
-  const handleLoad = () => updateControlStripComponent(letterCase);
+  const handleLoad = () => updateControlStripComponent(charGroup);
 
   const toggleLetterCase = () => {
-    const newCase = letterCaseRef.current == 'uppercase' ? 'lowercase' : 'uppercase';
-    setLetterCase(newCase);
+    const newCase = charGroupRef.current == 'uppercase' ? 'lowercase' : 'uppercase';
+    setCharGroup(newCase);
     updateControlStripComponent(newCase);
   };
 
-  const handlePressLetter = (letter, binary) => {
+  const handlePressChar = (char, binary) => {
     setControlStripComponent(
       <>
         <p>
-          {letter} - {binary}
+          {char} - {binary}
         </p>
       </>,
       'secondary',
@@ -56,5 +56,5 @@ export const useTranslator = ({ setControlStripComponent }) => {
     );
   };
 
-  return { handlePressLetter, handleLoad, letterCase };
+  return { handlePressChar, handleLoad, charGroup };
 };

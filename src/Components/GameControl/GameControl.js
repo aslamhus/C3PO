@@ -42,11 +42,26 @@ export default function GameControl({ children }) {
   const stage = useGameStage();
   const control = useGameControl({ speak: stage.speak });
 
-  const testActions = async (c3po) => {
+  const testTranslator = async (c3po) => {
     stage.showC3PO();
     stage.showBinary();
     control.toggleTranslator(true);
     control.toggleControls(true);
+  };
+
+  const testAnimations = async (c3po) => {
+    stage.showC3PO();
+    /**
+     * Note to self:
+     * test both resting and celebrating
+     */
+    await c3po.rest(0);
+    // c3po.walkToCenter(stage.getGameStage());
+    c3po.celebrate();
+    setTimeout(() => {
+      // c3po.stop();
+      c3po.fret();
+    }, 1000);
   };
   const translator = useTranslator({
     setControlStripComponent: control.setControlStripComponent,
@@ -54,7 +69,7 @@ export default function GameControl({ children }) {
 
   const beginGame = async () => {
     const { current: c3po } = stage.state.c3poAnimateRef;
-    testActions(c3po);
+    testAnimations(c3po);
     return;
     await actions.exitStageLeft(c3po);
     stage.showC3PO();
@@ -130,7 +145,7 @@ export default function GameControl({ children }) {
             <Translator
               onLoad={translator.handleLoad}
               onPressChar={(char, binary) => {
-                stage.speak(`${char} is ${binary}... let's see!`);
+                // stage.speak(`${char} is ${binary}... let's see!`);
                 stage.guessChar(char, binary);
                 translator.handlePressChar(char, binary);
               }}

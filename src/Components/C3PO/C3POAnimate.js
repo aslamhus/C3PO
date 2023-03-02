@@ -8,6 +8,7 @@ class C3POAnimate {
   constructor(bodyRef) {
     this.body = bodyRef.current;
     this.timeline = gsap.timeline();
+    this.currentAction = null;
     this.breatheTimeline = gsap.timeline({ repeat: -1, yoyo: true });
     this.bodyParts = {
       body: {
@@ -70,6 +71,7 @@ class C3POAnimate {
    */
   stop() {
     this.timeline.pause();
+    this.currentAction?.pause();
     return this.timeline;
   }
 
@@ -117,17 +119,16 @@ class C3POAnimate {
     return new Promise((resolve) => {
       const { leftShoulder, rightShoulder } = this.bodyParts;
       const restTimeline = gsap.timeline({
+        paused: true,
         onComplete: () => {
           resolve(true);
         },
       });
       restTimeline.to(leftShoulder.joint, { scaleY: -1, duration, rotate: '-20deg' }, 0);
-      restTimeline.to(leftShoulder.forearm, { scale: 0.9, duration: 0.5, rotate: '-60deg' }, 0);
+      restTimeline.to(leftShoulder.forearm, { scale: 0.9, duration, rotate: '-60deg' }, 0);
       restTimeline.to(rightShoulder.joint, { duration, rotate: '5deg' }, 0);
       restTimeline.to(rightShoulder.arm, { scale: 1, duration, rotate: '60deg' }, 0);
-      this.timeline.clear();
-      this.timeline.add(restTimeline);
-      this.timeline.play();
+      restTimeline.play();
     });
   }
 
@@ -192,6 +193,7 @@ class C3POAnimate {
   think(duration = 1) {
     return new Promise((resolve) => {
       const { leftShoulder, rightShoulder } = this.bodyParts;
+      this.stop();
       const thinkTimeline = gsap.timeline();
       thinkTimeline.to(leftShoulder.joint, { scaleY: -1, rotate: '5deg', duration: 0.1 }, 0);
       thinkTimeline.to(leftShoulder.arm, { rotate: '-20deg', scale: 0.9, duration }, 0);
@@ -250,6 +252,7 @@ class C3POAnimate {
 
   headScratch() {
     // first check if c3po is proposing an idea
+    const { leftShoulder, rightShoulder } = this.bodyParts;
     const headScratchTimeline = gsap.timeline({ yoyo: true, repeat: -1 }, 0);
     headScratchTimeline.to(rightShoulder.forearm, { rotation: '+=1', duration: 0.5 }, 0);
     headScratchTimeline.to(rightShoulder.hand, { rotation: '+=2', duration: 0.5 }, 0);
@@ -257,7 +260,7 @@ class C3POAnimate {
     headScratchTimeline.to(rightShoulder.hand, { rotation: '-=2', duration: 0.5 }, 0.5);
     headScratchTimeline.to(rightShoulder.hand, { opacity: 1, duration: 2 });
     headScratchTimeline.play();
-    thinkTimeline.add(headScratchTimeline, 'raiseArm');
+    return headScratchTimeline;
   }
 
   /**
@@ -267,6 +270,9 @@ class C3POAnimate {
    * @param {HTMLElement} gameStage - the game stage container. Needed to find its center point.
    */
   async walkToCenter(gameStage) {
+    if (!gameStage) {
+      throw new Error('GameStage is not defined');
+    }
     // rest
     this.rest();
     // get positions
@@ -341,6 +347,94 @@ class C3POAnimate {
     );
     torsoBreathe.to(head, { y: '+=0.5', duration: 1.25, delay: 0.5 }, 'breatheIn');
     return torsoBreathe;
+  }
+
+  celebrate(repeat) {
+    const {
+      body: { body },
+      head: { head },
+      hips: { hips, leftLeg, rightLeg },
+      torso: { torso, chest, stomach },
+      leftShoulder,
+      rightShoulder,
+    } = this.bodyParts;
+    this.stop();
+    const tl = gsap.timeline({ yoyo: true, repeat: repeat || -1 });
+    // set initial position
+    gsap.set(body, { y: '0', duration: prepareDuration }, 0);
+    gsap.set(leftLeg, { rotate: '-5deg', y: '0', duration: prepareDuration }, 0);
+    gsap.set(rightLeg, { rotate: '5deg', y: '0', duration: prepareDuration }, 0);
+    gsap.set(leftShoulder.joint, { scaleY: 1, rotate: '-20deg', duration: prepareDuration }, 0);
+    gsap.set(leftShoulder.mainArm, { rotate: '5deg', duration: prepareDuration }, 0);
+    gsap.set(leftShoulder.forearm, { rotate: '-10deg', duration: prepareDuration }, 0);
+    gsap.set(rightShoulder.joint, { rotate: '10deg', duration: prepareDuration }, 0);
+    gsap.set(rightShoulder.arm, { rotate: '-20deg', duration: prepareDuration }, 0);
+    gsap.set(rightShoulder.forearm, { rotate: '50deg', duration: prepareDuration }, 0);
+
+    // prepare (down)
+    const prepareDuration = 0.3;
+    tl.to(body, { y: '5', duration: prepareDuration }, 0);
+    tl.to(leftLeg, { rotate: '-5deg', y: '0', duration: prepareDuration }, 0);
+    tl.to(rightLeg, { rotate: '5deg', y: '0', duration: prepareDuration }, 0);
+    tl.to(leftShoulder.joint, { scaleY: 1, rotate: '-20deg', duration: prepareDuration }, 0);
+    tl.to(leftShoulder.mainArm, { rotate: '5deg', duration: prepareDuration }, 0);
+    tl.to(leftShoulder.forearm, { rotate: '-10deg', duration: prepareDuration }, 0);
+    tl.to(rightShoulder.joint, { rotate: '10deg', duration: prepareDuration }, 0);
+    tl.to(rightShoulder.arm, { rotate: '-20deg', duration: prepareDuration }, 0);
+    tl.to(rightShoulder.forearm, { rotate: '50deg', duration: prepareDuration }, 0);
+    tl.addLabel('prepare');
+    // raise arms
+    const raiseDuration = 0.3;
+    tl.to(body, { y: '-15', duration: prepareDuration }, 'prepare');
+    tl.to(leftLeg, { rotate: '5deg', y: '+=10', duration: prepareDuration }, 'prepare');
+    tl.to(rightLeg, { rotate: '-5deg', y: '+=10', duration: prepareDuration }, 'prepare');
+    tl.to(leftShoulder.joint, { rotate: '0', duration: prepareDuration }, 'prepare');
+    tl.to(leftShoulder.mainArm, { rotate: '5deg', duration: prepareDuration }, 'prepare');
+    tl.to(leftShoulder.forearm, { rotate: '-60deg', duration: prepareDuration }, 'prepare');
+    tl.to(
+      rightShoulder.joint,
+      { scaleY: 1, rotate: '10deg', duration: prepareDuration },
+      'prepare'
+    );
+    tl.to(rightShoulder.arm, { rotate: '-40deg', duration: prepareDuration }, 'prepare');
+    tl.to(rightShoulder.forearm, { rotate: '100deg', duration: prepareDuration }, 'prepare');
+
+    // tl.to(leftShoulder.mainArm, { , duration: prepareDuration }, 0);
+    tl.play();
+    this.currentAction = tl;
+    return tl;
+  }
+
+  fret() {
+    const {
+      body: { body },
+      head: { head },
+      hips: { hips, leftLeg, rightLeg },
+      torso: { torso, chest, stomach },
+      leftShoulder,
+      rightShoulder,
+    } = this.bodyParts;
+    this.stop();
+    const tl = gsap.timeline();
+    // set initial position
+    // prepare (down)
+    this.rest(0);
+    const prepareDuration = 0.3;
+    tl.to(body, { y: '0', duration: prepareDuration }, 0);
+    // tl.to(torso, { scaleY: 0.9, duration: prepareDuration }, 0);
+    tl.to(leftLeg, { rotate: '0', y: '0', duration: prepareDuration }, 0);
+    tl.to(rightLeg, { rotate: '0', y: '0', duration: prepareDuration }, 0);
+    tl.to(leftShoulder.joint, { scaleY: -1, rotate: '-20deg', duration: prepareDuration }, 0);
+    tl.to(leftShoulder.forearm, { rotate: '-70deg', duration: prepareDuration }, 0);
+
+    tl.to(rightShoulder.joint, { scaleY: -1, rotate: '30deg', duration: prepareDuration }, 0);
+    tl.to(rightShoulder.arm, { rotate: '-25deg', duration: prepareDuration }, 0);
+    tl.to(rightShoulder.forearm, { rotate: '90deg', duration: prepareDuration }, 0);
+
+    // tl.to(leftShoulder.mainArm, { rotate: '0', duration: prepareDuration }, 0);
+    // tl.to(rightShoulder.joint, { rotate: '0', duration: prepareDuration }, 0);
+    tl.addLabel('prepare');
+    tl.play();
   }
 
   animate(bodyPart, options) {

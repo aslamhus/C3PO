@@ -1,43 +1,99 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import images from './images';
 import gsap from 'gsap';
 import { getBinaryCodeFromImageURL } from './utils';
 import Byte from '../Byte/Byte';
 import './binary-message.css';
 
-export default function BinaryMessage({ show, guessChar }) {
+export default function BinaryMessage({
+  show,
+  guessChar,
+  onGuessAnimationStart,
+  onGuessAnimationComplete,
+}) {
+  const [byteData, setByteData] = useState(
+    images.map((url) => {
+      return {
+        url,
+        decoded: false,
+        binary: getBinaryCodeFromImageURL(url),
+        guess: null,
+        animationDelay: 0,
+      };
+    })
+  );
   const binaryRef = useRef();
+  const masterTimelineRef = useRef(
+    gsap.timeline({
+      paused: true,
+      onComplete: handleGuessAnimationComplete,
+      onStart: handleGuessAnimationStart,
+    })
+  );
+  const childTimelinesRef = useRef([]);
   const columnCount = 4;
 
-  const guessAnimation = () => {
-    const elements = binaryRef.current.querySelectorAll('div');
-    let delay = 0;
-    let duration = 0.3;
-    let countColumns = 1;
-    let decodedCharsPerRow = 0;
-    elements.forEach((el) => {
-      if (el.classList.contains('decoded')) {
-        decodedCharsPerRow++;
-        if (decodedCharsPerRow >= 4) {
-          console.log('div', el);
+  /**
+   * Guess
+   *
+   * setting guess state in child <Byte/> component
+   * begins animations
+   *
+   * @param {string} binary - the binary code of the guess letter,
+   * to match agains the byte
+   * */
+  const guess = (guessChar) => {
+    const [char, binary] = guessChar;
+    let delay = 0,
+      delayIncrement = 0.01,
+      guessWasCorrect = false,
+      countCharsFound = 0;
+    const { current: masterTl } = masterTimelineRef;
+    masterTl.clear();
+    setByteData((prev) => {
+      return prev.map((data, index) => {
+        if (!data.decoded) {
+          data.animationDelay = delay;
+          const childTl = childTimelinesRef.current[index];
+          childTl.play();
+          childTl.progress(0);
+          masterTl.add(childTl, delay);
+          delay += delayIncrement;
         }
-        return;
-      }
-      const tl = gsap.timeline({ delay });
-      const colors = ['#2bc016', '#26a96c', '#32936f'];
-      // reverse array without repeating last color.
-      colors.push(...[...colors].reverse().slice(1), 'transparent');
-      colors.forEach((color) => tl.to(el, { backgroundColor: color, duration }));
-
-      tl.play();
-      delay += 0.01;
-      countColumns++;
-      if (countColumns > 4) {
-        countColumns = 1;
-        decodedCharsPerRow = 0;
-      }
+        if (data.binary == binary) {
+          countCharsFound++;
+          guessWasCorrect = true;
+        }
+        data.guess = binary;
+        return data;
+      });
     });
+    masterTl.eventCallback('onStart', () =>
+      handleGuessAnimationStart(guessWasCorrect, countCharsFound, char, binary)
+    );
+    masterTl.eventCallback('onComplete', () =>
+      handleGuessAnimationComplete(guessWasCorrect, countCharsFound, char, binary)
+    );
+    masterTl.play(0);
   };
+
+  const handleGuessAnimationComplete = (wasCorrect, char, binary) => {
+    if (onGuessAnimationComplete instanceof Function) {
+      onGuessAnimationComplete(wasCorrect, char, binary);
+    }
+  };
+
+  const handleGuessAnimationStart = () => {
+    console.log('binMessage guess start');
+    if (onGuessAnimationStart instanceof Function) {
+      onGuessAnimationStart();
+    }
+  };
+
+  const childTimelineComplete = (id, binary) => console.info('child timeline complete');
+
+  const addByteAnimationToTimeline = (timeline, id, binary) =>
+    childTimelinesRef.current.push(timeline);
 
   /**
    * Animate entrance of Translator
@@ -53,31 +109,23 @@ export default function BinaryMessage({ show, guessChar }) {
    */
   useEffect(() => {
     if (guessChar) {
-      guessAnimation();
-      const [char, binary] = guessChar;
-      /**
-       *
-       * let delay = 0.5;
-       * for (bytes of binaryMessage){
-       *    animate(decode,{delay : 0.5})
-       *  }
-       */
-      console.log('check for ', char, binary);
+      guess(guessChar);
     }
   }, [guessChar]);
 
   return (
     <div ref={binaryRef} className="binary-message" style={{ opacity: 0 }}>
-      {images.map((url, index) => {
-        const binaryCode = getBinaryCodeFromImageURL(url);
-
+      {byteData.map((data, index) => {
         return (
-          <React.Fragment key={`binary-message-img-${url}`}>
+          <React.Fragment key={`binary-message-img-${data.url}`}>
             <Byte
-              src={url}
+              src={data.url}
               id={`binary-message-${index}`}
-              binaryCode={binaryCode}
-              guessBinary={guessChar?.[1]}
+              binaryCode={data.binary}
+              guessBinary={data.guess}
+              animationDelay={data.animationDelay}
+              onAnimationComplete={childTimelineComplete}
+              onBuildAnimationTimeline={addByteAnimationToTimeline}
             />
             {index > 1 && (index + 1) % columnCount == 0 && (
               <div style={{ flexBasis: '100%', height: 0, width: 0 }}></div>

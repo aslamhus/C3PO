@@ -10,7 +10,7 @@ export default merge(common, {
   entry: {
     main: './src/index.js',
   },
-  // devtool: 'cheap-source-map',
+  devtool: 'eval-source-map',
   plugins: [
     new HtmlWebpackPlugin({
       filename: 'index.html',

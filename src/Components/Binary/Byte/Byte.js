@@ -1,56 +1,70 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { binaryToCharacter, characterToBinaryDict } from '../../Translator/binaryDict';
-import gsap from 'gsap';
+import { getTimeline, animateDecode } from './utils';
 import './byte.css';
 
 export const Byte = React.forwardRef((props, ref) => {
-  const { src, id, binaryCode, guessBinary } = props;
-  // console.log(
-  //   Object.keys(characterToBinaryDict).reduce((acc, value) => {
-  //     if (characterToBinaryDict[value] instanceof Object) {
-  //       Object.entries(characterToBinaryDict[value]).forEach((entry) => {
-  //         const [letter, binary] = entry;
-  //         acc[binary] = letter;
-  //       });
-  //     }
-  //     return acc;
-  //   }, {})
-  // );
+  const {
+    src,
+    id,
+    binaryCode,
+    guessBinary,
+    animationDelay = 0,
+    onAnimationComplete,
+    onBuildAnimationTimeline,
+  } = props;
+
+  const byteRef = useRef();
+
   const [isDecoded, setIsDecoded] = useState(false);
   const [decodedChar, setDecodedChar] = useState('');
+  const [timeline, setTimeline] = useState(null);
 
   const handleDecode = async () => {
-    setDecodedChar(binaryToCharacter[guessBinary]);
-    // const bounds = ref.current.getBoundingClientRect();
-    // await gsap.fromTo(
-    //   ref.current,
-    //   {
-    //     width: `${bounds.width}px`,
-    //   },
-    //   {
-    //     // width: '10px',
-    //     duration: 0.5,
-    //     delay: 0.5,
-    //     onStart: () => {
-    //       ref.current.className = 'decoded';
-    //     },
-    //   }
-    // );
-    setIsDecoded(true);
-  };
-
-  console.log(binaryToCharacter[guessBinary]);
-
-  useEffect(() => {
     if (guessBinary == binaryCode) {
       // success animation
+      // console.log(timeline);
+      animateDecode(byteRef, { fadeOutDuration: 1 });
+      setDecodedChar(binaryToCharacter[guessBinary]);
+      setIsDecoded(true);
+    }
 
-      handleDecode(guessBinary);
+    // timeline.delay(animationDelay);
+  };
+
+  const handleAnimationComplete = () => {
+    if (onAnimationComplete instanceof Function) {
+      onAnimationComplete(id, binaryCode);
+    }
+    handleDecode();
+  };
+
+  /**
+   * When user guesses a binary code,
+   * the guess animation begins. When it completes,
+   * we check if the guess was correct in the handleDecode method.
+   */
+  useEffect(() => {
+    if (guessBinary) {
+      setTimeout(() => {
+        timeline.eventCallback('onComplete', handleAnimationComplete);
+      }, animationDelay * 1000);
     }
   }, [guessBinary]);
 
+  useEffect(() => {
+    const timeline = getTimeline(byteRef, ['#2bc016', '#26a96c', '#32936f'], {
+      duration: 0.3,
+      delay: 0,
+    });
+    setTimeline(timeline);
+    if (onBuildAnimationTimeline instanceof Function) {
+      onBuildAnimationTimeline(timeline, id, binaryCode);
+    }
+  }, []);
+
   return (
-    <div id={id} ref={ref} className={isDecoded ? 'decoded' : ''}>
+    <div id={id} ref={byteRef} className={isDecoded ? 'decoded' : ''}>
       {decodedChar ? <p>{decodedChar}</p> : <img src={src}></img>}
     </div>
   );

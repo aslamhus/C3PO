@@ -11,6 +11,9 @@
   padding: 0.7rem 1.5rem;
   background-color: rgb(47, 86, 29);
   border: 1px solid rgba(166, 224, 139, 0.52);
+  -webkit-user-select: none;
+  user-select: none;
+  -moz-user-select: none;
 }
 .translator-char:hover .char {
   opacity: 1;

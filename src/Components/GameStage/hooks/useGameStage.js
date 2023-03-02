@@ -35,6 +35,24 @@ export const useGameStage = () => {
   const guessChar = (char, binary) =>
     dispatch({ type: GAME_STAGE_ACTIONS.guessChar, payload: [char, binary] });
 
+  const handleGuessAnimationComplete = (wasCorrect, countCharsFound, char, binary) => {
+    const { current: c3po } = state.c3poAnimateRef;
+    if (wasCorrect) {
+      c3po.celebrate();
+      let plural = countCharsFound > 1 ? 's' : '';
+      speak(
+        `Well done! You found ${countCharsFound} <span style='color: blue'>${char}</span>${plural}!`
+      );
+    } else {
+      c3po.rest();
+      speak(`Hmmm... No  <span style='color: red'>${char}</span> could be found...`);
+    }
+  };
+
+  const handleGuessAnimationStart = () => {
+    dismissSpeechBubble();
+  };
+
   return {
     state,
     showC3PO,
@@ -43,6 +61,8 @@ export const useGameStage = () => {
     getGameStage,
     showBinary,
     guessChar,
+    handleGuessAnimationComplete,
+    handleGuessAnimationStart,
     dispatch,
   };
 };

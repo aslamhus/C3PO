@@ -12,6 +12,7 @@ const C3PO = React.forwardRef((props, ref) => {
     { loaded, speech, c3poState, showSpeechBubble, showSpeechBubbleAnimationDuration },
     dispatch,
   ] = useContext(GameStageContext);
+
   const [speechBubblePositions, setSpeechBubblePositions] = useState({
     arrow: 'right',
     bubble: { left: '', right: '' },
@@ -42,7 +43,7 @@ const C3PO = React.forwardRef((props, ref) => {
           c3poAnimateRef,
         },
       });
-    }, 1000);
+    }, 0);
   };
 
   const setSpeechBubblePosition = (speechBubbleElement) => {
@@ -57,10 +58,10 @@ const C3PO = React.forwardRef((props, ref) => {
     const constraintTop = 5;
     if (top < constraintTop) top = constraintTop;
     top = top + 'px';
-    console.log(
-      `headBounds.y ${bodyBounds.y} headBounds.top ${bodyBounds.top} - bubbleBounds.height ${bubbleBounds.height}`
-    );
-    console.log('set speech bubble position', top);
+    // console.log(
+    //   `headBounds.y ${bodyBounds.y} headBounds.top ${bodyBounds.top} - bubbleBounds.height ${bubbleBounds.height}`
+    // );
+    // console.log('set speech bubble position', top);
 
     // add window event listenner to apply same computations on resize
     // move  speech arrow

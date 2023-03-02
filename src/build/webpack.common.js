@@ -51,7 +51,7 @@ export default {
         ],
       },
       {
-        test: /\.(png|jpe?g|gif)/,
+        test: /\.(png|jpe?g|gif|mp3)/,
         loader: 'file-loader',
         options: {
           name: '[path][name].[ext]',
@@ -64,6 +64,7 @@ export default {
     alias: {
       // '@': path.resolve(__dirname, './src'),
       '@images': path.resolve(__dirname, '../../images/'),
+      '@sounds': path.resolve(__dirname, '../../sounds/'),
     },
   },
 };

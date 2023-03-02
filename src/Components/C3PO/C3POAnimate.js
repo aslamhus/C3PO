@@ -17,7 +17,9 @@ class C3POAnimate {
       head: {
         head: this.body.querySelector('.head'),
         leftEye: this.body.querySelector('.left-eye'),
+        leftEyeBall: this.body.querySelector('.left-eyeball'),
         rightEye: this.body.querySelector('.right-eye'),
+        rightEyeBall: this.body.querySelector('.right-eyeball'),
       },
       torso: {
         torso: this.body.querySelector('.torso'),
@@ -117,7 +119,7 @@ class C3POAnimate {
 
   async rest(duration = 0.5) {
     return new Promise((resolve) => {
-      const { leftShoulder, rightShoulder } = this.bodyParts;
+      const { leftShoulder, rightShoulder, head } = this.bodyParts;
       const restTimeline = gsap.timeline({
         paused: true,
         onComplete: () => {
@@ -126,8 +128,11 @@ class C3POAnimate {
       });
       restTimeline.to(leftShoulder.joint, { scaleY: -1, duration, rotate: '-20deg' }, 0);
       restTimeline.to(leftShoulder.forearm, { scale: 0.9, duration, rotate: '-60deg' }, 0);
-      restTimeline.to(rightShoulder.joint, { duration, rotate: '5deg' }, 0);
+      restTimeline.to(rightShoulder.joint, { scaleY: 1, duration, rotate: '5deg' }, 0);
       restTimeline.to(rightShoulder.arm, { scale: 1, duration, rotate: '60deg' }, 0);
+      restTimeline.to(rightShoulder.forearm, { rotate: '0', duration: duration }, 0);
+      restTimeline.to(head.leftEyeBall, { y: '0', x: '0', duration }, 0);
+      restTimeline.to(head.rightEyeBall, { y: '0', x: '0%', duration }, 0);
       restTimeline.play();
     });
   }
@@ -350,65 +355,66 @@ class C3POAnimate {
   }
 
   celebrate(repeat) {
-    const {
-      body: { body },
-      head: { head },
-      hips: { hips, leftLeg, rightLeg },
-      torso: { torso, chest, stomach },
-      leftShoulder,
-      rightShoulder,
-    } = this.bodyParts;
-    this.stop();
-    const tl = gsap.timeline({ yoyo: true, repeat: repeat || -1 });
-    // set initial position
-    gsap.set(body, { y: '0', duration: prepareDuration }, 0);
-    gsap.set(leftLeg, { rotate: '-5deg', y: '0', duration: prepareDuration }, 0);
-    gsap.set(rightLeg, { rotate: '5deg', y: '0', duration: prepareDuration }, 0);
-    gsap.set(leftShoulder.joint, { scaleY: 1, rotate: '-20deg', duration: prepareDuration }, 0);
-    gsap.set(leftShoulder.mainArm, { rotate: '5deg', duration: prepareDuration }, 0);
-    gsap.set(leftShoulder.forearm, { rotate: '-10deg', duration: prepareDuration }, 0);
-    gsap.set(rightShoulder.joint, { rotate: '10deg', duration: prepareDuration }, 0);
-    gsap.set(rightShoulder.arm, { rotate: '-20deg', duration: prepareDuration }, 0);
-    gsap.set(rightShoulder.forearm, { rotate: '50deg', duration: prepareDuration }, 0);
+    return new Promise((resolve) => {
+      const {
+        body: { body },
+        head: { head },
+        hips: { hips, leftLeg, rightLeg },
+        torso: { torso, chest, stomach },
+        leftShoulder,
+        rightShoulder,
+      } = this.bodyParts;
+      this.stop();
+      const tl = gsap.timeline({ yoyo: true, repeat: repeat || -1, onComplete: () => resolve() });
+      // set initial position
+      gsap.set(body, { y: '0', duration: prepareDuration }, 0);
+      gsap.set(leftLeg, { rotate: '-5deg', y: '0', duration: prepareDuration }, 0);
+      gsap.set(rightLeg, { rotate: '5deg', y: '0', duration: prepareDuration }, 0);
+      gsap.set(leftShoulder.joint, { scaleY: 1, rotate: '-20deg', duration: prepareDuration }, 0);
+      gsap.set(leftShoulder.mainArm, { rotate: '5deg', duration: prepareDuration }, 0);
+      gsap.set(leftShoulder.forearm, { rotate: '-10deg', duration: prepareDuration }, 0);
+      gsap.set(rightShoulder.joint, { rotate: '10deg', duration: prepareDuration }, 0);
+      gsap.set(rightShoulder.arm, { rotate: '-20deg', duration: prepareDuration }, 0);
+      gsap.set(rightShoulder.forearm, { rotate: '50deg', duration: prepareDuration }, 0);
 
-    // prepare (down)
-    const prepareDuration = 0.3;
-    tl.to(body, { y: '5', duration: prepareDuration }, 0);
-    tl.to(leftLeg, { rotate: '-5deg', y: '0', duration: prepareDuration }, 0);
-    tl.to(rightLeg, { rotate: '5deg', y: '0', duration: prepareDuration }, 0);
-    tl.to(leftShoulder.joint, { scaleY: 1, rotate: '-20deg', duration: prepareDuration }, 0);
-    tl.to(leftShoulder.mainArm, { rotate: '5deg', duration: prepareDuration }, 0);
-    tl.to(leftShoulder.forearm, { rotate: '-10deg', duration: prepareDuration }, 0);
-    tl.to(rightShoulder.joint, { rotate: '10deg', duration: prepareDuration }, 0);
-    tl.to(rightShoulder.arm, { rotate: '-20deg', duration: prepareDuration }, 0);
-    tl.to(rightShoulder.forearm, { rotate: '50deg', duration: prepareDuration }, 0);
-    tl.addLabel('prepare');
-    // raise arms
-    const raiseDuration = 0.3;
-    tl.to(body, { y: '-15', duration: prepareDuration }, 'prepare');
-    tl.to(leftLeg, { rotate: '5deg', y: '+=10', duration: prepareDuration }, 'prepare');
-    tl.to(rightLeg, { rotate: '-5deg', y: '+=10', duration: prepareDuration }, 'prepare');
-    tl.to(leftShoulder.joint, { rotate: '0', duration: prepareDuration }, 'prepare');
-    tl.to(leftShoulder.mainArm, { rotate: '5deg', duration: prepareDuration }, 'prepare');
-    tl.to(leftShoulder.forearm, { rotate: '-60deg', duration: prepareDuration }, 'prepare');
-    tl.to(
-      rightShoulder.joint,
-      { scaleY: 1, rotate: '10deg', duration: prepareDuration },
-      'prepare'
-    );
-    tl.to(rightShoulder.arm, { rotate: '-40deg', duration: prepareDuration }, 'prepare');
-    tl.to(rightShoulder.forearm, { rotate: '100deg', duration: prepareDuration }, 'prepare');
+      // prepare (down)
+      const prepareDuration = 0.3;
+      tl.to(body, { y: '5', duration: prepareDuration }, 0);
+      tl.to(leftLeg, { rotate: '-5deg', y: '0', duration: prepareDuration }, 0);
+      tl.to(rightLeg, { rotate: '5deg', y: '0', duration: prepareDuration }, 0);
+      tl.to(leftShoulder.joint, { scaleY: 1, rotate: '-20deg', duration: prepareDuration }, 0);
+      tl.to(leftShoulder.mainArm, { rotate: '5deg', duration: prepareDuration }, 0);
+      tl.to(leftShoulder.forearm, { rotate: '-10deg', duration: prepareDuration }, 0);
+      tl.to(rightShoulder.joint, { rotate: '10deg', duration: prepareDuration }, 0);
+      tl.to(rightShoulder.arm, { rotate: '-20deg', duration: prepareDuration }, 0);
+      tl.to(rightShoulder.forearm, { rotate: '50deg', duration: prepareDuration }, 0);
+      tl.addLabel('prepare');
+      // raise arms
+      const raiseDuration = 0.3;
+      tl.to(body, { y: '-15', duration: prepareDuration }, 'prepare');
+      tl.to(leftLeg, { rotate: '5deg', y: '+=10', duration: prepareDuration }, 'prepare');
+      tl.to(rightLeg, { rotate: '-5deg', y: '+=10', duration: prepareDuration }, 'prepare');
+      tl.to(leftShoulder.joint, { rotate: '0', duration: prepareDuration }, 'prepare');
+      tl.to(leftShoulder.mainArm, { rotate: '5deg', duration: prepareDuration }, 'prepare');
+      tl.to(leftShoulder.forearm, { rotate: '-60deg', duration: prepareDuration }, 'prepare');
+      tl.to(
+        rightShoulder.joint,
+        { scaleY: 1, rotate: '10deg', duration: prepareDuration },
+        'prepare'
+      );
+      tl.to(rightShoulder.arm, { rotate: '-40deg', duration: prepareDuration }, 'prepare');
+      tl.to(rightShoulder.forearm, { rotate: '100deg', duration: prepareDuration }, 'prepare');
 
-    // tl.to(leftShoulder.mainArm, { , duration: prepareDuration }, 0);
-    tl.play();
-    this.currentAction = tl;
-    return tl;
+      // tl.to(leftShoulder.mainArm, { , duration: prepareDuration }, 0);
+      tl.play();
+      this.currentAction = tl;
+    });
   }
 
   fret() {
     const {
       body: { body },
-      head: { head },
+      head: { head, leftEyeBall, rightEyeBall },
       hips: { hips, leftLeg, rightLeg },
       torso: { torso, chest, stomach },
       leftShoulder,
@@ -421,12 +427,13 @@ class C3POAnimate {
     this.rest(0);
     const prepareDuration = 0.3;
     tl.to(body, { y: '0', duration: prepareDuration }, 0);
+    tl.to(leftEyeBall, { y: '10%', x: '10%', duration: prepareDuration }, 0);
+    tl.to(rightEyeBall, { y: '10%', x: '10%', duration: prepareDuration }, 0);
     // tl.to(torso, { scaleY: 0.9, duration: prepareDuration }, 0);
     tl.to(leftLeg, { rotate: '0', y: '0', duration: prepareDuration }, 0);
     tl.to(rightLeg, { rotate: '0', y: '0', duration: prepareDuration }, 0);
     tl.to(leftShoulder.joint, { scaleY: -1, rotate: '-20deg', duration: prepareDuration }, 0);
     tl.to(leftShoulder.forearm, { rotate: '-70deg', duration: prepareDuration }, 0);
-
     tl.to(rightShoulder.joint, { scaleY: -1, rotate: '30deg', duration: prepareDuration }, 0);
     tl.to(rightShoulder.arm, { rotate: '-25deg', duration: prepareDuration }, 0);
     tl.to(rightShoulder.forearm, { rotate: '90deg', duration: prepareDuration }, 0);

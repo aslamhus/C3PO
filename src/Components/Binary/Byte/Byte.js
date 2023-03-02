@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { binaryToCharacter, characterToBinaryDict } from '../../Translator/binaryDict';
-import { getTimeline, animateDecode } from './utils';
+import { getTimeline, animateDecode } from './animations';
 import './byte.css';
 
 export const Byte = React.forwardRef((props, ref) => {

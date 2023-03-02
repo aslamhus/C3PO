@@ -9,6 +9,7 @@ import { useGameControl } from './hooks/useGameControl';
 import { useGameStage } from '../GameStage/hooks/useGameStage';
 import { useTranslator } from '../Translator/useTranslator';
 import * as actions from './actions';
+import starWarsThemeSong from '@sounds/star-wars-main-theme.mp3';
 import './game-control.css';
 
 /**
@@ -43,6 +44,12 @@ export default function GameControl({ children }) {
   const control = useGameControl({ speak: stage.speak });
 
   const testTranslator = async (c3po) => {
+    const themeSong = new Audio(starWarsThemeSong);
+    // document.addEventListener('click', () => {
+    //   themeSong.play();
+    // });
+
+    console.log('themeSong', themeSong);
     stage.showC3PO();
     stage.showBinary();
     control.toggleTranslator(true);
@@ -69,7 +76,8 @@ export default function GameControl({ children }) {
 
   const beginGame = async () => {
     const { current: c3po } = stage.state.c3poAnimateRef;
-    testAnimations(c3po);
+    stage.toggleGameStartScreen(true);
+    // testTranslator(c3po);
     return;
     await actions.exitStageLeft(c3po);
     stage.showC3PO();

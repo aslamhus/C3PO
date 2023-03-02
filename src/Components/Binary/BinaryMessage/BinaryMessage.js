@@ -127,9 +127,9 @@ export default function BinaryMessage({
               onAnimationComplete={childTimelineComplete}
               onBuildAnimationTimeline={addByteAnimationToTimeline}
             />
-            {index > 1 && (index + 1) % columnCount == 0 && (
+            {/* {index > 1 && (index + 1) % columnCount == 0 && (
               <div style={{ flexBasis: '100%', height: 0, width: 0 }}></div>
-            )}
+            )} */}
           </React.Fragment>
         );
       })}

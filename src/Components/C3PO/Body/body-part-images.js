@@ -1,7 +1,9 @@
 // import
 import head from '@images/c-3po/head.png';
 import leftEye from '@images/c-3po/left-eye.png';
+import leftEyeBall from '@images/c-3po/left-eyeball.png';
 import rightEye from '@images/c-3po/right-eye.png';
+import rightEyeBall from '@images/c-3po/right-eyeball.png';
 import torso from '@images/c-3po/torso.png';
 import leftShoulderJoint from '@images/c-3po/left-shoulder-joint.png';
 import leftMainArm from '@images/c-3po/left-main-arm.png';
@@ -33,4 +35,6 @@ export default {
   rightLeg,
   leftEye,
   rightEye,
+  leftEyeBall,
+  rightEyeBall,
 };

@@ -14,8 +14,12 @@ const Body = React.forwardRef((props, ref) => {
       <div ref={ref} className="body">
         <div className="head">
           <BodyPart className="head" src={bodyParts.head} />
-          <BodyPart className="left-eye" src={bodyParts.leftEye} />
-          <BodyPart className="right-eye" src={bodyParts.rightEye} />
+          <BodyPart className="left-eye" src={bodyParts.leftEye}>
+            <BodyPart className="left-eyeball" src={bodyParts.leftEyeBall} />
+          </BodyPart>
+          <BodyPart className="right-eye" src={bodyParts.rightEye}>
+            <BodyPart className="right-eyeball" src={bodyParts.rightEyeBall} />
+          </BodyPart>
         </div>
         <div className="torso">
           <BodyPart className="torso" src={bodyParts.torso} />

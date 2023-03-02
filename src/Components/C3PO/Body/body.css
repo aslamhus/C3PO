@@ -10,6 +10,9 @@ its width and height values are locked.
 C3PO's animations may overflow its bounds, however.
 **/
 .body-container {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
   position: relative;
   z-index: 2;
   width: 100%;
@@ -84,6 +87,22 @@ C3PO's animations may overflow its bounds, however.
   bottom: 45%;
   transform-origin: 100% 50%;
 }
+.body-part.right-eye,
+.body-part.left-eye {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.body-part.left-eyeball,
+.body-part.right-eyeball {
+  position: absolute;
+  width: 30%;
+
+  /* top: 50%;
+  left: 50%; */
+  /* transform: translate(-50%, -50%); */
+  transform-origin: 50% 50%;
+}
 .body-part.right-eye {
   --eye-size: 19%;
   width: var(--eye-size);
@@ -92,6 +111,7 @@ C3PO's animations may overflow its bounds, however.
   bottom: 45%;
   transform-origin: 100% 50%;
 }
+
 .body-part.right-eye img,
 .body-part.left-eye img {
   /** Not certain why position absolute is needed here. But without
@@ -268,10 +288,10 @@ Transparent reference image for sizes **/
   position: absolute;
   display: none;
   bottom: 20px;
-  left: -70px;
+  left: -60px;
   opacity: 0.8;
   z-index: 5;
-  width: 657px;
+  width: 667px;
   height: 607px;
   /* background: green; */
   object-fit: cover;

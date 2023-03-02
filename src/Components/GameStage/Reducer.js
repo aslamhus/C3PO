@@ -11,6 +11,7 @@ export const GAME_STAGE_ACTIONS = {
   hideSpeechBubble: 'hideSpeechBubble',
   showSpeechBubble: 'showSpeechBubble',
   showBinary: 'showBinary',
+  toggleGameStartScreen: 'toggleGameStartScreen',
   guessChar: 'guessChar',
 };
 
@@ -23,6 +24,7 @@ export const initialState = {
   showSpeechBubble: false,
   showSpeechBubbleAnimationDuration: 0.5,
   showBinary: false,
+  showGameStartScreen: false,
 };
 
 export const reducer = (state, action) => {
@@ -59,6 +61,11 @@ export const reducer = (state, action) => {
       return {
         ...state,
         showBinary: true,
+      };
+    case 'toggleGameStartScreen':
+      return {
+        ...state,
+        showGameStartScreen: action.payload,
       };
 
     case 'guessChar':

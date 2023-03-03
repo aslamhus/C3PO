@@ -4,6 +4,12 @@ export const C3POStates = {
   SHOW: 'show',
 };
 
+export const GAME_STAGE_VIEWS = {
+  startScreen: 'startScreen',
+  tatooine: 'tatooine',
+  c3po: 'c3po',
+};
+
 export const GAME_STAGE_ACTIONS = {
   loaded: 'loaded',
   speak: 'speak',
@@ -13,6 +19,7 @@ export const GAME_STAGE_ACTIONS = {
   showBinary: 'showBinary',
   toggleGameStartScreen: 'toggleGameStartScreen',
   guessChar: 'guessChar',
+  setGameStageView: 'setGameStageView',
 };
 
 export const initialState = {
@@ -24,7 +31,8 @@ export const initialState = {
   showSpeechBubble: false,
   showSpeechBubbleAnimationDuration: 0.5,
   showBinary: false,
-  showGameStartScreen: false,
+  showGameStartScreen: true,
+  stageView: GAME_STAGE_VIEWS.startScreen,
 };
 
 export const reducer = (state, action) => {
@@ -67,7 +75,11 @@ export const reducer = (state, action) => {
         ...state,
         showGameStartScreen: action.payload,
       };
-
+    case 'setGameStageView':
+      return {
+        ...state,
+        stageView: action.payload,
+      };
     case 'guessChar':
       return {
         ...state,

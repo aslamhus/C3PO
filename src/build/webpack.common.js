@@ -65,6 +65,7 @@ export default {
       // '@': path.resolve(__dirname, './src'),
       '@images': path.resolve(__dirname, '../../images/'),
       '@sounds': path.resolve(__dirname, '../../sounds/'),
+      '@fonts': path.resolve(__dirname, '../../fonts/'),
     },
   },
 };

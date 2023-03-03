@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import SelectButton from '../../UI/Buttons/SelectButton';
 import './char.css';
 
 const Char = ({ onClick, char, binary }) => {
@@ -11,10 +12,15 @@ const Char = ({ onClick, char, binary }) => {
     setSelected(true);
   };
   return (
-    <button onClick={handleClick} key={binary} className="translator-char" disabled={selected}>
+    <SelectButton
+      onClick={handleClick}
+      key={binary}
+      className="translator-char"
+      disabled={selected}
+    >
       <h3 className="char">{char == ' ' ? 'space' : char}</h3>
       {/* <h4 className="byte">{binary}</h4> */}
-    </button>
+    </SelectButton>
   );
 };
 

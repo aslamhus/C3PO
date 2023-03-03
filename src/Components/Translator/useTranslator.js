@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import MenuButton from '../UI/Buttons/MenuButton/MenuButton';
 
 /**
  * Note on useTranslator imperative sneakiness.
@@ -28,11 +29,11 @@ export const useTranslator = ({ setControlStripComponent }) => {
   const updateControlStripComponent = () => {
     setControlStripComponent(
       <>
-        <button onClick={toggleLetterCase}>
+        <MenuButton onClick={toggleLetterCase}>
           {charGroupRef.current == 'lowercase' ? 'AZ' : 'az'}
-        </button>
-        <button onClick={() => setCharGroup('numbers')}>123</button>
-        <button onClick={() => setCharGroup('punctuation')}>#+=</button>
+        </MenuButton>
+        <MenuButton onClick={() => setCharGroup('numbers')}>123</MenuButton>
+        <MenuButton onClick={() => setCharGroup('punctuation')}>#+=</MenuButton>
       </>
     );
   };

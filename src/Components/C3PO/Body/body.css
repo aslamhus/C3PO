@@ -166,7 +166,7 @@ it, the eyes lose their position when the viewport is very small **/
   position: absolute;
   width: 330%;
   height: 300%;
-  transform-origin: 5% 90%;
+  transform-origin: 45% 80%;
   bottom: 30%;
   left: -55%;
   z-index: -1;
@@ -184,7 +184,8 @@ it, the eyes lose their position when the viewport is very small **/
   width: 180%;
   height: 100%;
   transform: rotate(0deg);
-  transform-origin: 35% 90%;
+  /* transform-origin: 35% 90%; */
+  transform-origin: 38% 85%;
 }
 .body-part.left-hand {
   bottom: 64%;

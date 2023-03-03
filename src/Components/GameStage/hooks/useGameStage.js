@@ -1,20 +1,23 @@
 import React, { useContext } from 'react';
 import { GameStageContext } from '../context';
-import { C3POStates } from '../Reducer';
+import { C3POStates, GAME_STAGE_VIEWS } from '../Reducer';
 import { GAME_STAGE_ACTIONS } from '../Reducer';
 
 let resolver;
 export const useGameStage = () => {
   const [state, dispatch] = useContext(GameStageContext);
 
-  const speak = (words) => {
+  const setGameStageView = (state) =>
+    dispatch({ type: GAME_STAGE_ACTIONS.setGameStageView, payload: GAME_STAGE_VIEWS[state] });
+
+  const speak = (words, options = { wait: 0 }) => {
     dispatch({ type: 'speak', payload: words });
     return new Promise((resolve) => {
       resolver = resolve;
       const delay = state.showSpeechBubbleAnimationDuration;
       setTimeout(() => {
         resolver(true);
-      }, delay * 1000 + 500);
+      }, delay * 1000 + 500 + options.wait * 1000);
     });
   };
 
@@ -64,6 +67,7 @@ export const useGameStage = () => {
 
   return {
     state,
+    setGameStageView,
     showC3PO,
     speak,
     dismissSpeechBubble,

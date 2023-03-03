@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import images from './images';
 import gsap from 'gsap';
-import { getBinaryCodeFromImageURL } from './utils';
 import Byte from '../Byte/Byte';
+import { useGameSound } from '../../hooks/useGameSound';
+import { fx } from '../../hooks/useGameSound';
+import { getBinaryCodeFromImageURL } from './utils';
 import './binary-message.css';
 
 export default function BinaryMessage({
@@ -31,6 +33,7 @@ export default function BinaryMessage({
     })
   );
   const childTimelinesRef = useRef([]);
+  const { playSound } = useGameSound();
   const columnCount = 4;
 
   /**
@@ -68,6 +71,7 @@ export default function BinaryMessage({
         return data;
       });
     });
+    playSound(fx.binaryDecoder);
     masterTl.eventCallback('onStart', () =>
       handleGuessAnimationStart(guessWasCorrect, countCharsFound, char, binary)
     );
@@ -81,16 +85,24 @@ export default function BinaryMessage({
     if (onGuessAnimationComplete instanceof Function) {
       onGuessAnimationComplete(wasCorrect, char, binary);
     }
+    if (!wasCorrect) {
+      playSound(fx.error);
+    }
   };
 
   const handleGuessAnimationStart = () => {
-    console.log('binMessage guess start');
     if (onGuessAnimationStart instanceof Function) {
       onGuessAnimationStart();
     }
   };
 
-  const childTimelineComplete = (id, binary) => console.info('child timeline complete');
+  const onChildAnimationComplete = (id, binary, didDecode) => {
+    console.info('child timeline complete', id, binary);
+    // console.log('didDecode', didDecode);
+    if (didDecode) {
+      playSound(fx.success);
+    }
+  };
 
   const addByteAnimationToTimeline = (timeline, id, binary) =>
     childTimelinesRef.current.push(timeline);
@@ -124,7 +136,7 @@ export default function BinaryMessage({
               binaryCode={data.binary}
               guessBinary={data.guess}
               animationDelay={data.animationDelay}
-              onAnimationComplete={childTimelineComplete}
+              onAnimationComplete={onChildAnimationComplete}
               onBuildAnimationTimeline={addByteAnimationToTimeline}
             />
             {/* {index > 1 && (index + 1) % columnCount == 0 && (

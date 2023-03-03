@@ -6,10 +6,12 @@ export const GAME_CONTROL_ACTIONS = {
   toggleTranslator: 'toggleTranslator',
   setPrimaryControlStripComponent: 'setPrimaryControlStripComponent',
   setSecondaryControlStripComponent: 'setSecondaryControlStripComponent',
+  beginGame: 'beginGame',
 };
 
 export const initialState = {
   state: 'initial',
+  gameStart: false,
   viewScreen: false,
   controls: false,
   showTranslator: false,
@@ -20,6 +22,12 @@ export const initialState = {
 export const reducer = (state = initialState, action) => {
   const { options, payload, type } = action;
   switch (type) {
+    case 'beginGame':
+      console.log('begin game reducer action');
+      return {
+        ...state,
+        gameStart: true,
+      };
     case 'toggleViewScreen':
       return {
         ...state,

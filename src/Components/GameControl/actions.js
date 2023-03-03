@@ -1,3 +1,4 @@
+const speed = 1;
 const testAction = () => {
   setTimeout(() => {
     setTimeout(() => {
@@ -49,40 +50,62 @@ export const questionIdentity = async (
     return true;
   } else {
     speak('Oh... Sorry to have disturbed you.');
-    await wait(2);
+    await wait(2 * speed);
     dismissSpeechBubble();
     await exitStageLeft(c3po, 3);
   }
   return false;
 };
 
-export const startGameInstruction = async (c3po, gameStage, speak, askQuestion, showBinary) => {
+export const startGameInstruction = async (
+  c3po,
+  gameStage,
+  speak,
+  askQuestion,
+  dismissSpeechBubble,
+  showBinary
+) => {
   await c3po.animate(c3po.body, { rotate: 0, duration: 0.5 });
   await c3po.walkToCenter(gameStage);
+  // look around?
+  await speak(
+    "<span style='color:red;'>Sylvan</span>, I need your help to decode a message from <span style='color:red; '>Aslam Chacha</span>.",
+    { wait: 3 * speed }
+  );
+  await speak('The message is written in binary, which normally R2D2 helps me decode....', {
+    wait: 3 * speed,
+  });
+
+  await speak(
+    "But I can't find him anywhere! Oh where has that troublesome rustbucket gone to now....",
+    { wait: 5 * speed }
+  );
+  await dismissSpeechBubble();
   await c3po.proposeIdea();
   const response = await askQuestion({
-    question:
-      "<span style='color:red;'>Sylvan</span>, I need your help to decode a message from <span style='color:red; '>Aslam Chacha</span>. Can you help me?",
+    question: "<span style='color:red;'>Sylvan</span>, will you help me decode the message?",
     responses: [
       { title: 'Okay', value: 'Okay' },
       { title: 'No', value: 'No' },
     ],
   });
   if (response == 'Okay') {
-    await speak('Fantastic!');
-    await wait(2);
+    c3po.stop();
+    c3po.rest();
+    await speak('Fantastic!', { wait: 2 * speed });
     await speak(
-      "Here's the message. It's written in <span style='color:green; font-style:italic'>binary</span>, otherwise known as computer language."
+      "Here's the message. It's written in <span style='color:green; font-style:italic'>binary</span>, otherwise known as computer language.",
+      { wait: 3 * speed }
     );
-    await wait(3);
     await showBinary();
-    await wait(2);
-    c3po.think();
-    await wait(2);
+    await wait(2 * speed);
+    await dismissSpeechBubble();
+
     await speak(
       "My circuits are all full of sand from walking around  <span style='color:gold; font-style:italic'>Tattooine</span>, so my processor is a bit slow."
     );
-    await wait(5);
+    c3po.think();
+    await wait(6 * speed);
     return speak(
       "Help me decode the message by <span style='color:green; font-style:italic'>guessing the letters!</span> You're my only hope, <span style='color:red;'>Sylvan</span>!"
     );

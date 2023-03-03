@@ -1,4 +1,5 @@
 .game-stage {
+  background: white;
   position: relative;
   flex-basis: 50%;
   flex-grow: 1;

@@ -1,0 +1,40 @@
+.game-start-screen,
+.space-overlay,
+.game-title {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.game-start-screen {
+  position: fixed;
+  background: black;
+  min-height: 100vh;
+  z-index: 1049;
+}
+.space-overlay {
+  opacity: 1;
+  mix-blend-mode: hard-light;
+  z-index: 1;
+}
+.space-overlay.distant-stars {
+  opacity: 1;
+  z-index: 1;
+}
+.game-start-screen .game-title {
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: white;
+}
+.game-start-screen .game-title h1 {
+  font-size: 10vw;
+  color: gold;
+}
+.game-start-screen .game-title h1,
+.game-start-screen .game-title h2 {
+  font-family: var(--star-wars-font);
+}

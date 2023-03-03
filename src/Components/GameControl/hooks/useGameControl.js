@@ -2,15 +2,8 @@ import { useContext } from 'react';
 import { useAskQuestion } from '../AskQuestion/hooks/useAskQuestion';
 import { GameControlContext } from '../Context/context';
 import { GAME_CONTROL_ACTIONS } from '../Reducer';
-export const useGameControl = ({ speak }) => {
+export const useGameControl = () => {
   const [state, dispatch] = useContext(GameControlContext);
-
-  const { ask } = useAskQuestion();
-
-  const askQuestion = ({ question, responses }) => {
-    speak(question);
-    return ask({ question, responses });
-  };
 
   const toggleViewScreen = (bool) =>
     dispatch({ type: GAME_CONTROL_ACTIONS.toggleViewScreen, payload: bool });
@@ -20,6 +13,8 @@ export const useGameControl = ({ speak }) => {
 
   const toggleTranslator = (bool) =>
     dispatch({ type: GAME_CONTROL_ACTIONS.toggleTranslator, payload: bool });
+
+  const beginGame = () => dispatch({ type: GAME_CONTROL_ACTIONS.beginGame });
 
   /**
    * Sets the control strip value
@@ -43,10 +38,10 @@ export const useGameControl = ({ speak }) => {
 
   return {
     state,
-    askQuestion,
     toggleViewScreen,
     toggleControls,
     toggleTranslator,
     setControlStripComponent,
+    beginGame,
   };
 };

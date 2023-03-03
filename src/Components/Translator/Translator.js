@@ -14,7 +14,6 @@ export default function Translator({ charGroup = 'lowercase', show, onPressChar,
   };
 
   const handleLoad = async () => {
-    console.log('onLoad');
     await gsap.fromTo(
       translatorRef.current,
       { opacity: 0, y: '+50%' },

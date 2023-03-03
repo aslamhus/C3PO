@@ -1,28 +1,18 @@
-import React, { useRef } from 'react';
-import C3PO from './Components/C3PO/index.js';
+import React from 'react';
 import GameStage from './Components/GameStage/GameStage.js';
-import GameStageProvider from './Components/GameStage/GameStageProvider.js';
 import GameControl from './Components/GameControl';
-import GameControlContextProvider from './Components/GameControl/Context/GameControlContextProvider';
-import AskQuestionProvider from './Components/GameControl/AskQuestion/Context/AskQuestionProvider.js';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
+import '@fonts/starjedi/starjedi.css';
 import './fonts.css';
+import './buttons.css';
 import './app.css';
 
 export default function App() {
   return (
     <div className="c3po-app">
-      <GameStageProvider>
-        <GameStage>
-          <C3PO></C3PO>
-        </GameStage>
-        <GameControlContextProvider>
-          <AskQuestionProvider>
-            <GameControl></GameControl>
-          </AskQuestionProvider>
-        </GameControlContextProvider>
-      </GameStageProvider>
+      <GameStage></GameStage>
+      <GameControl></GameControl>
     </div>
   );
 }

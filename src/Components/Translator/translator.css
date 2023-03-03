@@ -1,4 +1,6 @@
 .translator-container {
+  /* position: absolute; */
+  /* top: 0; */
   /* background: rgba(17, 42, 17, 0.655); */
   display: inline-flex;
   flex-wrap: wrap;

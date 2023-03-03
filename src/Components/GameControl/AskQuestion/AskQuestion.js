@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAskQuestion } from './hooks/useAskQuestion';
 import './ask-question.css';
+import SelectButton from '../../UI/Buttons/SelectButton';
 
 export default function AskQuestion({}) {
   let timeout;
@@ -24,13 +25,13 @@ export default function AskQuestion({}) {
       {responses &&
         responses.map((response, index) => {
           return (
-            <button
+            <SelectButton
               key={`${response.title}-${index}`}
               onClick={handleResponse}
               value={response.value}
             >
               {response.title}
-            </button>
+            </SelectButton>
           );
         })}
     </div>

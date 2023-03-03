@@ -20,23 +20,24 @@ export const Byte = React.forwardRef((props, ref) => {
   const [decodedChar, setDecodedChar] = useState('');
   const [timeline, setTimeline] = useState(null);
 
-  const handleDecode = async () => {
+  const handleDecode = () => {
     if (guessBinary == binaryCode) {
       // success animation
       // console.log(timeline);
       animateDecode(byteRef, { fadeOutDuration: 1 });
       setDecodedChar(binaryToCharacter[guessBinary]);
       setIsDecoded(true);
+      return true;
     }
-
+    return false;
     // timeline.delay(animationDelay);
   };
 
   const handleAnimationComplete = () => {
+    const didDecode = handleDecode();
     if (onAnimationComplete instanceof Function) {
-      onAnimationComplete(id, binaryCode);
+      onAnimationComplete(id, binaryCode, didDecode);
     }
-    handleDecode();
   };
 
   /**

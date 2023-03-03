@@ -35,12 +35,11 @@ export const useGameSound = () => {
       }
       audio.play();
       audio.addEventListener('pause', (event) => {
-        console.log('paused');
         resolve(true);
       });
       return audio.play();
     });
   };
 
-  return { playSound };
+  return { playSound, music, fx };
 };

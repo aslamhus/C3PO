@@ -38,7 +38,7 @@ import './game-control.css';
  * @component
  */
 export default function GameControl({ children }) {
-  const { stage, control, beginGame } = useGame();
+  const { stage, control } = useGame();
 
   const translator = useTranslator({
     setControlStripComponent: control.setControlStripComponent,
@@ -49,13 +49,6 @@ export default function GameControl({ children }) {
       control.setControlStripComponent(<Clock />, 'secondary');
     }
   }, [stage.state.loaded]);
-
-  useEffect(() => {
-    console.log('gameStart?', control.state.gameStart);
-    if (control.state.gameStart) {
-      beginGame();
-    }
-  }, [control.state.gameStart]);
 
   return (
     <div className="game-control-flex-wrap">
@@ -74,8 +67,18 @@ export default function GameControl({ children }) {
               show={control.state.showTranslator}
               onLoad={translator.handleLoad}
               onPressChar={(char, binary) => {
-                // stage.speak(`${char} is ${binary}... let's see!`);
-                stage.guessChar(char, binary);
+                /**
+                 * Any component can set the pressChar handler
+                 * using the game control context when using the method
+                 * toggleTranslator. See useGameControl
+                 */
+                const {
+                  state: { onPressChar },
+                } = control;
+                if (onPressChar instanceof Function) {
+                  onPressChar(char, binary);
+                }
+                control.onPressChar;
                 translator.handlePressChar(char, binary);
               }}
               charGroup={translator.charGroup}

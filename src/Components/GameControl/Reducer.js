@@ -17,6 +17,7 @@ export const initialState = {
   showTranslator: false,
   primaryControlStripComponent: null,
   secondaryControlStripComponent: null,
+  onPressChar: null,
 };
 
 export const reducer = (state = initialState, action) => {
@@ -39,16 +40,18 @@ export const reducer = (state = initialState, action) => {
         controls: payload,
       };
     case 'toggleTranslator':
+      const [bool, options] = payload;
       return {
         ...state,
-        showTranslator: payload,
+        showTranslator: bool,
+        onPressChar: options?.onPressChar,
       };
 
     case 'setPrimaryControlStripComponent':
     case 'setSecondaryControlStripComponent':
       const { primaryControlStripComponent } = state;
       const update = {};
-      const component = options.overwrite ? (
+      const component = options?.overwrite ? (
         payload
       ) : (
         <>

@@ -1,52 +1,52 @@
-import React, { useContext, useEffect, useReducer } from 'react';
+import React, { useEffect } from 'react';
 import StarWarsLoader from '../StarWarsLoader/StarWarsLoader';
-// import Tatooine
-import C3PO from '../C3PO';
-import BinaryMessage from '../Binary/BinaryMessage';
-import { useGameStage } from './hooks/useGameStage';
-import GameStartScreen from '../GameStartScreen/GameStartScreen';
-import { useGameControl } from '../GameControl/hooks/useGameControl';
+import GameStartScreen from '../Views/GameStartScreen/GameStartScreen';
+import C3POProvider from '../Views/C3PO/context/C3POProvider';
+import C3PO from '../Views/C3PO';
 import { AnimatePresence } from 'framer-motion';
+import { useGame } from '../hooks/useGame';
+import { GAME_STAGE_VIEWS } from './Reducer';
 import './game-stage.css';
 
 export default function GameStage(props) {
   const {
-    state,
-    state: { loaded, showBinary, guessChar, showGameStartScreen, stageView },
-    handleGuessAnimationComplete,
-    handleGuessAnimationStart,
-    toggleGameStartScreen,
-  } = useGameStage();
+    stage: {
+      state: { showLoader, stageView },
+      setGameStageView,
+    },
+    control: {
+      state: { gameStart },
+      beginGame,
+    },
+  } = useGame();
 
-  const { beginGame } = useGameControl();
-
-  console.log('stage state', state);
+  useEffect(() => {
+    if (gameStart) {
+      setGameStageView(GAME_STAGE_VIEWS.c3po);
+    }
+  }, [gameStart]);
 
   return (
     <div className="game-stage">
-      {!loaded && <StarWarsLoader />}
-
+      {showLoader && <StarWarsLoader />}
       <AnimatePresence>
         {stageView == 'startScreen' && (
           <GameStartScreen
             onPressGameStart={() => {
-              toggleGameStartScreen(false);
               beginGame();
             }}
           />
         )}
       </AnimatePresence>
+      <AnimatePresence>
+        {stageView == 'c3po' && (
+          <C3POProvider>
+            <C3PO></C3PO>
+          </C3POProvider>
+        )}
+      </AnimatePresence>
 
-      <C3PO></C3PO>
-      {/* <Tatooine/> */}
       {props.children}
-
-      <BinaryMessage
-        show={showBinary}
-        guessChar={guessChar}
-        onGuessAnimationStart={handleGuessAnimationStart}
-        onGuessAnimationComplete={handleGuessAnimationComplete}
-      ></BinaryMessage>
     </div>
   );
 }

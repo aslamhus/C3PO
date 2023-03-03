@@ -1,4 +1,4 @@
-const speed = 1;
+const speed = 0;
 const testAction = () => {
   setTimeout(() => {
     setTimeout(() => {

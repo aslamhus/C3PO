@@ -1,7 +1,7 @@
 import React from 'react';
 import spaceOverlay from '@images/space-overlay.jpg';
 import spaceOverlay2 from '@images/space-overlay2.jpg';
-import ConfirmButton from '../UI/Buttons/ConfirmButton';
+import ConfirmButton from '../../UI/Buttons/ConfirmButton';
 import { motion } from 'framer-motion';
 import './game-start-screen.css';
 
@@ -33,7 +33,6 @@ export default function GameStartScreen({ onPressGameStart }) {
       className="game-start-screen"
       initial="initial"
       animate="enter"
-      transition={{ duration: 1 }}
     >
       <div className="space-overlay" style={{ backgroundImage: `url(${spaceOverlay})` }}></div>
       <div

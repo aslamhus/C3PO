@@ -31,10 +31,15 @@
   color: white;
 }
 .game-start-screen .game-title h1 {
-  font-size: 10vw;
+  font-size: 20vh;
   color: gold;
 }
 .game-start-screen .game-title h1,
 .game-start-screen .game-title h2 {
   font-family: var(--star-wars-font);
+}
+@media only screen and (max-aspect-ratio: 1920/1080) {
+  .game-start-screen .game-title h1 {
+    font-size: 10vw;
+  }
 }

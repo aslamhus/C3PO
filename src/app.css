@@ -11,6 +11,7 @@ body {
   margin: 0;
   font-family: var(--view-screen-font);
   background: rgb(32, 32, 32);
+  overflow: hidden;
 }
 #render {
   height: 100%;
@@ -21,18 +22,25 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 100%;
+  width: auto;
   height: 100%;
-  height: auto;
   /* width: 100%; */
   aspect-ratio: 1920/1080;
   display: flex;
   justify-content: flex-start;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 @media only screen and (orientation: portrait) {
   .app {
     flex-direction: column;
+  }
+}
+
+@media (max-aspect-ratio: 1920/1080) {
+  .app {
+    width: 100%;
+    height: auto;
   }
 }

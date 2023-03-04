@@ -9,14 +9,59 @@ export default function SpeechBubble({
   speech,
   isVisible,
   style,
-  arrowPosition,
+  anchor,
+  constraints,
+  // arrowPosition,
   showAnimationDuration = 0.5,
   onBeforeShowSpeechBubble,
   onShowSpeechBubble,
 }) {
   const [bubbleText, setBubbleText] = useState('');
   const [_show, setShow] = useState(false);
+
+  const [positions, setPositions] = useState({
+    arrow: 'left',
+    left: '',
+    right: '',
+  });
   const bubbleRef = useRef();
+
+  const findAnchorPosition = (anchor) => {
+    const anchorBounds = anchor.parentElement.getBoundingClientRect();
+    // const bodyBounds = c3po.body.getBoundingClientRect();
+    // const headBounds = c3po.bodyParts.head.head.getBoundingClientRect();
+    // const left = parseFloat(headBounds.x + headBounds.width) + 'px';
+    // const top = headBounds.top - bodyContainerBounds.top;
+    const { left, top } = anchorBounds;
+    console.log(`anchorBounds.top ${anchorBounds.top}`);
+
+    return { left, top };
+  };
+
+  const findArrowPosition = (left) => {
+    return 'left';
+    let arrowPosition;
+    const stageBounds = c3poRef.current.closest('.game-stage').getBoundingClientRect();
+    if (left < stageBounds.width / 4) {
+      arrowPosition = 'left';
+    }
+    return arrowPosition;
+  };
+
+  const setSpeechBubblePosition = () => {
+    console.log('set speech bubble position anchor', anchor);
+    if (!anchor) return;
+    const { current: speechBubbleElement } = bubbleRef;
+
+    const bubbleBounds = speechBubbleElement.parentElement.getBoundingClientRect();
+    let { left, top } = findAnchorPosition(anchor);
+    // top = parseFloat(bodyBounds.top - bubbleBounds.height);
+    // const constraintTop = 5;
+    // if (top < constraintTop) top = constraintTop;
+    // top = top + 'px';
+
+    setPositions({ arrow: findArrowPosition(left), left, top });
+  };
 
   const handleBubbleRef = (el) => {
     if (!el) return;
@@ -31,6 +76,7 @@ export default function SpeechBubble({
   };
 
   const showBubble = async () => {
+    setSpeechBubblePosition();
     if (onBeforeShowSpeechBubble instanceof Function) {
       onBeforeShowSpeechBubble(bubbleRef?.current);
     }
@@ -53,20 +99,19 @@ export default function SpeechBubble({
     showBubble();
   };
 
-  const getArrowPosition = () => {
-    let styles = {};
-    switch (arrowPosition) {
+  const getArrowLeftPosition = () => {
+    let left = '';
+    switch (positions.arrow) {
       case 'right':
-        styles.left = '65%';
+        left = '65%';
         break;
       case 'left':
-        styles.left = '25%';
+        left = '25%';
         break;
       case 'center':
     }
 
-    styles.right = 'unset';
-    return styles;
+    return left;
   };
 
   /**
@@ -88,7 +133,10 @@ export default function SpeechBubble({
   }, [show]);
 
   return (
-    <div className="speech-bubble-container" style={style}>
+    <div
+      className="speech-bubble-container"
+      style={{ ...style, left: positions.left, top: positions.top }}
+    >
       <div
         ref={handleBubbleRef}
         className="speech-bubble"
@@ -100,7 +148,10 @@ export default function SpeechBubble({
         }}
       >
         <span dangerouslySetInnerHTML={parseSpeech(bubbleText)}></span>
-        <div className="bubble-arrow" style={{ ...getArrowPosition() }}></div>
+        <div
+          className="bubble-arrow"
+          style={{ right: 'unset', left: getArrowLeftPosition() }}
+        ></div>
       </div>
     </div>
   );

@@ -13,27 +13,6 @@ import './game-control.css';
 /**
  *
  * GameControl
- * The GameControl components handles the game logic.
- *
- * Stage
- * ------
- * Methods and state from the GameStage (where c3po is animated and
- * where he speaks) are represented by the object "stage", derived
- * from the useGameStage hook.
- *
- * Control
- * -------
- * Methods and state from the GameControl (which handles the game UI
- * i.e. the view screen) are represetned by the object "control"
- * derived from the useGameControl hook.
- *
- * Actions
- * -------
- * C3PO's movement and speech are controlled by the "actions"
- * object, which exports multiple action methods. Action
- * methods are dependent on both control and stage methods/states,
- * i.e. the C3PO Dom reference which is initialized in the stage context
- * must be passed as a parameter to all action methods.
  *
  * @component
  */
@@ -49,6 +28,16 @@ export default function GameControl({ children }) {
       control.setControlStripComponent(<Clock />, 'secondary');
     }
   }, [stage.state.loaded]);
+
+  useEffect(() => {
+    if (control.state?.controls) {
+      // update constraints
+      stage.setConstraints({ x: [0, '50%'], y: [0, '100%'] });
+    } else {
+      // reset constraints
+      stage.setConstraints({ x: [0, '100%'], y: [0, '100%'] });
+    }
+  }, [control?.state?.controls]);
 
   return (
     <div className={`game-control-flex-wrap ${control.state?.controls ? ' show' : ' hide'}`}>

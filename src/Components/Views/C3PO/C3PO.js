@@ -29,10 +29,6 @@ const C3PO = React.forwardRef((props, ref) => {
     getGameStage,
   } = useC3PO();
 
-  const [speechBubblePositions, setSpeechBubblePositions] = useState({
-    arrow: 'right',
-    bubble: { left: '', right: '' },
-  });
   const [showTatooineFromSpace, setShowTatooineFromSpace] = useState(false);
   const [showTatooineDesert, setShowTatooineDesert] = useState(false);
   const c3poRef = useRef();
@@ -54,25 +50,6 @@ const C3PO = React.forwardRef((props, ref) => {
       c3poRef,
       c3poAnimateRef,
     });
-  };
-
-  const setSpeechBubblePosition = (speechBubbleElement) => {
-    const { current: c3po } = c3poAnimateRef;
-    const bubbleBounds = speechBubbleElement.parentElement.getBoundingClientRect();
-    const bodyBounds = c3po.body.getBoundingClientRect();
-    const headBounds = c3po.bodyParts.head.head.getBoundingClientRect();
-    const left = parseFloat(headBounds.x + headBounds.width / 3) + 'px';
-    let top = parseFloat(bodyBounds.top - bubbleBounds.height);
-    const constraintTop = 5;
-    if (top < constraintTop) top = constraintTop;
-    top = top + 'px';
-    const gameStage = c3poRef.current.closest('.game-stage');
-    const { width: stageWidth } = gameStage.getBoundingClientRect();
-    let arrowPosition;
-    if (headBounds.x < stageWidth / 2) {
-      arrowPosition = 'left';
-    }
-    setSpeechBubblePositions({ arrow: arrowPosition, bubble: { left, top } });
   };
 
   const animateEntrance = async () => {
@@ -149,9 +126,11 @@ const C3PO = React.forwardRef((props, ref) => {
             <SpeechBubble
               show={showSpeechBubble}
               speech={speech}
-              style={speechBubblePositions.bubble}
-              arrowPosition={speechBubblePositions.arrow}
-              onBeforeShowSpeechBubble={setSpeechBubblePosition}
+              // style={speechBubblePositions.bubble}
+              anchor={c3poRef?.current}
+              constraints={{ x: [0, 500], y: [0, 1000] }}
+              // arrowPosition={speechBubblePositions.arrow}
+              // onBeforeShowSpeechBubble={setSpeechBubblePosition}
               showAnimationDuration={showSpeechBubbleAnimationDuration}
               onShowSpeechBubble={() => toggleSpeechBubble(true)}
             />

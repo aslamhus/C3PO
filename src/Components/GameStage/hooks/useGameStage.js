@@ -12,9 +12,14 @@ export const useGameStage = () => {
   const toggleShowLoader = (bool) =>
     dispatch({ type: GAME_STAGE_ACTIONS.toggleShowLoader, payload: bool });
 
+  const setConstraints = (constraints = { x: [0, '100%'], y: [0, '100%'] }) => {
+    dispatch({ type: GAME_STAGE_ACTIONS.setConstraints, payload: constraints });
+  };
+
   return {
     state,
     setGameStageView,
     toggleShowLoader,
+    setConstraints,
   };
 };

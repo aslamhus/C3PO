@@ -30,7 +30,7 @@ export const useC3PO = () => {
   };
 
   const getGameStage = () => {
-    return document.querySelector('.game-stage');
+    return document.querySelector('.game-stage-constraints');
   };
 
   const showC3PO = () => dispatch({ type: C3PO_ACTIONS.updateC3poState, payload: C3POStates.SHOW });

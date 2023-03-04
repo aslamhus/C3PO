@@ -2,7 +2,7 @@
   position: absolute;
   bottom: 75%;
   left: 20%;
-  z-index: -2;
+  z-index: 1;
   width: 40vw;
   height: 25%;
   transform: translateY(-100%);

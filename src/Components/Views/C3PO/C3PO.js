@@ -9,6 +9,7 @@ import BinaryMessage from '../../Binary/BinaryMessage';
 import gsap from 'gsap';
 import { useC3PO } from './useC3PO';
 import './c3po.css';
+import { useGameStage } from '../../GameStage/hooks/useGameStage';
 
 const C3PO = React.forwardRef((props, ref) => {
   const {
@@ -29,8 +30,11 @@ const C3PO = React.forwardRef((props, ref) => {
     getGameStage,
   } = useC3PO();
 
+  const stage = useGameStage();
+
   const [showTatooineFromSpace, setShowTatooineFromSpace] = useState(false);
   const [showTatooineDesert, setShowTatooineDesert] = useState(false);
+  const [speechBubbleAnchor, setSpeechBubbleAnchor] = useState(null);
   const c3poRef = useRef();
   const c3poAnimateRef = useRef();
   const tatooineSpaceRef = useRef();
@@ -88,16 +92,10 @@ const C3PO = React.forwardRef((props, ref) => {
   useEffect(() => {
     if (loaded) {
       console.log('startC3poGame', loaded);
-
+      setSpeechBubbleAnchor(c3poRef.current.querySelector('.head'));
       startC3POGame();
     }
   }, [loaded]);
-
-  useEffect(() => {
-    // animateEntrance().then(() => {
-    //   setShowTatooineDesert(true);
-    // });
-  }, []);
 
   // const variants = {
   //   initial: {
@@ -122,19 +120,19 @@ const C3PO = React.forwardRef((props, ref) => {
       {!showTatooineDesert && (
         <div className="c3po-container" style={{ backgroundImage: `url(${tatooineDesert})` }}>
           <img src={c3po} className="c3po-reference"></img>
-          <Body ref={getC3PORef} style={{ opacity: c3poState != 'hidden' ? 1 : 0 }}>
-            <SpeechBubble
-              show={showSpeechBubble}
-              speech={speech}
-              // style={speechBubblePositions.bubble}
-              anchor={c3poRef?.current}
-              constraints={{ x: [0, 500], y: [0, 1000] }}
-              // arrowPosition={speechBubblePositions.arrow}
-              // onBeforeShowSpeechBubble={setSpeechBubblePosition}
-              showAnimationDuration={showSpeechBubbleAnimationDuration}
-              onShowSpeechBubble={() => toggleSpeechBubble(true)}
-            />
-          </Body>
+          <SpeechBubble
+            show={showSpeechBubble}
+            speech={speech}
+            // style={speechBubblePositions.bubble}
+            anchor={speechBubbleAnchor}
+            offset={{ x: -10, y: -50 }}
+            constraints={stage.getComputedConstraints()}
+            // arrowPosition={speechBubblePositions.arrow}
+            // onBeforeShowSpeechBubble={setSpeechBubblePosition}
+            showAnimationDuration={showSpeechBubbleAnimationDuration}
+            onShowSpeechBubble={() => toggleSpeechBubble(true)}
+          />
+          <Body ref={getC3PORef} style={{ opacity: c3poState != 'hidden' ? 1 : 0 }}></Body>
         </div>
       )}
       <BinaryMessage

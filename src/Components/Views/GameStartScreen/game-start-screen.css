@@ -8,9 +8,9 @@
   left: 0;
 }
 .game-start-screen {
-  position: fixed;
+  position: absolute;
   background: black;
-  min-height: 100vh;
+  min-height: 100%;
   z-index: 1049;
 }
 .space-overlay {

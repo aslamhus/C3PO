@@ -10,7 +10,7 @@ import './app.css';
 
 export default function App() {
   return (
-    <div className="c3po-app">
+    <div className="app">
       <GameStage></GameStage>
       <GameControl></GameControl>
     </div>

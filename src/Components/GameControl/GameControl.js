@@ -51,8 +51,8 @@ export default function GameControl({ children }) {
   }, [stage.state.loaded]);
 
   return (
-    <div className="game-control-flex-wrap">
-      <div className={`game-control-container${control.state?.controls ? ' show' : ' hide'}`}>
+    <div className={`game-control-flex-wrap ${control.state?.controls ? ' show' : ' hide'}`}>
+      <div className={`game-control-container`}>
         <div className="game-control-edge"></div>
         <div className="game-control">
           <div className="control-row">
@@ -70,7 +70,10 @@ export default function GameControl({ children }) {
                 /**
                  * Any component can set the pressChar handler
                  * using the game control context when using the method
-                 * toggleTranslator. See useGameControl
+                 * toggleTranslator. See useGameControl.
+                 *
+                 * Eventually this should be Translator (renamed to Keypad's)
+                 * context.
                  */
                 const {
                   state: { onPressChar },

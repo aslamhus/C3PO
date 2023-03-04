@@ -6,6 +6,9 @@
   justify-content: flex-end;
   flex-wrap: wrap;
   overflow: hidden;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background-position: center bottom;
 }
 .c3po-container > img {
   object-fit: contain;

@@ -287,7 +287,7 @@ class C3POAnimate {
     const { leftShoulder, rightShoulder } = this.bodyParts;
     const gameStageBounds = gameStage.getBoundingClientRect();
     const bodyBounds = this.body.getBoundingClientRect();
-    const centerX = gameStageBounds.width / 2 - bodyBounds.width;
+    const centerX = gameStageBounds.width / 4 - bodyBounds.width;
     // build timeline
     const walkTimeline = gsap.timeline();
     const distance = centerX - bodyBounds.x;

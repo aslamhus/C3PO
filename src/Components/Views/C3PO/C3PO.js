@@ -3,8 +3,10 @@ import c3po from '@images/C-3P0.png';
 import SpeechBubble from '../../SpeechBubble/SpeechBubble';
 import Body from './Body/Body';
 import C3POAnimate from './C3POAnimate';
+import TatooineFromSpace from '../TatooineFromSpace';
+import tatooineDesert from '@images/backgrounds/tatooine.png';
 import BinaryMessage from '../../Binary/BinaryMessage';
-import { motion, AnimatePresence } from 'framer-motion';
+import gsap from 'gsap';
 import { useC3PO } from './useC3PO';
 import './c3po.css';
 
@@ -24,15 +26,18 @@ const C3PO = React.forwardRef((props, ref) => {
     toggleSpeechBubble,
     handleGuessAnimationStart,
     handleGuessAnimationComplete,
+    getGameStage,
   } = useC3PO();
 
   const [speechBubblePositions, setSpeechBubblePositions] = useState({
     arrow: 'right',
     bubble: { left: '', right: '' },
   });
+  const [showTatooineFromSpace, setShowTatooineFromSpace] = useState(false);
+  const [showTatooineDesert, setShowTatooineDesert] = useState(false);
   const c3poRef = useRef();
   const c3poAnimateRef = useRef();
-  let loadTimeout;
+  const tatooineSpaceRef = useRef();
 
   /**
    * Get c3poRef, and dispatch loaded state
@@ -70,41 +75,75 @@ const C3PO = React.forwardRef((props, ref) => {
     setSpeechBubblePositions({ arrow: arrowPosition, bubble: { left, top } });
   };
 
+  const animateEntrance = async () => {
+    return new Promise((resolve) => {
+      const tl = gsap.timeline({ ease: false });
+      const { current: space } = tatooineSpaceRef;
+      let y = 0;
+      let duration = 5;
+      const gameStage = getGameStage();
+      const img = space.querySelector('img');
+      const bounds = img.getBoundingClientRect();
+      console.log(`img height: ${bounds.height}, viewport height: ${window.innerHeight}`);
+      if (bounds.height > window.innerHeight) {
+        y = `${parseFloat(bounds.height - window.innerHeight) * -1}px`;
+        duration += 5;
+      }
+      console.log('y', y);
+      tl.set(gameStage, { backgroundColor: 'black' });
+      tl.set(space, {
+        y: '100%',
+        opacity: 0,
+      });
+
+      tl.to(space, {
+        y,
+        opacity: 1,
+        duration,
+        onComplete: () => {
+          resolve();
+        },
+      });
+      tl.play();
+    });
+  };
+
   useEffect(() => {
     if (loaded) {
       console.log('startC3poGame', loaded);
+
       startC3POGame();
     }
   }, [loaded]);
 
-  const variants = {
-    initial: {
-      opacity: 0,
-      y: '100%',
-    },
-    enter: {
-      opacity: 1,
-      y: '0',
-      transition: { duration: 1 },
-    },
-    exit: {
-      y: '-100%',
-      opacity: 0,
-      transition: { duration: 2 },
-    },
-  };
+  useEffect(() => {
+    // animateEntrance().then(() => {
+    //   setShowTatooineDesert(true);
+    // });
+  }, []);
+
+  // const variants = {
+  //   initial: {
+  //     opacity: 0,
+  //     y: '100%',
+  //   },
+  //   enter: {
+  //     opacity: 1,
+  //     y: '0',
+  //     transition: { duration: 1 },
+  //   },
+  //   exit: {
+  //     y: '-100%',
+  //     opacity: 0,
+  //     transition: { duration: 2 },
+  //   },
+  // };
 
   return (
     <>
-      <AnimatePresence>
-        {/* {stageView == 'tatooineDesert' && <TatooineDesert></TatooineDesert>} */}
-        <motion.div
-          className="c3po-container"
-          variants={variants}
-          exit="exit"
-          initial="initial"
-          animate="enter"
-        >
+      {showTatooineDesert && <TatooineFromSpace ref={tatooineSpaceRef} />}
+      {!showTatooineDesert && (
+        <div className="c3po-container" style={{ backgroundImage: `url(${tatooineDesert})` }}>
           <img src={c3po} className="c3po-reference"></img>
           <Body ref={getC3PORef} style={{ opacity: c3poState != 'hidden' ? 1 : 0 }}>
             <SpeechBubble
@@ -117,8 +156,8 @@ const C3PO = React.forwardRef((props, ref) => {
               onShowSpeechBubble={() => toggleSpeechBubble(true)}
             />
           </Body>
-        </motion.div>
-      </AnimatePresence>
+        </div>
+      )}
       <BinaryMessage
         show={showBinary}
         guessChar={guessChar}

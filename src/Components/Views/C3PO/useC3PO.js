@@ -30,10 +30,7 @@ export const useC3PO = () => {
   };
 
   const getGameStage = () => {
-    if (state.loaded && state.c3poRef?.current) {
-      return state.c3poRef.current.closest('.game-stage');
-    }
-    throw new Error('game stage has not loaded');
+    return document.querySelector('.game-stage');
   };
 
   const showC3PO = () => dispatch({ type: C3PO_ACTIONS.updateC3poState, payload: C3POStates.SHOW });
@@ -154,5 +151,6 @@ export const useC3PO = () => {
     startC3POGame,
     loadC3PO,
     toggleSpeechBubble,
+    getGameStage,
   };
 };

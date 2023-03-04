@@ -1,19 +1,29 @@
-.game-control-container {
+.game-control-flex-wrap {
   --game-control-edge-size: 20px;
   --game-control-edge-border-size: 5px;
   --game-control-edge-border-color: rgb(94, 94, 94);
+  --game-control-bg: rgb(28, 28, 28);
 }
 .game-control-flex-wrap {
-  flex-grow: 1;
-  flex-basis: 40%;
-  width: 100%;
+  position: absolute;
+  right: 0;
+  z-index: 3;
+  /* flex-grow: 1; */
+  /* flex-basis: 40%; */
+  /* transform: translateX(100%); */
+  width: 50%;
   height: 100%;
   overflow: hidden;
-  background: white;
+  transform: translateX(100%);
+  transition: transform 0.5s ease-out;
+}
+.game-control-flex-wrap.show {
+  transform: translateX(0%);
+}
+.game-control-flex-wrap.hide {
+  transform: translateX(calc(100% + var(--game-control-edge-size)));
 }
 .game-control-container {
-  --game-control-bg: rgb(28, 28, 28);
-  position: relative;
   z-index: 4;
   width: calc(100% - var(--game-control-edge-size));
   height: 100%;
@@ -21,15 +31,8 @@
   display: flex;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
-  transform: translateX(100%);
-  transition: transform 0.5s ease-out;
 }
-.game-control-container.show {
-  transform: translateX(0%);
-}
-.game-control-container.hide {
-  transform: translateX(calc(100% + var(--game-control-edge-size)));
-}
+
 .game-control-container,
 .game-control-container * {
   box-sizing: border-box;
@@ -72,7 +75,7 @@
 .game-control-edge {
   position: absolute;
   top: 0;
-  left: calc(-1 * var(--game-control-edge-size));
+  left: var(--game-control-edge-size);
   width: var(--game-control-edge-size);
   background: var(--game-control-bg);
   height: 100%;
@@ -89,7 +92,7 @@
   content: '';
   position: absolute;
   width: var(--game-control-edge-size);
-  background: white;
+  background: transparent;
   height: var(--cut-out-size);
   top: 50%;
   left: calc(-1 * var(--game-control-edge-border-size));
@@ -104,77 +107,15 @@
   border-bottom: var(--game-control-edge-border-size) solid var(--game-control-edge-border-color);
 }
 
-@media only screen and (orientation: landscape) {
-  .game-control-container {
-    margin-left: var(--game-control-edge-size);
-    flex-shrink: 1;
-    height: 100%;
-    /* width: 50%; */
-  }
-  .game-control {
-    flex-direction: column;
-    /* width: auto; */
-    height: 100%;
-    aspect-ratio: 2/3;
-  }
+.game-control-container {
+  margin-left: var(--game-control-edge-size);
+  flex-shrink: 1;
+  height: 100%;
+  /* width: 50%; */
 }
-@media only screen and (orientation: portrait) {
-  .game-control-container {
-    margin-top: var(--game-control-edge-size);
-    height: calc(100% - var(--game-control-edge-size));
-    width: 100%;
-  }
-  .game-control {
-    /* display: block; */
-    /* height: 100%; */
-    width: 100%;
-  }
-  /**
-  Move control rows to top right and top left positios **/
-  .game-control .control-row {
-    position: absolute;
-    top: 0;
-    left: 0;
-    flex-direction: column;
-    height: auto;
-    width: 30%;
-    height: 15%;
-    transform: translateY(-40%);
-    /* flex-basis: 10%; */
-  }
-  .control-row:nth-child(3) {
-    position: absolute;
-    right: 0;
-    left: unset;
-  }
-  /** hide radar and small panel **/
-  .radar-container,
-  .small-panel {
-    display: none;
-  }
-  .game-control-edge {
-    top: calc(-1 * var(--game-control-edge-size));
-    left: 0;
-    width: 100%;
-    height: var(--game-control-edge-size);
-    border: none;
-    border-top: var(--game-control-edge-border-size) solid var(--game-control-edge-border-color);
-  }
-  .game-control-edge::after,
-  .game-control-edge::before {
-    background: white;
-    top: calc(-1 * var(--game-control-edge-border-size));
-    left: 50%;
-    width: var(--cut-out-size);
-    height: var(--game-control-edge-size);
-    transform-origin: 0 0;
-    transform: translateX(calc(var(--cut-out-size) / -1)) skew(30deg) rotate(0deg);
-    border: none;
-    border-bottom: var(--game-control-edge-border-size) solid var(--game-control-edge-border-color);
-    border-left: var(--game-control-edge-border-size) solid var(--game-control-edge-border-color);
-  }
-  .game-control-edge::before {
-    transform: skew(-30deg) rotate(0deg);
-    border-right: var(--game-control-edge-border-size) solid var(--game-control-edge-border-color);
-  }
+.game-control {
+  flex-direction: column;
+  /* width: auto; */
+  height: 100%;
+  aspect-ratio: 2/3;
 }

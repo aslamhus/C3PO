@@ -1,0 +1,15 @@
+.tatooine-from-space {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-size: cover;
+  background-repeat: no-repeat;
+  width: 100vw;
+  height: 100vh;
+  z-index: 3;
+  /* aspect-ratio: 900/1092; */
+}
+.tatooine-from-space img {
+  width: 100%;
+  height: auto;
+}

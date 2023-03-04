@@ -1,7 +1,8 @@
 .game-stage {
   background: white;
   position: relative;
-  flex-basis: 50%;
+  z-index: 1;
+  flex-basis: 100%;
   flex-grow: 1;
   height: 100%;
   display: flex;

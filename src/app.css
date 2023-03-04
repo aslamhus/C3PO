@@ -10,23 +10,29 @@ body {
   padding: 0;
   margin: 0;
   font-family: var(--view-screen-font);
-  background: black;
+  background: rgb(32, 32, 32);
 }
 #render {
   height: 100%;
-  width: 100vw;
-}
-.c3po-app {
-  width: 100vw;
-  height: 100%;
   width: 100%;
+}
+.app {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  height: auto;
+  /* width: 100%; */
+  aspect-ratio: 1920/1080;
   display: flex;
-  /* align-items: flex-start; */
   justify-content: flex-start;
+  box-sizing: border-box;
 }
 
 @media only screen and (orientation: portrait) {
-  .c3po-app {
+  .app {
     flex-direction: column;
   }
 }

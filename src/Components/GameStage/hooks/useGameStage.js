@@ -1,8 +1,9 @@
 import React, { useContext } from 'react';
-import { constraints } from '../constraints';
 import { GameStageContext } from '../context';
 import { GAME_STAGE_VIEWS } from '../Reducer';
 import { GAME_STAGE_ACTIONS } from '../Reducer';
+import { GAME_STAGE_EVENTS } from '../events';
+import { constraints } from '../constraints';
 
 export const useGameStage = () => {
   const [state, dispatch] = useContext(GameStageContext);
@@ -15,17 +16,32 @@ export const useGameStage = () => {
 
   const setConstraints = (constraints = { x: [0, '100%'], y: [0, '100%'] }) => {
     dispatch({ type: GAME_STAGE_ACTIONS.setConstraints, payload: constraints });
+
+    getGameStage()?.dispatchEvent(
+      new CustomEvent(GAME_STAGE_EVENTS.updateconstraints, { detail: constraints })
+    );
   };
 
   const loadGameStage = (ref) => {
     dispatch({ type: GAME_STAGE_ACTIONS.load, payload: ref });
   };
 
+  /**
+   * get game stage
+   *
+   * @returns {HTMLElement}
+   */
   const getGameStage = () => {
-    return state.gameStageRef.current;
+    const gameStage = state?.gameStageRef?.current;
+    if (!gameStage) {
+      console.error('gameStage not rendered');
+    }
+    return gameStage;
   };
 
   /**
+   *
+   * get position of element relative to game stage
    *
    * @param {HTMLElement} el
    * @param {HTMLElement} parent
@@ -40,6 +56,12 @@ export const useGameStage = () => {
     return subtractGameStageOffsetFromDOMRect(elBounds);
   };
 
+  /**
+   * Does element break constraints
+   *
+   * @param {HTMLElement} el
+   * @returns {Object} - { constraintsBroken, constraintBounds, elementBounds }
+   */
   const doesElementBreakConstraints = (el) => {
     let constraintsBroken = [];
     const gameStage = getGameStage();
@@ -67,7 +89,6 @@ export const useGameStage = () => {
     return false;
   };
 
-  window.doesElementBreakConstraints = doesElementBreakConstraints;
   /**
    * gets computed constraints
    *

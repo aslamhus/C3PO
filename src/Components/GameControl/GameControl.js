@@ -9,6 +9,7 @@ import Translator from '../Translator/Translator';
 import { useGame } from '../hooks/useGame';
 import { useTranslator } from '../Translator/useTranslator';
 import './game-control.css';
+import { GAME_STAGE_EVENTS } from '../GameStage/events';
 
 /**
  *
@@ -38,6 +39,12 @@ export default function GameControl({ children }) {
       stage.setConstraints({ x: [0, '100%'], y: [0, '100%'] });
     }
   }, [control?.state?.controls]);
+
+  useEffect(() => {
+    document.addEventListener(GAME_STAGE_EVENTS.updateconstraints, (event) => {
+      console.log('constraints updated', event);
+    });
+  }, []);
 
   return (
     <div className={`game-control-flex-wrap ${control.state?.controls ? ' show' : ' hide'}`}>

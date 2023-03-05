@@ -79,7 +79,6 @@ export default function SpeechBubble({
         acc[constraints[constraint].opposite] = 'unset';
         return acc;
       }, {});
-      console.log('--------------');
       setPositions({ ...style });
     }
   };

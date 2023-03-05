@@ -17,7 +17,8 @@ export default function GameStartScreen({ onPressGameStart }) {
     exit: {
       y: '-100%',
       opacity: 0,
-      transition: { duration: 3, ease: 'linear' },
+      transition: { duration: 0, ease: 'linear' },
+      // transition: { duration: 3, ease: 'linear' },
     },
   };
   const handleGameStart = (event) => {

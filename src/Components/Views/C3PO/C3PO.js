@@ -126,7 +126,6 @@ const C3PO = React.forwardRef((props, ref) => {
             // style={speechBubblePositions.bubble}
             anchor={speechBubbleAnchor}
             offset={{ x: -10, y: -50 }}
-            constraints={stage.getComputedConstraints()}
             // arrowPosition={speechBubblePositions.arrow}
             // onBeforeShowSpeechBubble={setSpeechBubblePosition}
             showAnimationDuration={showSpeechBubbleAnimationDuration}

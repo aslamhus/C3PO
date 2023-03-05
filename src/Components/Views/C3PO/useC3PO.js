@@ -103,7 +103,7 @@ export const useC3PO = () => {
   };
 
   const startC3POGame = async () => {
-    await actions.wait(5);
+    // await actions.wait(5);
     playSound(music.jawaTheme);
     const { current: c3po } = state.c3poAnimateRef;
     // testTranslator(c3po);

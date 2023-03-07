@@ -6,6 +6,7 @@ import C3PO from '../Views/C3PO';
 import { AnimatePresence } from 'framer-motion';
 import { useGame } from '../hooks/useGame';
 import { GAME_STAGE_VIEWS } from './Reducer';
+import { GAME_STAGE_EVENTS } from './events';
 import './game-stage.css';
 
 /**
@@ -58,6 +59,18 @@ export default function GameStage(props) {
   useEffect(() => {
     loadGameStage(ref);
   }, []);
+
+  /**
+   * Fire event, 'updateconstraints'
+   * This fires after the render.
+   * To access the constraints before the render,
+   * see useGameStage 'beforeupdateconstraints'
+   */
+  useEffect(() => {
+    document.dispatchEvent(
+      new CustomEvent(GAME_STAGE_EVENTS.updateconstraints, { detail: constraints })
+    );
+  }, [constraints]);
 
   return (
     <div className="game-stage" ref={ref}>

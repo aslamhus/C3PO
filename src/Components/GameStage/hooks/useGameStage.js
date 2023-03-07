@@ -16,14 +16,14 @@ export const useGameStage = () => {
 
   const setConstraints = (constraints = { x: [0, '100%'], y: [0, '100%'] }) => {
     dispatch({ type: GAME_STAGE_ACTIONS.setConstraints, payload: constraints });
-
-    getGameStage()?.dispatchEvent(
-      new CustomEvent(GAME_STAGE_EVENTS.updateconstraints, { detail: constraints })
-    );
   };
 
   const loadGameStage = (ref) => {
     dispatch({ type: GAME_STAGE_ACTIONS.load, payload: ref });
+    /** fire event 'beforeupdateconstraints' */
+    document.dispatchEvent(
+      new CustomEvent(GAME_STAGE_EVENTS.beforeupdateconstraints, { detail: constraints })
+    );
   };
 
   /**
@@ -79,6 +79,12 @@ export const useGameStage = () => {
     if (elBounds.x < constraintBounds.x) {
       constraintsBroken.push(constraints.left.name);
     }
+    if (elBounds.height > constraintBounds.height) {
+      constraintsBroken.push(constraints.height.name);
+    }
+    if (elBounds.width > constraintBounds.width) {
+      constraintsBroken.push(constraints.width.name);
+    }
     if (constraintsBroken.length > 0) {
       return {
         constraintsBroken,
@@ -86,6 +92,7 @@ export const useGameStage = () => {
         elementBounds: elBounds,
       };
     }
+
     return false;
   };
 
@@ -101,18 +108,47 @@ export const useGameStage = () => {
     return subtractGameStageOffsetFromDOMRect(gameStageBounds);
   };
 
+  /**
+   * subtractGameStageOffsetFromDOMRect
+   *
+   *
+   *
+   * @param {DOMRect} elBounds
+   * @returns {Object} - the element bounds with game stage as a cartesian reference point.
+   * Also returns the percentValues of each property.
+   */
   const subtractGameStageOffsetFromDOMRect = (elBounds) => {
     const parentBounds = getGameStage().parentElement.getBoundingClientRect();
+    const x = elBounds.x - parentBounds.x;
+    const y = elBounds.y - parentBounds.y;
+    const height = elBounds.height;
+    const width = elBounds.width;
+    const top = elBounds.top - parentBounds.top;
+    const left = elBounds.left - parentBounds.left;
+    const right = parentBounds.right - elBounds.right;
+    const bottom = parentBounds.bottom - elBounds.bottom;
     return {
-      x: elBounds.x - parentBounds.x,
-      y: elBounds.y - parentBounds.y,
-      height: elBounds.height,
-      width: elBounds.width,
-      top: elBounds.top - parentBounds.top,
-      left: elBounds.left - parentBounds.left,
-      right: parentBounds.right - elBounds.right,
-      bottom: parentBounds.bottom - elBounds.bottom,
+      x,
+      xPercent: x / parentBounds.width,
+      y,
+      yPercent: y / parentBounds.height,
+      height,
+      heightPercent: height / parentBounds.height,
+      width,
+      widthPercent: width / parentBounds.width,
+      top,
+      topPercent: top / parentBounds.height,
+      left,
+      leftPercent: left / parentBounds.width,
+      right,
+      rightPercent: right / parentBounds.width,
+      bottom,
+      bottomPercent: bottom / parentBounds.height,
     };
+  };
+
+  window.getPos = (el) => {
+    getPositionRelativeToGameStage(el, el.closest('.game-stage'));
   };
 
   return {

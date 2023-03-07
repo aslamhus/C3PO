@@ -38,7 +38,16 @@ export const useC3PO = () => {
   const toggleSpeechBubble = (bool) =>
     dispatch({ type: C3PO_ACTIONS.toggleSpeechBubble, payload: bool });
 
-  const dismissSpeechBubble = () => toggleSpeechBubble(false);
+  const dismissSpeechBubble = () => {
+    toggleSpeechBubble(false);
+    return new Promise((resolve) => {
+      resolver = resolve;
+      const delay = state.showSpeechBubbleAnimationDuration;
+      setTimeout(() => {
+        resolver(true);
+      }, delay * 1000);
+    });
+  };
 
   const showBinary = () => dispatch({ type: C3PO_ACTIONS.showBinary });
 

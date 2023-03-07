@@ -23,7 +23,7 @@ export const peekAbooEntrance = async (c3po, speak) => {
     x: '-70%',
     duration: 1.5,
   });
-  await speak('Oh I say!');
+  await speak('Oh I say! ');
   await wait(0);
 };
 
@@ -39,7 +39,7 @@ export const questionIdentity = async (
   }, 2500);
   c3po.wave();
   const response = await askQuestion({
-    question: 'is that you, <span style="color:red">Sylvan?</span>',
+    question: `is that you, <span style="color:red">Sylvan?</span>`,
     responses: [
       { title: 'Yes', value: 'Yes' },
       { title: 'No', value: 'No' },
@@ -66,13 +66,13 @@ export const startGameInstruction = async (
   showBinary
 ) => {
   await c3po.animate(c3po.body, { rotate: 0, duration: 0.5 });
-  await c3po.walkToCenter(gameStage);
+  await c3po.walk(-20, { steps: 9, duration: 3 });
   // look around?
   await speak(
     "<span style='color:red;'>Sylvan</span>, I need your help to decode a message from <span style='color:red; '>Aslam Chacha</span>.",
     { wait: 3 * speed }
   );
-  await speak('The message is written in binary, which normally R2D2 helps me decode....', {
+  await speak("Normally, I ask <span style='color:blue;'>R2D2</span> to help me decode....", {
     wait: 3 * speed,
   });
 
@@ -94,16 +94,17 @@ export const startGameInstruction = async (
     c3po.rest();
     await speak('Fantastic!', { wait: 2 * speed });
     await speak(
-      "Here's the message. It's written in <span style='color:green; font-style:italic'>binary</span>, otherwise known as computer language.",
+      "It's written in <span style='color:green; font-style:italic'>binary</span>, otherwise known as computer language.",
       { wait: 3 * speed }
     );
     await showBinary();
     await wait(2 * speed);
     await dismissSpeechBubble();
-
+    await wait(1 * speed);
     await speak(
-      "My circuits are all full of sand from walking around  <span style='color:gold; font-style:italic'>Tattooine</span>, so my processor is a bit slow."
+      "My circuits are all full of sand from walking around <span style='color:gold; font-style:italic'>Tattooine</span>, so my processor is a bit slow."
     );
+
     c3po.think();
     await wait(6 * speed);
     return speak(

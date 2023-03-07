@@ -275,25 +275,15 @@ class C3POAnimate {
    *
    * Walk to center
    *
-   * @param {HTMLElement} gameStage - the game stage container. Needed to find its center point.
+   * @param {Number} xPosition - walk to position on game stage
    */
-  async walkToCenter(gameStage) {
-    if (!gameStage) {
-      throw new Error('GameStage is not defined');
-    }
-    // rest
-    this.rest();
-    // get positions
-    const { leftShoulder, rightShoulder } = this.bodyParts;
-    const gameStageBounds = gameStage.getBoundingClientRect();
+  async walk(xPosition, options = { steps: 7, duration: 2 }) {
     const bodyBounds = this.body.getBoundingClientRect();
-    const centerX = gameStageBounds.width / 2 - bodyBounds.width / 2;
+    const distance = xPosition - bodyBounds.x;
+    const totalDuration = options.duration || 2;
+    const steps = options.steps || 7;
     // build timeline
     const walkTimeline = gsap.timeline();
-    const distance = centerX - bodyBounds.x;
-    const totalDuration = 2;
-    const steps = 7;
-
     for (let i = 1; i <= steps; i++) {
       const x = distance / steps;
       const duration = totalDuration / steps;

@@ -123,23 +123,22 @@ const C3PO = React.forwardRef((props, ref) => {
           <SpeechBubble
             show={showSpeechBubble}
             speech={speech}
-            // style={speechBubblePositions.bubble}
             anchor={speechBubbleAnchor}
-            offset={{ x: -10, y: -50 }}
-            // arrowPosition={speechBubblePositions.arrow}
-            // onBeforeShowSpeechBubble={setSpeechBubblePosition}
+            offset={{ x: 0, y: -100 }}
             showAnimationDuration={showSpeechBubbleAnimationDuration}
             onShowSpeechBubble={() => toggleSpeechBubble(true)}
           />
           <Body ref={getC3PORef} style={{ opacity: c3poState != 'hidden' ? 1 : 0 }}></Body>
         </div>
       )}
-      <BinaryMessage
-        show={showBinary}
-        guessChar={guessChar}
-        onGuessAnimationStart={handleGuessAnimationStart}
-        onGuessAnimationComplete={handleGuessAnimationComplete}
-      ></BinaryMessage>
+      {showBinary && (
+        <BinaryMessage
+          show={showBinary}
+          guessChar={guessChar}
+          onGuessAnimationStart={handleGuessAnimationStart}
+          onGuessAnimationComplete={handleGuessAnimationComplete}
+        ></BinaryMessage>
+      )}
     </>
   );
 });

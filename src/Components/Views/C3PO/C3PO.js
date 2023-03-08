@@ -49,7 +49,7 @@ const C3PO = React.forwardRef((props, ref) => {
       return;
     }
     c3poRef.current = el;
-    c3poAnimateRef.current = new C3POAnimate(c3poRef);
+    c3poAnimateRef.current = new C3POAnimate(c3poRef, stage.getGameStage());
     loadC3PO({
       c3poRef,
       c3poAnimateRef,

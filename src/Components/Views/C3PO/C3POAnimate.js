@@ -1,11 +1,14 @@
 import gsap from 'gsap';
+import { getBoundsRelativeToParent } from '../../GameStage/utils';
 
 class C3POAnimate {
   /**
    *
    * @param {React.RefObject<HTMLElement>} bodyRef - body ref
+   * @param {HTMLElement} constrainEl - the element to reference as C3PO's coordinate system.
    */
-  constructor(bodyRef) {
+  constructor(bodyRef, constrainEl) {
+    this.constrainEl = constrainEl;
     this.body = bodyRef.current;
     this.timeline = gsap.timeline();
     this.currentAction = null;
@@ -275,27 +278,33 @@ class C3POAnimate {
    *
    * Walk to center
    *
-   * @param {Number} xPosition - walk to position on game stage
+   * @param {String|Number} xPosition - walk to position on game stage. Can
    */
   async walk(xPosition, options = { steps: 7, duration: 2 }) {
-    const bodyBounds = this.body.getBoundingClientRect();
-    const distance = xPosition - bodyBounds.x;
+    const bodyBounds = this.getBounds(this.body);
+    const distance = xPosition - bodyBounds.x - window.scrollX;
+    // console.log(
+    //   `xPos ${xPosition} - bodyBounds.x ${bodyBounds.x}  - window.scrollX ${window.scrollX}= ${distance}`
+    // );
     const totalDuration = options.duration || 2;
     const steps = options.steps || 7;
+
     // build timeline
     const walkTimeline = gsap.timeline();
+    // walkTimeline.set(this.body, { x: bodyBounds.x });
     for (let i = 1; i <= steps; i++) {
       const x = distance / steps;
       const duration = totalDuration / steps;
       const isEven = i % 2 == 0;
+      console.log(`+=${x}px`);
       walkTimeline.to(this.body, {
-        x: `+=${x}`,
+        x: `+=${x}px`,
         y: isEven ? '-20' : '+10',
         duration,
         ease: true,
       });
     }
-    // walkTimeline.to(this.body, { x: centerX, rotate: '0deg' });
+    // walkTimeline.to(this.body, { x: xPosition, rotate: '0deg' });
     return walkTimeline.play();
   }
 
@@ -453,6 +462,10 @@ class C3POAnimate {
         },
       });
     });
+  }
+
+  getBounds(bodyPart) {
+    return getBoundsRelativeToParent(bodyPart, this.constrainEl);
   }
 }
 

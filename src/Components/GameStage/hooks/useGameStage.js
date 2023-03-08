@@ -4,6 +4,7 @@ import { GAME_STAGE_VIEWS } from '../Reducer';
 import { GAME_STAGE_ACTIONS } from '../Reducer';
 import { GAME_STAGE_EVENTS } from '../events';
 import { constraints } from '../constraints';
+import { getBoundsRelativeToParent } from '../utils';
 
 export const useGameStage = () => {
   const [state, dispatch] = useContext(GameStageContext);
@@ -52,8 +53,8 @@ export const useGameStage = () => {
         `failed to get position of element relative to parent. Parent is not an ancestor of ${el.classList.toString()}`
       );
     }
-    const elBounds = el.getBoundingClientRect();
-    return subtractGameStageOffsetFromDOMRect(elBounds);
+
+    return getBoundsRelativeToParent(el, getGameStage().parentElement);
   };
 
   /**
@@ -102,49 +103,8 @@ export const useGameStage = () => {
    * @returns {Object} - DOMRect values for constraints relative to parent .game-stage
    */
   const getComputedConstraints = () => {
-    const gameStageBounds = getGameStage()
-      .querySelector('.game-stage-constraints')
-      .getBoundingClientRect();
-    return subtractGameStageOffsetFromDOMRect(gameStageBounds);
-  };
-
-  /**
-   * subtractGameStageOffsetFromDOMRect
-   *
-   *
-   *
-   * @param {DOMRect} elBounds
-   * @returns {Object} - the element bounds with game stage as a cartesian reference point.
-   * Also returns the percentValues of each property.
-   */
-  const subtractGameStageOffsetFromDOMRect = (elBounds) => {
-    const parentBounds = getGameStage().parentElement.getBoundingClientRect();
-    const x = elBounds.x - parentBounds.x;
-    const y = elBounds.y - parentBounds.y;
-    const height = elBounds.height;
-    const width = elBounds.width;
-    const top = elBounds.top - parentBounds.top;
-    const left = elBounds.left - parentBounds.left;
-    const right = parentBounds.right - elBounds.right;
-    const bottom = parentBounds.bottom - elBounds.bottom;
-    return {
-      x,
-      xPercent: x / parentBounds.width,
-      y,
-      yPercent: y / parentBounds.height,
-      height,
-      heightPercent: height / parentBounds.height,
-      width,
-      widthPercent: width / parentBounds.width,
-      top,
-      topPercent: top / parentBounds.height,
-      left,
-      leftPercent: left / parentBounds.width,
-      right,
-      rightPercent: right / parentBounds.width,
-      bottom,
-      bottomPercent: bottom / parentBounds.height,
-    };
+    const gameStageConstraints = getGameStage().querySelector('.game-stage-constraints');
+    return getBoundsRelativeToParent(gameStageConstraints, getGameStage().parentElement);
   };
 
   window.getPos = (el) => {

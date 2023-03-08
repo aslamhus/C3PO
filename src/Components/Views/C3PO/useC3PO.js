@@ -120,6 +120,17 @@ export const useC3PO = () => {
 
     await actions.exitStageLeft(c3po);
     showC3PO();
+    // test
+    await actions.startGameInstruction(
+      c3po,
+      getGameStage(),
+      speak,
+      askQuestion,
+      dismissSpeechBubble,
+      showBinary
+    );
+
+    return;
     await actions.peekAbooEntrance(c3po, speak);
     const identityConfirmed = await actions.questionIdentity(
       c3po,

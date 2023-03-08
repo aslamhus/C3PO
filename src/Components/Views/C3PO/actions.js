@@ -66,7 +66,7 @@ export const startGameInstruction = async (
   showBinary
 ) => {
   await c3po.animate(c3po.body, { rotate: 0, duration: 0.5 });
-  await c3po.walk(-20, { steps: 9, duration: 3 });
+  await c3po.walk(0, { steps: 9, duration: 3 });
   // look around?
   await speak(
     "<span style='color:red;'>Sylvan</span>, I need your help to decode a message from <span style='color:red; '>Aslam Chacha</span>.",

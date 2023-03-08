@@ -4,7 +4,7 @@ import bodyParts from './body-part-images.js';
 import './body.css';
 import './movements.css';
 
-const showBoundingBox = true;
+const showBoundingBox = false;
 
 const Body = React.forwardRef((props, ref) => {
   const { children, style } = props;

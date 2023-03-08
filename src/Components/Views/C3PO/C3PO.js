@@ -21,6 +21,7 @@ const C3PO = React.forwardRef((props, ref) => {
       showSpeechBubbleAnimationDuration,
       guessChar,
       showBinary,
+      showTapToContinue,
     },
     startC3POGame,
     loadC3PO,
@@ -127,6 +128,7 @@ const C3PO = React.forwardRef((props, ref) => {
             offset={{ x: 0, y: -100 }}
             showAnimationDuration={showSpeechBubbleAnimationDuration}
             onShowSpeechBubble={() => toggleSpeechBubble(true)}
+            showTapToContinue={showTapToContinue}
           />
           <Body ref={getC3PORef} style={{ opacity: c3poState != 'hidden' ? 1 : 0 }}></Body>
         </div>

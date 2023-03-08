@@ -8,6 +8,7 @@ import { useGame } from '../hooks/useGame';
 import { GAME_STAGE_VIEWS } from './Reducer';
 import { GAME_STAGE_EVENTS } from './events';
 import './game-stage.css';
+import TipModal from '../UI/Modals/TipModal';
 
 /**
  * A note about GameStage bounds.
@@ -30,6 +31,7 @@ export default function GameStage(props) {
       beginGame,
     },
   } = useGame();
+
   const ref = useRef();
 
   const assignPixelFormat = (value) => (isNaN(value) ? value : `${value}px`);
@@ -74,7 +76,7 @@ export default function GameStage(props) {
 
   return (
     <div className="game-stage" ref={ref}>
-      <div className="game-stage-constraints" style={applyConstraints(constraints)} />
+      <div className="game-stage-constraints" style={applyConstraints(constraints)}></div>
       {showLoader && <StarWarsLoader />}
       <AnimatePresence>
         {stageView == 'startScreen' && (
@@ -93,6 +95,7 @@ export default function GameStage(props) {
         )}
       </AnimatePresence>
 
+      <TipModal />
       {props.children}
     </div>
   );

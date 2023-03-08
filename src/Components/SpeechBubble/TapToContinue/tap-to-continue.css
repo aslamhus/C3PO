@@ -1,0 +1,15 @@
+.tap-to-continue {
+  position: absolute;
+  z-index: 1;
+  bottom: 5px;
+  right: 10px;
+  width: 40px;
+  height: auto;
+  aspect-ratio: 1/1;
+  /* background: green; */
+}
+.tap-to-continue img {
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}

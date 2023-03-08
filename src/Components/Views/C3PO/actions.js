@@ -66,19 +66,16 @@ export const startGameInstruction = async (
   showBinary
 ) => {
   await c3po.animate(c3po.body, { rotate: 0, duration: 0.5 });
-  await c3po.walk(0, { steps: 9, duration: 3 });
+
+  await c3po.walk(-40, { steps: 9, duration: 3 });
   // look around?
   await speak(
-    "<span style='color:red;'>Sylvan</span>, I need your help to decode a message from <span style='color:red; '>Aslam Chacha</span>.",
-    { wait: 3 * speed }
+    "<span style='color:red;'>Sylvan</span>, I need your help to decode a message from <span style='color:red; '>Aslam Chacha</span>."
   );
-  await speak("Normally, I ask <span style='color:blue;'>R2D2</span> to help me decode....", {
-    wait: 3 * speed,
-  });
+  await speak("Normally, I ask <span style='color:blue;'>R2D2</span> to help me decode....");
 
   await speak(
-    "But I can't find him anywhere! Oh where has that troublesome rustbucket gone to now....",
-    { wait: 5 * speed }
+    "But I can't find him anywhere! Oh where has that troublesome rustbucket gone to now...."
   );
   await dismissSpeechBubble();
   await c3po.proposeIdea();
@@ -92,10 +89,9 @@ export const startGameInstruction = async (
   if (response == 'Okay') {
     c3po.stop();
     c3po.rest();
-    await speak('Fantastic!', { wait: 2 * speed });
+    await speak('Fantastic!');
     await speak(
-      "It's written in <span style='color:green; font-style:italic'>binary</span>, otherwise known as computer language.",
-      { wait: 3 * speed }
+      "It's written in <span style='color:green; font-style:italic'>binary</span>, otherwise known as computer language."
     );
     await showBinary();
     await wait(2 * speed);
@@ -104,7 +100,6 @@ export const startGameInstruction = async (
     await speak(
       "My circuits are all full of sand from walking around <span style='color:gold; font-style:italic'>Tattooine</span>, so my processor is a bit slow."
     );
-
     c3po.think();
     await wait(6 * speed);
     return speak(

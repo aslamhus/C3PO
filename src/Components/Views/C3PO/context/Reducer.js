@@ -11,6 +11,8 @@ export const C3PO_ACTIONS = {
   toggleSpeechBubble: 'toggleSpeechBubble',
   showBinary: 'showBinary',
   guessChar: 'guessChar',
+  showTapToContinue: 'showTapToContinue',
+  hideTapToContinue: 'hideTapToContinue',
 };
 
 export const initialState = {
@@ -22,6 +24,7 @@ export const initialState = {
   showSpeechBubble: false,
   showSpeechBubbleAnimationDuration: 0.5,
   showBinary: false,
+  showTapToContinue: false,
 };
 
 export const reducer = (state = initialState, action) => {
@@ -60,6 +63,17 @@ export const reducer = (state = initialState, action) => {
       return {
         ...state,
         guessChar: action.payload,
+      };
+
+    case 'showTapToContinue':
+      return {
+        ...state,
+        showTapToContinue: true,
+      };
+    case 'hideTapToContinue':
+      return {
+        ...state,
+        showTapToContinue: false,
       };
     default:
       throw new Error(`unrecognised dispatch type ${action.type}`);

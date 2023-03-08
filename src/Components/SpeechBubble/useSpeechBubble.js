@@ -154,6 +154,23 @@ export const useSpeechBubble = ({
     return applyConstraints();
   };
 
+  const typeSpeech = () => {
+    const speech = bubbleRef.current.querySelector('.type');
+
+    const text = speech.textContent;
+    const clone = React.cloneElement(speech);
+    clone.textContent = '';
+    clone.style.opacity = 1;
+    speech.parentElement.insertBefore(clone, speech);
+    speech.remove();
+    for (let i = 0; i < text.length; i++) {
+      setTimeout(() => {
+        console.log(`${clone.textContent}${text[i]}`);
+        clone.textContent = `${clone.textContent}${text[i]}`;
+      }, 100 * i);
+    }
+  };
+
   /**
    * 1. Receive new speech
    * - hide the bubble
@@ -194,6 +211,15 @@ export const useSpeechBubble = ({
   useEffect(() => {
     if (isPrepared) showBubble();
   }, [isPrepared]);
+
+  // /**
+  //  * 4. Type out the letters
+  //  */
+  // useEffect(() => {
+  //   if (show) {
+  //     typeSpeech();
+  //   }
+  // }, [show]);
 
   /**
    * If parent show state differs from internal show state

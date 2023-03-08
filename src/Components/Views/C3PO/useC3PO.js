@@ -14,8 +14,8 @@ export const useC3PO = () => {
   } = useGame();
   const { ask } = useAskQuestion();
 
-  const askQuestion = ({ question, responses }) => {
-    speak(question);
+  const askQuestion = async ({ question, responses }) => {
+    await speak(question);
     return ask({ question, responses });
   };
 
@@ -120,17 +120,6 @@ export const useC3PO = () => {
 
     await actions.exitStageLeft(c3po);
     showC3PO();
-    // test
-    await actions.startGameInstruction(
-      c3po,
-      getGameStage(),
-      speak,
-      askQuestion,
-      dismissSpeechBubble,
-      showBinary
-    );
-
-    return;
     await actions.peekAbooEntrance(c3po, speak);
     const identityConfirmed = await actions.questionIdentity(
       c3po,

@@ -1,6 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './type-text.css';
 
+/**
+ * TypeText
+ *
+ * TypeText scans children for nodes with string values,
+ * and types those strings at the specified speed.
+ *
+ * The parent node to search for string values must
+ * have the className 'type-text-target'.
+ *
+ * @component
+ */
 const TypeText = ({ show, children, onTypingComplete, typeSpeed = 0.1 }) => {
   const [typedText, _setTypedText] = useState(null);
   const typedTextRef = useRef(null);
@@ -73,16 +84,15 @@ const TypeText = ({ show, children, onTypingComplete, typeSpeed = 0.1 }) => {
       onTypingComplete();
     }
   };
+
   const renderTypeText = () => {
     return React.Children.map(children, (child) => {
       if (child.props.className.includes('type-text-target')) {
         const Clone = React.cloneElement(child, {
           style: { opacity: 1 },
           children: typedText,
-          //   dangerouslySetInnerHTML: { __html: typedText },
         });
         return Clone;
-        // return <Clone>{typedText}</Clone>;
       }
       return child;
     });

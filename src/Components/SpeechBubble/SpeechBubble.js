@@ -1,13 +1,12 @@
 import React from 'react';
-import './speech-bubble.css';
 import TapToContinue from './TapToContinue';
 import TypeText from './TypeText';
 import { useSpeechBubble } from './useSpeechBubble';
+import './speech-bubble.css';
 
 export const SpeechBubble = React.memo((props) => {
   const { positions, bubbleRef, _show, bubbleText, parseSpeech, arrowPosition } =
     useSpeechBubble(props);
-  console.log('props.showTapToContinue', props?.showTapToContinue);
   return (
     <div className="speech-bubble-container" style={{ ...positions }}>
       <div
@@ -20,16 +19,12 @@ export const SpeechBubble = React.memo((props) => {
       >
         <TypeText
           show={_show}
-          text={bubbleText}
-          typeSpeed={0.05}
+          typeSpeed={0.1}
           onTypingComplete={() => {
             console.log('typing complete');
           }}
         >
-          <div
-            className="speech type-text-target"
-            dangerouslySetInnerHTML={parseSpeech(bubbleText)}
-          ></div>
+          <div className="speech type-text-target">{bubbleText}</div>
         </TypeText>
         {props?.showTapToContinue && <TapToContinue />}
         <div className="bubble-arrow" style={{ ...arrowPosition }}></div>

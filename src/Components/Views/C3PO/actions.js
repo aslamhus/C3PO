@@ -1,3 +1,4 @@
+import React from 'react';
 const speed = 0;
 const testAction = () => {
   setTimeout(() => {
@@ -23,7 +24,7 @@ export const peekAbooEntrance = async (c3po, speak) => {
     x: '-70%',
     duration: 1.5,
   });
-  await speak('Oh I say! ');
+  await speak(<>Oh I say!</>);
   await wait(0);
 };
 
@@ -39,7 +40,11 @@ export const questionIdentity = async (
   }, 2500);
   c3po.wave();
   const response = await askQuestion({
-    question: `is that you, <span style="color:red">Sylvan?</span>`,
+    question: (
+      <>
+        is that you, <span style={{ color: 'red' }}>Sylvan?</span>
+      </>
+    ),
     responses: [
       { title: 'Yes', value: 'Yes' },
       { title: 'No', value: 'No' },
@@ -70,9 +75,16 @@ export const startGameInstruction = async (
   await c3po.walk(-40, { steps: 9, duration: 3 });
   // look around?
   await speak(
-    "<span style='color:red;'>Sylvan</span>, I need your help to decode a message from <span style='color:red; '>Aslam Chacha</span>."
+    <>
+      <span style={{ color: 'red' }}>Sylvan</span>, I need your help to decode a message from{' '}
+      <span style={{ color: 'red' }}>Aslam Chacha</span>
+    </>
   );
-  await speak("Normally, I ask <span style='color:blue;'>R2D2</span> to help me decode....");
+  await speak(
+    <>
+      Normally, I ask <span style={{ color: 'blue' }}>R2D2</span> to help me decode....
+    </>
+  );
 
   await speak(
     "But I can't find him anywhere! Oh where has that troublesome rustbucket gone to now...."
@@ -80,7 +92,11 @@ export const startGameInstruction = async (
   await dismissSpeechBubble();
   await c3po.proposeIdea();
   const response = await askQuestion({
-    question: "<span style='color:red;'>Sylvan</span>, will you help me decode the message?",
+    question: (
+      <>
+        <span style={{ color: 'red' }}>Sylvan</span>, will you help me decode the message?
+      </>
+    ),
     responses: [
       { title: 'Okay', value: 'Okay' },
       { title: 'No', value: 'No' },
@@ -91,19 +107,28 @@ export const startGameInstruction = async (
     c3po.rest();
     await speak('Fantastic!');
     await speak(
-      "It's written in <span style='color:green; font-style:italic'>binary</span>, otherwise known as computer language."
+      <>
+        It's written in <span style={{ color: 'green', fontStyle: 'italic' }}>binary</span>,
+        otherwise known as computer language.
+      </>
     );
     await showBinary();
     await wait(2 * speed);
     await dismissSpeechBubble();
     await wait(1 * speed);
     await speak(
-      "My circuits are all full of sand from walking around <span style='color:gold; font-style:italic'>Tattooine</span>, so my processor is a bit slow."
+      <>
+        My circuits are all full of sand from walking around{' '}
+        <span style={{ color: 'gold' }}>Tattooine</span>, so my processor is a bit slow.
+      </>
     );
     c3po.think();
     await wait(6 * speed);
     return speak(
-      "Help me decode the message by <span style='color:green; font-style:italic'>guessing the letters!</span> You're my only hope, <span style='color:red;'>Sylvan</span>!"
+      <>
+        Help me decode the message by <span style={{ color: 'green' }}>guessing the letters!</span>{' '}
+        You're my only hope, <span style={{ color: 'red' }}>Sylvan</span>!
+      </>
     );
   }
 };

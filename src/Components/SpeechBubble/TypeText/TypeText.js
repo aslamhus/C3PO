@@ -1,23 +1,71 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './type-text.css';
 
-const TypeText = ({ show, text, children, onTypingComplete, typeSpeed = 0.1 }) => {
-  const [typedText, _setTypedText] = useState('');
-  const typedTextRef = useRef('');
+const TypeText = ({ show, children, onTypingComplete, typeSpeed = 0.1 }) => {
+  const [typedText, _setTypedText] = useState(null);
+  const typedTextRef = useRef(null);
   const setTypedText = (value) => {
     typedTextRef.current = value;
     _setTypedText(value);
   };
 
-  const beginTyping = () => {
-    for (let i = 0; i < text.length; i++) {
+  const getTextNodes = (children) => {
+    let textNodes = [];
+    const recursiveNodeSearch = (children) => {
+      const childArray = React.Children.toArray(children);
+      if (Array.isArray(childArray)) {
+        childArray.forEach((child, index) => {
+          if (typeof child == 'string' || child.type == 'span' || child.type == 'p') {
+            textNodes.push(childArray[index]);
+          } else {
+            if (child?.props?.children) {
+              recursiveNodeSearch(child.props.children);
+            }
+          }
+        });
+      }
+    };
+    recursiveNodeSearch(children);
+    return textNodes;
+  };
+
+  const type = (char) => {
+    return new Promise((resolve) => {
       setTimeout(() => {
-        setTypedText(`${typedTextRef.current}${text[i]}`);
-        if (i == text.length - 1) {
-          handleTypingComplete();
+        setTypedText(
+          <>
+            {typedTextRef.current}
+            {char}
+          </>
+        );
+        resolve();
+      }, typeSpeed * 1000);
+    });
+  };
+  const beginTyping = async () => {
+    const textNodes = getTextNodes(children);
+    for (let node of textNodes) {
+      // is the node pure text?
+      if (typeof node === 'string') {
+        for (let i = 0; i < node.length; i++) {
+          const char = node[i];
+          await type(char);
         }
-      }, typeSpeed * 1000 * i);
+      } else {
+        // node is react component
+        // find text node within it.
+        const text = node.props.children;
+        if (typeof text != 'string') {
+          throw new Error('text node child was not of type string');
+        }
+        for (let i = 0; i < text.length; i++) {
+          const char = text[i];
+          const clone = React.cloneElement(node, { children: char });
+          await type(clone);
+        }
+      }
     }
+    return;
   };
 
   const handleTypingComplete = () => {
@@ -30,20 +78,20 @@ const TypeText = ({ show, text, children, onTypingComplete, typeSpeed = 0.1 }) =
       if (child.props.className.includes('type-text-target')) {
         const Clone = React.cloneElement(child, {
           style: { opacity: 1 },
-          dangerouslySetInnerHTML: { __html: typedText },
+          children: typedText,
+          //   dangerouslySetInnerHTML: { __html: typedText },
         });
         return Clone;
+        // return <Clone>{typedText}</Clone>;
       }
       return child;
     });
   };
 
-  useEffect(() => {}, [text]);
-
   useEffect(() => {
     if (show) {
-      setTypedText('');
-      beginTyping();
+      setTypedText(null);
+      beginTyping().then(handleTypingComplete);
     }
   }, [show]);
   return <>{show ? renderTypeText() : children}</>;

@@ -17,6 +17,7 @@ export const useSpeechBubble = ({
 }) => {
   const [bubbleText, setBubbleText] = useState('');
   const [_show, setShow] = useState(false);
+  const [isPrepared, setIsPrepared] = useState(false);
   const [arrowPosition, setArrowPosition] = useState({ left: '25%' });
   const [positions, _setPositions] = useState(null);
   const positionsRef = useRef(positions);
@@ -77,24 +78,30 @@ export const useSpeechBubble = ({
    * right value of game stage constraint to speech bubble right.
    * Unset the opposite constraint of speech bubble, i.e. for right,
    * left would be unset.
+   *
+   * @returns {Boolean} - whether constraints pass or not
    */
-  const applyConstraints = async () => {
+  const applyConstraints = () => {
     const breakConstraints = doesElementBreakConstraints(bubbleRef.current.parentElement);
     if (breakConstraints) {
       const { constraintsBroken, constraintBounds } = breakConstraints;
+      console.error('broken constraints', constraintsBroken);
       const adjustedPosition = constraintsBroken.reduce((acc, constraint) => {
-        acc[constraint] = `${constraintBounds[`${constraint}Percent`] * 100}%`;
-        // calculate percent values
-        const opposite = constraints[constraint].opposite;
-        if (opposite != 'width' && opposite != 'height') {
+        if (constraint != 'width' && constraint != 'height') {
+          acc[constraint] = `${constraintBounds[`${constraint}Percent`] * 100}%`;
+          // calculate percent values
+          const opposite = constraints[constraint].opposite;
           acc[opposite] = '';
+        } else {
+          // do something
         }
         return acc;
       }, {});
-      // console.log('previous position', positionsRef);
-      // console.log('apply constraints => adjusted pos', adjustedPosition);
+
       setPositions({ ...positionsRef?.current, ...adjustedPosition });
+      return false;
     }
+    return true;
   };
 
   const parseSpeech = (speech) => ({ __html: speech });
@@ -105,9 +112,6 @@ export const useSpeechBubble = ({
   };
 
   const showBubble = async () => {
-    // set scale to 1 before applying onstraints so we can calculate actual size
-    await gsap.set(bubbleRef.current, { scale: 1 });
-    applyConstraints();
     computeFontSize();
     await gsap.set(bubbleRef.current, { scale: 0 });
     setShow(true);
@@ -131,6 +135,8 @@ export const useSpeechBubble = ({
     if (!bubbleRef.current) {
       throw new Error('Speech bubble has not rendered');
     }
+
+    setIsPrepared(false);
     if (show) {
       await hideBubble();
     }
@@ -142,23 +148,40 @@ export const useSpeechBubble = ({
     }
   };
 
+  const checkConstraints = async () => {
+    // set scale to 1 before applying onstraints so we can calculate actual size
+    await gsap.set(bubbleRef.current, { scale: 1 });
+    return applyConstraints();
+  };
+
   /**
    * 1. Receive new speech
    * - hide the bubble
+   * - set is prepared to false
    * - set the bubble text
    * - set the position based on anchor
    * - fire 'onBeforeShowSpeechBubble'
    */
   useEffect(() => {
     speech && prepareBubble();
+    console.log(`-------- ${speech}`);
   }, [speech]);
 
   /**
    * 2. Whenever positions are set/adjusted,
-   * set the arrow position.
+   * set the arrow position and check constraints. If constraints pass
+   * set is prepared to true. This will be first triggered
+   * by 'prepareBubble'. But if constraints are broken by
+   * the position set in prepareBubble, we may need to set
+   * the positions again, at which we will checkConstraintsAndArrowPosition
    */
   useEffect(() => {
-    positions && setArrowPosition(findArrowPosition());
+    if (positions) {
+      setArrowPosition(findArrowPosition());
+      checkConstraints().then((pass) => {
+        if (pass) setIsPrepared(true);
+      });
+    }
   }, [positions]);
 
   /**
@@ -169,10 +192,8 @@ export const useSpeechBubble = ({
    * - animate entrance
    */
   useEffect(() => {
-    if (bubbleText) {
-      showBubble();
-    }
-  }, [bubbleText]);
+    if (isPrepared) showBubble();
+  }, [isPrepared]);
 
   /**
    * If parent show state differs from internal show state

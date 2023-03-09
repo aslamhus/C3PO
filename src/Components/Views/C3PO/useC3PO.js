@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 import { C3POContext } from './context/context';
 import { useGame } from '../../hooks/useGame';
 import { useAskQuestion } from '../../GameControl/AskQuestion/hooks/useAskQuestion';

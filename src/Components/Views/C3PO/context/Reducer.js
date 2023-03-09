@@ -28,7 +28,7 @@ export const initialState = {
   showTapToContinue: false,
   guesses: {},
   message: 'May the force be with you, Sylvan!',
-  energy: 0.3,
+  energy: 0.85,
 };
 
 export const reducer = (state = initialState, action) => {

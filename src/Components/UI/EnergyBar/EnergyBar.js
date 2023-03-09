@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
+import { getEnergyLevel, levels } from './energy-levels';
 import './energy-bar.css';
 
 export default function EnergyBar({ now = 1 }) {
@@ -45,6 +46,21 @@ export default function EnergyBar({ now = 1 }) {
   const animateEnergyChange = () =>
     gsap.to(energyBarRef.current, { scaleX: energy, duration: 0.5 });
 
+  const getEnergyBarBackground = () => {
+    switch (getEnergyLevel(energy)) {
+      case levels.high:
+        return 'green';
+      case levels.mid:
+        return 'yellow';
+      case levels.low:
+        return 'orange';
+      case levels.danger:
+        return 'red';
+      default:
+        return '';
+    }
+  };
+
   useEffect(() => {
     if (energy) {
       handleAnimations();
@@ -62,23 +78,28 @@ export default function EnergyBar({ now = 1 }) {
         <EnergyPercent energy={energy} />
       </div>
       <div className="energy-bar">
-        <div ref={energyBarRef} className="energy"></div>
+        <div
+          ref={energyBarRef}
+          className="energy"
+          style={{
+            background: getEnergyBarBackground(),
+          }}
+        ></div>
       </div>
     </div>
   );
 }
 
 const EnergyPercent = ({ energy }) => {
-  let color = 'green';
   const getEnergyColor = () => {
-    switch (true) {
-      case energy > 0.75:
+    switch (getEnergyLevel(energy)) {
+      case levels.high:
         return 'green';
-      case energy > 0.5 && energy < 0.75:
+      case levels.mid:
         return 'yellow';
-      case energy > 0.3 && energy <= 0.5:
+      case levels.low:
         return 'orange';
-      case energy <= 0.3:
+      case levels.danger:
         return 'red';
     }
   };

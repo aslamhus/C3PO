@@ -54,6 +54,13 @@ export const useC3PO = () => {
   const showBinary = () => dispatch({ type: C3PO_ACTIONS.showBinary });
 
   /**
+   *
+   * @param {Number|String} value - can be set to value, or incremented (+=10) or decremented (-=15)
+   * @returns
+   */
+  const setEnergy = (value) => dispatch({ type: C3PO_ACTIONS.setEnergy, payload: value });
+
+  /**
    * Speak
    *
    * Note for future Aslam:
@@ -118,6 +125,8 @@ export const useC3PO = () => {
     c3po.celebrate(3).then(() => {
       c3po.rest();
     });
+
+    setEnergy(`+=${parseFloat(Number(countCharsFound) * 0.05)}`);
     let plural = countCharsFound > 1 ? 's' : '';
     speak(
       <>
@@ -130,6 +139,7 @@ export const useC3PO = () => {
 
   const handleIncorrectGuess = async (char, c3po) => {
     // increment bad guesses
+    setEnergy('-=0.1');
     const oppositeCase = getOppositeCase(char);
     const hasOppositeCase = hasChar(oppositeCase.char, state.message);
     c3po.fret();
@@ -137,7 +147,7 @@ export const useC3PO = () => {
       <>
         No <span className="letter-not-found">{char}</span> could be found...
       </>,
-      { tapToContinue: hasOppositeCase }
+      { tapToContinue: hasOppositeCase ? true : false }
     );
     if (hasOppositeCase) {
       speak(
@@ -207,5 +217,6 @@ export const useC3PO = () => {
     loadC3PO,
     toggleSpeechBubble,
     getGameStage,
+    control,
   };
 };

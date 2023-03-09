@@ -13,6 +13,7 @@ export const C3PO_ACTIONS = {
   guessChar: 'guessChar',
   showTapToContinue: 'showTapToContinue',
   hideTapToContinue: 'hideTapToContinue',
+  setEnergy: 'setEnergy',
 };
 
 export const initialState = {
@@ -27,6 +28,7 @@ export const initialState = {
   showTapToContinue: false,
   guesses: {},
   message: 'May the force be with you, Sylvan!',
+  energy: 0.3,
 };
 
 export const reducer = (state = initialState, action) => {
@@ -79,6 +81,19 @@ export const reducer = (state = initialState, action) => {
         ...state,
         showTapToContinue: false,
       };
+    case 'setEnergy':
+      let energy = action.payload;
+      const [, increment, decrement, value] = energy.match(/(\+=)?(-=)?([0-9]*?\.[0-9]*)/);
+      if (increment) {
+        energy = parseFloat(state.energy) + parseFloat(value);
+      } else if (decrement) {
+        energy = parseFloat(state.energy) - parseFloat(value);
+      }
+      return {
+        ...state,
+        energy,
+      };
+
     default:
       throw new Error(`unrecognised dispatch type ${action.type}`);
   }

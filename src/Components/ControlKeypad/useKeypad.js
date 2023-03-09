@@ -61,15 +61,15 @@ export const useKeypad = ({ setControlStripComponent }) => {
   };
 
   const handlePressChar = (char, binary) => {
-    setControlStripComponent(
-      <>
-        <p>
-          {char} - {binary}
-        </p>
-      </>,
-      'secondary',
-      { overwrite: true }
-    );
+    // setControlStripComponent(
+    //   <>
+    //     <p>
+    //       {char} - {binary}
+    //     </p>
+    //   </>,
+    //   'secondary',
+    //   { overwrite: true }
+    // );
   };
 
   useEffect(() => {

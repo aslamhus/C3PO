@@ -8,13 +8,15 @@ import tatooineDesert from '@images/backgrounds/tatooine.png';
 import BinaryMessage from '../../Binary/BinaryMessage';
 import gsap from 'gsap';
 import { useC3PO } from './useC3PO';
-import './c3po.css';
 import { useGameStage } from '../../GameStage/hooks/useGameStage';
+import EnergyBar from '../../UI/EnergyBar';
+import './c3po.css';
 
 const C3PO = React.forwardRef((props, ref) => {
   const {
     state: {
       loaded,
+      message,
       speech,
       c3poState,
       showSpeechBubble,
@@ -22,6 +24,7 @@ const C3PO = React.forwardRef((props, ref) => {
       guessChar,
       showBinary,
       showTapToContinue,
+      energy,
     },
     startC3POGame,
     loadC3PO,
@@ -29,6 +32,7 @@ const C3PO = React.forwardRef((props, ref) => {
     handleGuessAnimationStart,
     handleGuessAnimationComplete,
     getGameStage,
+    control,
   } = useC3PO();
 
   const stage = useGameStage();
@@ -91,10 +95,22 @@ const C3PO = React.forwardRef((props, ref) => {
   };
 
   useEffect(() => {
+    console.log('new energy', energy);
+    if (energy) {
+      control.setControlStripComponent(<EnergyBar now={energy} />, 'secondary', {
+        overwrite: true,
+      });
+    }
+  }, [energy]);
+
+  useEffect(() => {
     if (loaded) {
-      console.log('startC3poGame', loaded);
+      console.info('startC3poGame', loaded);
       setSpeechBubbleAnchor(c3poRef.current.querySelector('.head'));
       startC3POGame();
+      control.setControlStripComponent(<EnergyBar now={energy} />, 'secondary', {
+        overwrite: true,
+      });
     }
   }, [loaded]);
 
@@ -136,7 +152,7 @@ const C3PO = React.forwardRef((props, ref) => {
       {showBinary && (
         <BinaryMessage
           show={showBinary}
-          message={'May the force be with you, Sylvan!'}
+          message={message}
           guessChar={guessChar}
           onGuessAnimationStart={handleGuessAnimationStart}
           onGuessAnimationComplete={handleGuessAnimationComplete}

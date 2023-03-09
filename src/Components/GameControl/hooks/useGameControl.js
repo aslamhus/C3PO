@@ -11,8 +11,8 @@ export const useGameControl = () => {
   const toggleControls = (bool) =>
     dispatch({ type: GAME_CONTROL_ACTIONS.toggleControls, payload: bool });
 
-  const toggleTranslator = (bool, options = { onPressChar }) =>
-    dispatch({ type: GAME_CONTROL_ACTIONS.toggleTranslator, payload: [bool, options] });
+  const toggleKeypad = (bool, options = { onPressChar }) =>
+    dispatch({ type: GAME_CONTROL_ACTIONS.toggleKeypad, payload: [bool, options] });
 
   const beginGame = () => dispatch({ type: GAME_CONTROL_ACTIONS.beginGame });
 
@@ -40,7 +40,7 @@ export const useGameControl = () => {
     state,
     toggleViewScreen,
     toggleControls,
-    toggleTranslator,
+    toggleKeypad,
     setControlStripComponent,
     beginGame,
   };

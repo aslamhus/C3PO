@@ -99,7 +99,7 @@ export default function BinaryMessage({
     childTimelinesRef.current.push(timeline);
 
   /**
-   * Animate entrance of Translator
+   * Animate entrance of ControlKeypad
    */
   useEffect(() => {
     if (show) {

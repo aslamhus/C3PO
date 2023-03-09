@@ -129,11 +129,11 @@ export const useC3PO = () => {
     dismissSpeechBubble();
   };
 
-  const testTranslator = async (c3po) => {
+  const testKeypad = async (c3po) => {
     showC3PO();
     showBinary();
     control.toggleControls(true);
-    control.toggleTranslator(true, { onPressChar: guessChar });
+    control.toggleKeypad(true, { onPressChar: guessChar });
   };
 
   const testAnimations = async (c3po) => {
@@ -155,7 +155,7 @@ export const useC3PO = () => {
     // await actions.wait(5);
     playSound(music.jawaTheme);
     const { current: c3po } = state.c3poAnimateRef;
-    testTranslator(c3po);
+    testKeypad(c3po);
     return;
 
     await actions.exitStageLeft(c3po);
@@ -182,8 +182,8 @@ export const useC3PO = () => {
       );
       c3po.stop();
       c3po.rest();
-      control.toggleTranslator(true, { onPressChar: guessChar });
-      // showTranslator();
+      control.toggleKeypad(true, { onPressChar: guessChar });
+      // showKeypad();
     } else {
       // end game.
     }

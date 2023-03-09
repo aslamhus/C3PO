@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { binaryToCharacter, characterToBinaryDict } from '../../Translator/binaryDict';
+import { binaryToCharacter, characterToBinaryDict } from '../../ControlKeypad/binaryDict';
 import { getTimeline, animateDecode } from './animations';
 import './byte.css';
 

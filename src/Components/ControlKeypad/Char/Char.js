@@ -15,7 +15,7 @@ const Char = ({ onClick, char, binary }) => {
     <SelectButton
       onClick={handleClick}
       key={binary}
-      className="translator-char"
+      className="control-keypad-char"
       disabled={selected}
     >
       <h3 className="char">{char == ' ' ? 'space' : char}</h3>

@@ -3,7 +3,7 @@ import React from 'react';
 export const GAME_CONTROL_ACTIONS = {
   toggleViewScreen: 'toggleViewScreen',
   toggleControls: 'toggleControls',
-  toggleTranslator: 'toggleTranslator',
+  toggleKeypad: 'toggleKeypad',
   setPrimaryControlStripComponent: 'setPrimaryControlStripComponent',
   setSecondaryControlStripComponent: 'setSecondaryControlStripComponent',
   beginGame: 'beginGame',
@@ -14,7 +14,7 @@ export const initialState = {
   gameStart: false,
   viewScreen: false,
   controls: false,
-  showTranslator: false,
+  showKeypad: false,
   primaryControlStripComponent: null,
   secondaryControlStripComponent: null,
   onPressChar: null,
@@ -39,11 +39,11 @@ export const reducer = (state = initialState, action) => {
         ...state,
         controls: payload,
       };
-    case 'toggleTranslator':
+    case 'toggleKeypad':
       const [bool, options] = payload;
       return {
         ...state,
-        showTranslator: bool,
+        showKeypad: bool,
         onPressChar: options?.onPressChar,
       };
 

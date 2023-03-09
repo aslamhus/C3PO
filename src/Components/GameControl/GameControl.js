@@ -5,9 +5,9 @@ import Radar from './Radar';
 import ControlStripGroup from './ControlStripGroup';
 import ViewScreen from './ViewScreen/ViewScreen';
 import AskQuestion from './AskQuestion/AskQuestion';
-import Translator from '../Translator/Translator';
+import ControlKeypad from '../ControlKeypad/ControlKeypad';
 import { useGame } from '../hooks/useGame';
-import { useTranslator } from '../Translator/useTranslator';
+import { useKeypad } from '../ControlKeypad/useKeypad';
 import './game-control.css';
 
 /**
@@ -19,7 +19,7 @@ import './game-control.css';
 export default function GameControl({ children }) {
   const { stage, control } = useGame();
 
-  const translator = useTranslator({
+  const keypad = useKeypad({
     setControlStripComponent: control.setControlStripComponent,
   });
 
@@ -51,17 +51,17 @@ export default function GameControl({ children }) {
             <Radar className="shadow" />
           </div>
           <ViewScreen on={control.state.viewScreen}>
-            {!control.state.showTranslator && <AskQuestion />}
-            <Translator
-              show={control.state.showTranslator}
-              onLoad={translator.handleLoad}
+            {!control.state.showKeypad && <AskQuestion />}
+            <ControlKeypad
+              show={control.state.showKeypad}
+              onLoad={keypad.handleLoad}
               onPressChar={(char, binary) => {
                 /**
                  * Any component can set the pressChar handler
                  * using the game control context when using the method
-                 * toggleTranslator. See useGameControl.
+                 * toggleKeypad. See useGameControl.
                  *
-                 * Eventually this should be Translator (renamed to Keypad's)
+                 * Eventually this should be ControlKeypad (renamed to Keypad's)
                  * context.
                  */
                 const {
@@ -71,9 +71,9 @@ export default function GameControl({ children }) {
                   onPressChar(char, binary);
                 }
                 control.onPressChar;
-                translator.handlePressChar(char, binary);
+                keypad.handlePressChar(char, binary);
               }}
-              charGroup={translator.charGroup}
+              charGroup={keypad.charGroup}
             />
             {children}
           </ViewScreen>

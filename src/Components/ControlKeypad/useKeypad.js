@@ -2,11 +2,11 @@ import React, { useRef, useState } from 'react';
 import MenuButton from '../UI/Buttons/MenuButton/MenuButton';
 
 /**
- * Note on useTranslator imperative sneakiness.
+ * Note on useKeypad imperative sneakiness.
  *
  * Becuase we are adding the letter case toggle button to
  * the parent GameControl component while maintaining the state of the
- * toggle button inside a child component (Translator),
+ * toggle button inside a child component (ControlKeypad),
  * the button in the parent context does not have access to the child component's state.
  * So we have to update the button every time the state is changed manually
  * so that its onclick handler sets the correct case.
@@ -17,7 +17,7 @@ import MenuButton from '../UI/Buttons/MenuButton/MenuButton';
  *  But for now we are using this imperative trick.
  *
  */
-export const useTranslator = ({ setControlStripComponent }) => {
+export const useKeypad = ({ setControlStripComponent }) => {
   const [charGroup, _setCharGroup] = useState('lowercase');
   const charGroupRef = useRef(charGroup);
 

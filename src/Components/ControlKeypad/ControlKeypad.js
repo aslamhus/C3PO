@@ -2,10 +2,10 @@ import React, { useRef, useState, useEffect } from 'react';
 import Char from './Char/Char';
 import { characterToBinaryDict } from './binaryDict';
 import gsap from 'gsap';
-import './translator.css';
+import './control-keypad.css';
 
-export default function Translator({ charGroup = 'lowercase', show, onPressChar, onLoad }) {
-  const translatorRef = useRef();
+export default function ControlKeypad({ charGroup = 'lowercase', show, onPressChar, onLoad }) {
+  const keypadRef = useRef();
 
   const handlePressChar = (char, binary) => {
     if (onPressChar instanceof Function) {
@@ -15,7 +15,7 @@ export default function Translator({ charGroup = 'lowercase', show, onPressChar,
 
   const handleLoad = async () => {
     await gsap.fromTo(
-      translatorRef.current,
+      keypadRef.current,
       { opacity: 0, y: '+50%' },
       { opacity: 1, y: 0, duration: 1 }
     );
@@ -29,7 +29,7 @@ export default function Translator({ charGroup = 'lowercase', show, onPressChar,
   }, [show]);
 
   return (
-    <div ref={translatorRef} className="translator-container" style={{ opacity: 0 }}>
+    <div ref={keypadRef} className="control-keypad-container" style={{ opacity: 0 }}>
       {Object.entries(characterToBinaryDict[charGroup]).map((entry, index) => {
         const [char, binary] = entry;
         return (

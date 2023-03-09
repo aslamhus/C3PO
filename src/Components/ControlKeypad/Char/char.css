@@ -1,4 +1,4 @@
-.translator-char {
+.control-keypad-char {
   font-family: var(--view-screen-font);
   position: relative;
   color: white;
@@ -15,19 +15,19 @@
   user-select: none;
   -moz-user-select: none;
 }
-.translator-char:hover .char {
+.control-keypad-char:hover .char {
   opacity: 1;
   cursor: pointer;
 }
-.translator-char .char {
+.control-keypad-char .char {
   position: relative;
   color: white;
   font-size: calc(50vw / 30);
   opacity: 0.8;
 }
-.translator-char .char::after {
+.control-keypad-char .char::after {
 }
-.translator-char .byte {
+.control-keypad-char .byte {
   display: none;
   position: absolute;
   top: 100%;
@@ -41,7 +41,7 @@
   opacity: 0;
   border: none;
 }
-.translator-char:disabled {
+.control-keypad-char:disabled {
   pointer-events: none;
   opacity: 0.2;
 }

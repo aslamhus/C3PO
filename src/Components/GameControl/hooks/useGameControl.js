@@ -17,7 +17,7 @@ export const useGameControl = () => {
   const beginGame = () => dispatch({ type: GAME_CONTROL_ACTIONS.beginGame });
 
   /**
-   * Sets the control strip value
+   * Sets the control strip components
    *
    * @param {ReactComponent} ReactComponent
    */

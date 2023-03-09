@@ -55,6 +55,7 @@
   padding: 1rem;
   font-family: var(--view-screen-font);
 }
+
 @media only screen and (orientation: portrait) {
   .control-button {
     width: 50%;

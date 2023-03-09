@@ -1,3 +1,5 @@
+import { charToBinary } from '../../ControlKeypad/binaryDict';
+
 export const getBinaryCodeFromImageURL = (url) => {
   const prefix = 'binary-message_0000s_';
   const regex = new RegExp(`${prefix}[^-]*-(.*)\.png`);

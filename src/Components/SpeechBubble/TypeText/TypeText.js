@@ -12,10 +12,11 @@ import './type-text.css';
  *
  * @component
  */
+
+let timeouts = [];
 const TypeText = ({ show, children, onTypingComplete, onBeforeType, typeSpeed = 0.1 }) => {
   const [typedText, _setTypedText] = useState(null);
   const typedTextRef = useRef(null);
-  const typeTargetRef = useRef();
   const setTypedText = (value) => {
     typedTextRef.current = value;
     _setTypedText(value);
@@ -43,7 +44,7 @@ const TypeText = ({ show, children, onTypingComplete, onBeforeType, typeSpeed = 
 
   const type = (char) => {
     return new Promise((resolve) => {
-      setTimeout(() => {
+      const timeout = setTimeout(() => {
         setTypedText(
           <>
             {typedTextRef.current}
@@ -52,6 +53,7 @@ const TypeText = ({ show, children, onTypingComplete, onBeforeType, typeSpeed = 
         );
         resolve();
       }, typeSpeed * 1000);
+      timeouts.push(timeout);
     });
   };
 
@@ -85,14 +87,6 @@ const TypeText = ({ show, children, onTypingComplete, onBeforeType, typeSpeed = 
     if (onTypingComplete instanceof Function) {
       onTypingComplete();
     }
-  };
-
-  const renderChildrenClone = () => {
-    return React.cloneElement(children, {
-      ...children.props,
-      ref: typeTargetRef,
-      style: { visibility: 'hidden' },
-    });
   };
 
   /**
@@ -130,13 +124,26 @@ const TypeText = ({ show, children, onTypingComplete, onBeforeType, typeSpeed = 
 
   useEffect(() => {
     if (show) {
+      timeouts = [];
       setTypedText(null);
+      console.log('show typed text!');
       if (onBeforeType instanceof Function) {
         onBeforeType();
       }
       beginTyping().then(handleTypingComplete);
+    } else {
+      /**Clean up timeouts */
+      console.log('clean up timeouts', timeouts);
+      timeouts.forEach((timeout) => clearTimeout(timeout));
     }
   }, [show]);
+
+  // useEffect(() => {
+  //   return () => {
+  //     console.log('clear timeouts!', timeouts.length);
+
+  //   };
+  // }, []);
 
   return <div>{show ? renderTypeText() : children}</div>;
 };

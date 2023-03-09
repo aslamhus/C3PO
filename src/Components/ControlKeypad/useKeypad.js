@@ -34,7 +34,6 @@ export const useKeypad = (props) => {
    * Render control strip with keypad menu buttons
    */
   const renderControlStripComponent = (charGroup) => {
-    console.log('render contorl stirp');
     setControlStripComponent(
       <>
         <MenuButton
@@ -66,7 +65,6 @@ export const useKeypad = (props) => {
   };
 
   const handlePressChar = (char, binary) => {
-    console.log('onPressChar', onPressChar);
     if (onPressChar instanceof Function) {
       onPressChar(char, binary);
     }

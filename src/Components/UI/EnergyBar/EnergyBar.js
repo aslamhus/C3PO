@@ -19,7 +19,6 @@ export default function EnergyBar({ now = 1 }) {
 
   const handleAnimations = () => {
     animateEnergyChange();
-    console.log('handle animation');
     energyGlowTimeline.current.clear();
     if (energy < 0.49 && energy > 0.25) {
       animateEnergyGlow();
@@ -31,9 +30,7 @@ export default function EnergyBar({ now = 1 }) {
   };
 
   const animateEnergyGlow = (options = { duration: 1, color: 'rgb(84, 6, 84)' }) => {
-    console.log('start glow');
     energyGlowTimeline.current.clear();
-    console.log(energyGlowTimeline.current);
     const energyOutline = energyBarRef.current.parentElement;
     energyGlowTimeline.current.to(energyOutline, {
       borderColor: options.color,

@@ -1,20 +1,19 @@
 import React, { useContext } from 'react';
 import { C3POContext } from './context/context';
-import { useGame } from '../../hooks/useGame';
 import { useAskQuestion } from '../../GameControl/AskQuestion/hooks/useAskQuestion';
 import { C3PO_ACTIONS, C3POStates } from './context/Reducer';
 import { useTipModal } from '../../UI/Modals/TipModal/useTipModal';
 import * as actions from './actions';
 import { tips } from '../../../schema/tips';
 import { getOppositeCase, hasChar } from './utils';
+import { useGameSound } from '../../hooks/useGameSound';
+import { useGameControl } from '../../GameControl/hooks/useGameControl';
 
 let resolver;
 export const useC3PO = () => {
   const [state, dispatch] = useContext(C3POContext);
-  const {
-    control,
-    sound: { playSound, music, fx },
-  } = useGame();
+  const control = useGameControl();
+  const { playSound, music, fx } = useGameSound();
   const { ask } = useAskQuestion();
 
   const askQuestion = async ({ question, responses }) => {

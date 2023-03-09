@@ -95,7 +95,6 @@ const C3PO = React.forwardRef((props, ref) => {
   };
 
   useEffect(() => {
-    console.log('new energy', energy);
     if (energy) {
       control.setControlStripComponent(<EnergyBar now={energy} />, 'secondary', {
         overwrite: true,

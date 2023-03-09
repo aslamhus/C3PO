@@ -147,17 +147,24 @@ export const useC3PO = () => {
       <>
         No <span className="letter-not-found">{char}</span> could be found...
       </>,
-      { tapToContinue: hasOppositeCase ? true : false }
+      { tapToContinue: hasOppositeCase }
     );
     if (hasOppositeCase) {
-      speak(
-        <>
-          But I wonder if there's {oppositeCase.caseType == 'lowercase' ? 'a small' : 'a big'}{' '}
-          <span className="letter-not-found">{oppositeCase.char}</span>?
-        </>
-      ),
-        { tapToContinue: false };
+      hint(oppositeCase, c3po);
     }
+  };
+
+  const hint = async (oppositeCase, c3po) => {
+    // dismissSpeechBubble();
+    await c3po.rest(0);
+    await c3po.proposeIdea();
+    speak(
+      <>
+        But I wonder if there's {oppositeCase.caseType == 'lowercase' ? 'a small' : 'a big'}{' '}
+        <span className="letter-not-found">{oppositeCase.char}</span>?
+      </>,
+      { tapToContinue: false }
+    );
   };
 
   const testKeypad = async (c3po) => {
@@ -198,6 +205,7 @@ export const useC3PO = () => {
       );
       c3po.stop();
       c3po.rest();
+      console.log('toggle keypad!');
       control.toggleKeypad(true, { onPressChar: guessChar });
       // showKeypad();
     } else {

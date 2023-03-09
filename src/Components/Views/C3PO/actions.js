@@ -110,25 +110,32 @@ export const startGameInstruction = async (
     await speak('Fantastic!');
     await speak(
       <>
-        It's written in <span style={{ color: 'green', fontStyle: 'italic' }}>binary</span>,
-        otherwise known as computer language.
+        The code is written in <span style={{ color: 'green', fontStyle: 'italic' }}>binary</span>,
+        otherwise known as 'computer language'.
       </>
     );
     await showBinary();
     await wait(2 * speed);
     await dismissSpeechBubble();
     await wait(1 * speed);
+
+    c3po.think();
     await speak(
       <>
         My circuits are all full of sand from walking around{' '}
-        <span style={{ color: 'gold' }}>Tattooine</span>, so my processor is a bit slow.
+        <span style={{ color: 'gold' }}>Tattooine</span>. I don't know how long my{' '}
+        <span className="battery">battery</span> will last!
       </>
     );
-    c3po.think();
     await wait(6 * speed);
-    return speak(
+    await speak(
       <>
         Help me decode the message by <span style={{ color: 'green' }}>guessing the letters!</span>{' '}
+      </>,
+      { tapToContinue: true }
+    );
+    return speak(
+      <>
         You're my only hope, <span style={{ color: 'red' }}>Sylvan</span>!
       </>,
       { tapToContinue: false }

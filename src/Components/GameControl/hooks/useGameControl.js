@@ -17,6 +17,22 @@ export const useGameControl = () => {
   const beginGame = () => dispatch({ type: GAME_CONTROL_ACTIONS.beginGame });
 
   /**
+   * Disable ControlKeypad keys
+   * @param {Array} keys - array of keys to disable, i.e. ['a','b','!']
+   */
+  const disableKeys = (keys) => {
+    dispatch({ type: GAME_CONTROL_ACTIONS.setDisabledKeys, payload: keys });
+  };
+
+  /**
+   * Enable ControlKeypad keys
+   * @param {Array} keys - array of keys to enable, i.e. ['a','b','!']
+   */
+  const enableKeys = (keys) => {
+    dispatch({ type: GAME_CONTROL_ACTIONS.setEnabledKeys, payload: keys });
+  };
+
+  /**
    * Sets the control strip components
    *
    * @param {ReactComponent} ReactComponent
@@ -43,5 +59,7 @@ export const useGameControl = () => {
     toggleKeypad,
     setControlStripComponent,
     beginGame,
+    disableKeys,
+    enableKeys,
   };
 };

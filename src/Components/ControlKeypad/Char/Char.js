@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import SelectButton from '../../UI/Buttons/SelectButton';
 import './char.css';
 
-const Char = ({ onClick, char, binary }) => {
+const Char = ({ onClick, char, binary, disabled = false }) => {
   const [selected, setSelected] = useState(false);
 
   const handleClick = (event) => {
@@ -16,7 +16,7 @@ const Char = ({ onClick, char, binary }) => {
       onClick={handleClick}
       key={binary}
       className="control-keypad-char"
-      disabled={selected}
+      disabled={disabled}
     >
       <h3 className="char">{char == ' ' ? 'space' : char}</h3>
       {/* <h4 className="byte">{binary}</h4> */}

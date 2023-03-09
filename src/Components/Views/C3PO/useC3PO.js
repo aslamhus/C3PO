@@ -91,8 +91,10 @@ export const useC3PO = () => {
     return;
   };
 
-  const guessChar = (char, binary) =>
+  const guessChar = (char, binary) => {
     dispatch({ type: C3PO_ACTIONS.guessChar, payload: [char, binary] });
+    control.disableKeys([char]);
+  };
 
   const handleGuessAnimationComplete = (wasCorrect, countCharsFound, char, binary) => {
     const { current: c3po } = state.c3poAnimateRef;

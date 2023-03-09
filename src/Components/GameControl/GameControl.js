@@ -39,6 +39,7 @@ export default function GameControl({ children }) {
     }
   }, [control?.state?.controls]);
 
+  console.log('disabledKeys', control.state.disabledKeys);
   return (
     <div className={`game-control-flex-wrap ${control.state?.controls ? ' show' : ' hide'}`}>
       <div className={`game-control-container`}>
@@ -55,6 +56,7 @@ export default function GameControl({ children }) {
             <ControlKeypad
               show={control.state.showKeypad}
               onLoad={keypad.handleLoad}
+              disabledKeys={control.state?.disabledKeys}
               onPressChar={(char, binary) => {
                 /**
                  * Any component can set the pressChar handler

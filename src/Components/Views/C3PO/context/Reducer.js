@@ -25,6 +25,7 @@ export const initialState = {
   showSpeechBubbleAnimationDuration: 0.5,
   showBinary: false,
   showTapToContinue: false,
+  guesses: {},
 };
 
 export const reducer = (state = initialState, action) => {
@@ -60,9 +61,11 @@ export const reducer = (state = initialState, action) => {
       };
 
     case 'guessChar':
+      const [char, binary] = action.payload;
       return {
         ...state,
-        guessChar: action.payload,
+        guessChar: [char, binary],
+        guesses: { ...state.guesses, [char]: binary },
       };
 
     case 'showTapToContinue':

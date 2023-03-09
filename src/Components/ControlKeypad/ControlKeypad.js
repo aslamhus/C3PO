@@ -4,7 +4,13 @@ import { characterToBinaryDict } from './binaryDict';
 import gsap from 'gsap';
 import './control-keypad.css';
 
-export default function ControlKeypad({ charGroup = 'lowercase', show, onPressChar, onLoad }) {
+export default function ControlKeypad({
+  charGroup = 'lowercase',
+  show,
+  onPressChar,
+  onLoad,
+  disabledKeys,
+}) {
   const keypadRef = useRef();
 
   const handlePressChar = (char, binary) => {
@@ -34,7 +40,12 @@ export default function ControlKeypad({ charGroup = 'lowercase', show, onPressCh
         const [char, binary] = entry;
         return (
           <React.Fragment key={binary}>
-            <Char onClick={handlePressChar} char={char} binary={binary} />
+            <Char
+              onClick={handlePressChar}
+              char={char}
+              binary={binary}
+              disabled={disabledKeys?.[char]}
+            />
             {char == 'd' && <div className="break"></div>}
           </React.Fragment>
         );

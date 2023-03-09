@@ -5,10 +5,9 @@ import './byte.css';
 
 export const Byte = React.forwardRef((props, ref) => {
   const {
-    // src,
     id,
-
     char,
+    colors = ['#55e142', '#02914e', '#c3ff4c'],
     binaryCode,
     guessBinary,
     animationDelay = 0,
@@ -56,7 +55,7 @@ export const Byte = React.forwardRef((props, ref) => {
   }, [guessBinary]);
 
   useEffect(() => {
-    const timeline = getTimeline(byteRef, ['#2bc016', '#26a96c', '#32936f'], {
+    const timeline = getTimeline(byteRef, colors, {
       duration: 0.3,
       delay: 0,
     });

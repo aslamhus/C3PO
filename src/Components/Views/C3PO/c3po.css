@@ -33,9 +33,9 @@
 } */
 
 .letter-not-found {
-  background: green;
+  background: rgb(74, 47, 47);
   color: white;
-  border-color: transparent;
+  border-color: red;
   /* color: black;
   background: white;
   border-color: black; */

@@ -34,9 +34,7 @@ export const useC3PO = () => {
     });
   };
 
-  const getGameStage = () => {
-    return document.querySelector('.game-stage-constraints');
-  };
+  const getGameStage = () => document.querySelector('.game-stage-constraints');
 
   const showC3PO = () => dispatch({ type: C3PO_ACTIONS.updateC3poState, payload: C3POStates.SHOW });
 
@@ -97,54 +95,6 @@ export const useC3PO = () => {
     control.disableKeys([char]);
   };
 
-  const handleGuessAnimationComplete = async (wasCorrect, countCharsFound, char, binary) => {
-    const { current: c3po } = state.c3poAnimateRef;
-
-    control.disableKeypad(false);
-    if (wasCorrect) {
-      // check if message is completely decoded -> game complete
-      c3po.celebrate(3).then(() => {
-        c3po.rest();
-      });
-
-      console.log('chars found', countCharsFound, typeof countCharsFound);
-      let plural = countCharsFound > 1 ? 's' : '';
-      speak(
-        <>
-          You found {countCharsFound} <span className="letter-found">{char}</span>
-          <span style={{ fontSize: 'smaller' }}>{plural}</span>!
-        </>,
-        { tapToContinue: false }
-      );
-    } else {
-      // increment bad guesses
-      // give hint if there is a lowercase/uppercase letter.
-      const oppositeCase = getOppositeCase(char);
-      const hasOppositeCase = hasChar(oppositeCase.char, state.message);
-      console.log('hasOppositeCase', hasOppositeCase);
-      c3po.fret();
-      await speak(
-        <>
-          No <span className="letter-not-found">{char}</span> could be found...
-        </>,
-        {
-          tapToContinue: hasOppositeCase,
-        }
-      );
-      if (hasOppositeCase) {
-        speak(
-          <>
-            But I wonder if there's {oppositeCase.caseType == 'lowercase' ? 'a small' : 'a big'}{' '}
-            <span className="letter-not-found">{oppositeCase.char}</span>?
-          </>
-        ),
-          {
-            tapToContinue: false,
-          };
-      }
-    }
-  };
-
   const handleGuessAnimationStart = () => {
     const { current: c3po } = state.c3poAnimateRef;
 
@@ -154,26 +104,59 @@ export const useC3PO = () => {
     dismissSpeechBubble();
   };
 
+  const handleGuessAnimationComplete = async (wasCorrect, countCharsFound, char, binary) => {
+    const { current: c3po } = state.c3poAnimateRef;
+    control.disableKeypad(false);
+    if (wasCorrect) {
+      handleCorrectGuess(countCharsFound);
+    } else {
+      handleIncorrectGuess(char);
+    }
+  };
+
+  const handleCorrectGuess = (countCharsFound) => {
+    // check if message is completely decoded -> game complete
+    c3po.celebrate(3).then(() => {
+      c3po.rest();
+    });
+    let plural = countCharsFound > 1 ? 's' : '';
+    speak(
+      <>
+        You found {countCharsFound} <span className="letter-found">{char}</span>
+        <span style={{ fontSize: 'smaller' }}>{plural}</span>!
+      </>,
+      { tapToContinue: false }
+    );
+  };
+
+  const handleIncorrectGuess = async (char) => {
+    // increment bad guesses
+    // give hint if there is a lowercase/uppercase letter.
+    const oppositeCase = getOppositeCase(char);
+    const hasOppositeCase = hasChar(oppositeCase.char, state.message);
+    c3po.fret();
+    await speak(
+      <>
+        No <span className="letter-not-found">{char}</span> could be found...
+      </>,
+      { tapToContinue: hasOppositeCase }
+    );
+    if (hasOppositeCase) {
+      speak(
+        <>
+          But I wonder if there's {oppositeCase.caseType == 'lowercase' ? 'a small' : 'a big'}{' '}
+          <span className="letter-not-found">{oppositeCase.char}</span>?
+        </>
+      ),
+        { tapToContinue: false };
+    }
+  };
+
   const testKeypad = async (c3po) => {
     showC3PO();
     showBinary();
     control.toggleControls(true);
     control.toggleKeypad(true, { onPressChar: guessChar });
-  };
-
-  const testAnimations = async (c3po) => {
-    showC3PO();
-    /**
-     * Note to self:
-     * test both resting and celebrating
-     */
-    await c3po.rest(0);
-    // c3po.walkToCenter(getGameStage());
-    c3po.celebrate();
-    setTimeout(() => {
-      // c3po.stop();
-      c3po.fret();
-    }, 1000);
   };
 
   const startC3POGame = async () => {

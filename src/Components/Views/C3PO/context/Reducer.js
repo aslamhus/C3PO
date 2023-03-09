@@ -26,6 +26,7 @@ export const initialState = {
   showBinary: false,
   showTapToContinue: false,
   guesses: {},
+  message: 'May the force be with you, Sylvan!',
 };
 
 export const reducer = (state = initialState, action) => {

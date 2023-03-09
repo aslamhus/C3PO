@@ -6,6 +6,7 @@ import { C3PO_ACTIONS, C3POStates } from './context/Reducer';
 import { useTipModal } from '../../UI/Modals/TipModal/useTipModal';
 import * as actions from './actions';
 import { tips } from '../../../schema/tips';
+import { getOppositeCase, hasChar } from './utils';
 
 let resolver;
 export const useC3PO = () => {
@@ -96,7 +97,7 @@ export const useC3PO = () => {
     control.disableKeys([char]);
   };
 
-  const handleGuessAnimationComplete = (wasCorrect, countCharsFound, char, binary) => {
+  const handleGuessAnimationComplete = async (wasCorrect, countCharsFound, char, binary) => {
     const { current: c3po } = state.c3poAnimateRef;
     if (wasCorrect) {
       // check if message is completely decoded -> game complete
@@ -115,15 +116,32 @@ export const useC3PO = () => {
       );
     } else {
       // increment bad guesses
+      // give hint if there is a lowercase/uppercase letter.
+      const oppositeCase = getOppositeCase(char);
+      const hasOppositeCase = hasChar(oppositeCase.char, state.message);
+
       c3po.fret();
-      speak(
+      await speak(
         <>
           No <span className="letter-not-found">{char}</span> could be found...
         </>,
         {
-          tapToContinue: false,
+          tapToContinue: hasOppositeCase,
         }
       );
+      if (hasOppositeCase) {
+        speak(
+          <>
+            But I wonder if there's {oppositeCase.caseType == 'lowercase' ? 'a small' : 'a big'}{' '}
+            <span className="letter-not-found">{oppositeCase.char}</span>?
+          </>
+        ),
+          {
+            tapToContinue: false,
+          };
+      }
+
+      //
     }
   };
 

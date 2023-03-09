@@ -102,10 +102,9 @@ export const useC3PO = () => {
       });
       console.log('chars found', countCharsFound, typeof countCharsFound);
       let plural = countCharsFound > 1 ? 's' : '';
-      let testCount = 6;
       speak(
         <>
-          You found {6} <span className="letter-found">{char}</span>
+          You found {countCharsFound} <span className="letter-found">{char}</span>
           <span style={{ fontSize: 'smaller' }}>{plural}</span>!
         </>,
         { tapToContinue: false }

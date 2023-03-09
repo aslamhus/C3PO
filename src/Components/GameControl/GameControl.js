@@ -61,8 +61,12 @@ export default function GameControl({ children }) {
                  * using the game control context when using the method
                  * toggleKeypad. See useGameControl.
                  *
-                 * Eventually this should be ControlKeypad (renamed to Keypad's)
-                 * context.
+                 * For instance, when you call toggleControls
+                 * you can specify the onPressChar method:
+                 *
+                 * control.toggleKeypad(true, { onPressChar: myFunc });
+                 *
+                 * Eventually this should be handled by ControlKeypad's context.
                  */
                 const {
                   state: { onPressChar },

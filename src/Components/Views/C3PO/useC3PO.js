@@ -113,7 +113,7 @@ export const useC3PO = () => {
       c3po.fret();
       speak(
         <>
-          No <span style={{ color: 'red' }}>{char}</span> could be found...
+          No <span className="letter-not-found">{char}</span> could be found...
         </>,
         {
           tapToContinue: false,

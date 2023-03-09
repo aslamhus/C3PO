@@ -26,23 +26,25 @@ export const useKeypad = ({ setControlStripComponent }) => {
     charGroupRef.current = value;
   };
 
-  const updateControlStripComponent = () => {
+  /**
+   * Render control strip with keypad menu buttons
+   */
+  const renderControlStripComponent = (newCase) => {
+    console.log('newCase', newCase);
     setControlStripComponent(
       <>
-        <MenuButton onClick={toggleLetterCase}>
-          {charGroupRef.current == 'lowercase' ? 'AZ' : 'az'}
-        </MenuButton>
+        <MenuButton onClick={toggleLetterCase}>{newCase == 'lowercase' ? 'AZ' : 'az'}</MenuButton>
         <MenuButton onClick={() => setCharGroup('numbers')}>123</MenuButton>
         <MenuButton onClick={() => setCharGroup('punctuation')}>#+=</MenuButton>
       </>
     );
   };
-  const handleLoad = () => updateControlStripComponent(charGroup);
+  const handleLoad = () => renderControlStripComponent(charGroup);
 
   const toggleLetterCase = () => {
     const newCase = charGroupRef.current == 'uppercase' ? 'lowercase' : 'uppercase';
     setCharGroup(newCase);
-    updateControlStripComponent(newCase);
+    renderControlStripComponent(newCase);
   };
 
   const handlePressChar = (char, binary) => {

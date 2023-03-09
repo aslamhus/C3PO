@@ -68,7 +68,7 @@ export const Byte = React.forwardRef((props, ref) => {
 
   return (
     <div id={id} ref={byteRef} className={isDecoded ? 'decoded' : ''}>
-      {decodedChar ? <p>{decodedChar}</p> : <div>{binaryCode}</div>}
+      {decodedChar ? <p className="letter-found">{decodedChar}</p> : <div>{binaryCode}</div>}
     </div>
   );
 });

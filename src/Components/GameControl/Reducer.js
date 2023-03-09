@@ -51,7 +51,7 @@ export const reducer = (state = initialState, action) => {
     case 'setSecondaryControlStripComponent':
       const { primaryControlStripComponent } = state;
       const update = {};
-      const component = options?.overwrite ? (
+      const component = action.options?.overwrite ? (
         payload
       ) : (
         <>

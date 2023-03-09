@@ -6,7 +6,7 @@ button {
   font-size: 1rem;
   background: transparent;
   opacity: 1;
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
   color: var(--lucasfilms-blue);
   border: 3px solid var(--lucasfilms-medium-blue);
   font-size: 1.25rem;

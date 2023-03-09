@@ -19,9 +19,9 @@
   /* padding: 0.25rem; */
   margin: 0;
   text-align: left;
-  color: blue;
-  background: yellow;
-  border: 2px solid rgba(0, 0, 255, 0.53);
+  /* color: blue;
+  background: yellow; */
+  border-width: 1px;
   font-weight: bold;
   font-size: 1.5rem;
   height: 100%;

@@ -4,7 +4,7 @@ import GameButton from '../GameButton';
 import './confirm-button.css';
 
 const ConfirmButton = React.forwardRef((props, ref) => {
-  return <GameButton sound={fx.confirm} ref={ref} {...props} />;
+  return <GameButton {...props} sound={fx.confirm} ref={ref} />;
 });
 
 export default ConfirmButton;

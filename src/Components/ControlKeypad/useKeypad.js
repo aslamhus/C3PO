@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import MenuButton from '../UI/Buttons/MenuButton/MenuButton';
 
 /**
@@ -29,13 +29,28 @@ export const useKeypad = ({ setControlStripComponent }) => {
   /**
    * Render control strip with keypad menu buttons
    */
-  const renderControlStripComponent = (newCase) => {
-    console.log('newCase', newCase);
+  const renderControlStripComponent = (charGroup) => {
+    console.log('charGroup', charGroup);
     setControlStripComponent(
       <>
-        <MenuButton onClick={toggleLetterCase}>{newCase == 'lowercase' ? 'AZ' : 'az'}</MenuButton>
-        <MenuButton onClick={() => setCharGroup('numbers')}>123</MenuButton>
-        <MenuButton onClick={() => setCharGroup('punctuation')}>#+=</MenuButton>
+        <MenuButton
+          className={charGroup == 'uppercase' || charGroup == 'lowercase' ? 'active' : ''}
+          onClick={toggleLetterCase}
+        >
+          {charGroup == 'lowercase' ? 'AZ' : 'az'}
+        </MenuButton>
+        <MenuButton
+          className={charGroup == 'numbers' ? 'active' : ''}
+          onClick={() => setCharGroup('numbers')}
+        >
+          123
+        </MenuButton>
+        <MenuButton
+          className={charGroup == 'punctuation' ? 'active' : ''}
+          onClick={() => setCharGroup('punctuation')}
+        >
+          #+=
+        </MenuButton>
       </>
     );
   };
@@ -44,7 +59,6 @@ export const useKeypad = ({ setControlStripComponent }) => {
   const toggleLetterCase = () => {
     const newCase = charGroupRef.current == 'uppercase' ? 'lowercase' : 'uppercase';
     setCharGroup(newCase);
-    renderControlStripComponent(newCase);
   };
 
   const handlePressChar = (char, binary) => {
@@ -58,6 +72,12 @@ export const useKeypad = ({ setControlStripComponent }) => {
       { overwrite: true }
     );
   };
+
+  useEffect(() => {
+    if (charGroup) {
+      renderControlStripComponent(charGroup);
+    }
+  }, [charGroup]);
 
   return { handlePressChar, handleLoad, charGroup };
 };

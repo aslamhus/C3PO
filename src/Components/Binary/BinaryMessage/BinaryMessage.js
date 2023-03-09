@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import images from './images';
 import gsap from 'gsap';
 import Byte from '../Byte/Byte';
 import { useGameSound } from '../../hooks/useGameSound';
 import { fx } from '../../hooks/useGameSound';
-import { charToBinary } from '../../Translator/binaryDict';
-import { getBinaryCodeFromImageURL } from './utils';
+import { getByteDataFromMessage } from './utils';
 import './binary-message.css';
 
 export default function BinaryMessage({
@@ -15,31 +13,8 @@ export default function BinaryMessage({
   onGuessAnimationStart,
   onGuessAnimationComplete,
 }) {
-  const getByteDataFromMessage = () => {
-    let data = [];
-    for (let i = 0; i < message.length; i++) {
-      const char = message[i];
-      data.push({
-        char,
-        decoded: false,
-        binary: charToBinary[char],
-        guess: null,
-        animationDelay: 0,
-      });
-    }
-    return data;
-  };
-  // console.log(
-  //   'characterToBinary',
-  //   Object.entries(binaryToCharacter).reduce((acc, entry) => {
-  //     const [key, value] = entry;
-  //     acc[value] = key;
-  //     return acc;
-  //   }, {})
-  // );
-  const [byteData, setByteData] = useState(getByteDataFromMessage());
+  const [byteData, setByteData] = useState(getByteDataFromMessage(message));
 
-  console.log('byteData', byteData);
   const binaryRef = useRef();
   const masterTimelineRef = useRef(
     gsap.timeline({
@@ -145,12 +120,13 @@ export default function BinaryMessage({
     <div ref={binaryRef} className="binary-message" style={{ opacity: 0 }}>
       {byteData.map((data, index) => {
         return (
-          <React.Fragment key={`binary-message-img-${data.url}`}>
+          <React.Fragment key={`binary-message-img-${data.char}`}>
             <Byte
-              src={data.url}
+              // src={data.url}
               id={`binary-message-${index}`}
               binaryCode={data.binary}
               guessBinary={data.guess}
+              char={data.char}
               animationDelay={data.animationDelay}
               onAnimationComplete={onChildAnimationComplete}
               onBuildAnimationTimeline={addByteAnimationToTimeline}

@@ -136,7 +136,7 @@ const C3PO = React.forwardRef((props, ref) => {
       {showBinary && (
         <BinaryMessage
           show={showBinary}
-          message={'kasim'}
+          message={'May the force be with you, Sylvan!'}
           guessChar={guessChar}
           onGuessAnimationStart={handleGuessAnimationStart}
           onGuessAnimationComplete={handleGuessAnimationComplete}

@@ -120,7 +120,7 @@ export default function BinaryMessage({
     <div ref={binaryRef} className="binary-message" style={{ opacity: 0 }}>
       {byteData.map((data, index) => {
         return (
-          <React.Fragment key={`binary-message-img-${data.char}`}>
+          <React.Fragment key={`binary-message-img-${data.binary}-${index}`}>
             <Byte
               // src={data.url}
               id={`binary-message-${index}`}

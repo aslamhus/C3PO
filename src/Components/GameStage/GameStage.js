@@ -8,7 +8,7 @@ import { useGame } from '../hooks/useGame';
 import { GAME_STAGE_VIEWS } from './Reducer';
 import { GAME_STAGE_EVENTS } from './events';
 import './game-stage.css';
-import TipModal from '../UI/Modals/TipModal';
+// import TipModal from '../UI/Modals/TipModal';
 
 /**
  * A note about GameStage bounds.
@@ -95,7 +95,6 @@ export default function GameStage(props) {
         )}
       </AnimatePresence>
 
-      <TipModal />
       {props.children}
     </div>
   );

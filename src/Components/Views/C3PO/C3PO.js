@@ -128,7 +128,7 @@ const C3PO = React.forwardRef((props, ref) => {
             offset={{ x: 0, y: -100 }}
             showAnimationDuration={showSpeechBubbleAnimationDuration}
             onShowSpeechBubble={() => toggleSpeechBubble(true)}
-            showTapToContinue={showTapToContinue}
+            enableTapToContinue={showTapToContinue}
           />
           <Body ref={getC3PORef} style={{ opacity: c3poState != 'hidden' ? 1 : 0 }}></Body>
         </div>

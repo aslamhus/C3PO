@@ -17,7 +17,7 @@ export const useC3PO = () => {
   const { ask } = useAskQuestion();
 
   const askQuestion = async ({ question, responses }) => {
-    await speak(question, { clickToContinue: false });
+    await speak(question, { tapToContinue: false });
     return ask({ question, responses });
   };
 
@@ -55,26 +55,29 @@ export const useC3PO = () => {
 
   const showBinary = () => dispatch({ type: C3PO_ACTIONS.showBinary });
 
-  const speak = (words, options = { wait: 0, clickToContinue: true }) => {
+  /**
+   * Speak
+   *
+   * Note for future Aslam:
+   * Speak should PERHAPS be part of speech bubble's context.
+   *
+   * @param {string} words
+   * @param {Number} options
+   * @returns
+   */
+  const speak = (words, options = { wait: 0, tapToContinue: true }) => {
     dispatch({ type: C3PO_ACTIONS.speak, payload: words });
-    if (options.clickToContinue) {
+    if (options.tapToContinue) {
       return new Promise((resolve) => {
-        let showTipTimeout = setTimeout(() => {
-          // showTip(...tips.clickToContinue);
-          dispatch({ type: C3PO_ACTIONS.showTapToContinue });
-        }, state.showSpeechBubbleAnimationDuration * 1000 + 500);
-        const handleClickToContinue = (event) => {
+        dispatch({ type: C3PO_ACTIONS.showTapToContinue });
+        const handletapToContinue = (event) => {
           event.preventDefault();
-          console.log('click to continue');
-          resolve(true);
-          document.removeEventListener('click', handleClickToContinue);
+          document.removeEventListener('click', handletapToContinue);
           document.body.style.cursor = '';
-          // hideTip();
-          clearTimeout(showTipTimeout);
-
           dispatch({ type: C3PO_ACTIONS.hideTapToContinue });
+          resolve(true);
         };
-        document.addEventListener('click', handleClickToContinue);
+        document.addEventListener('click', handletapToContinue);
       });
     } else if (options.wait) {
       return new Promise((resolve) => {
@@ -100,14 +103,22 @@ export const useC3PO = () => {
 
       let plural = countCharsFound > 1 ? 's' : '';
       speak(
-        `You found ${countCharsFound} <span style='color: blue'>${char}</span><span style='font-size:smaller'>${plural}</span>!`,
-        { clickToContinue: false }
+        <>
+          You found ${countCharsFound} <span className="letter-found">${char}</span>
+          <span style={{ fontSize: 'smaller' }}>${plural}</span>!
+        </>,
+        { tapToContinue: false }
       );
     } else {
       c3po.fret();
-      speak(`No  <span style='color: red'>${char}</span> could be found...`, {
-        clickToContinue: false,
-      });
+      speak(
+        <>
+          No <span style={{ color: 'red' }}>${char}</span> could be found...
+        </>,
+        {
+          tapToContinue: false,
+        }
+      );
     }
   };
 
@@ -149,7 +160,7 @@ export const useC3PO = () => {
 
     await actions.exitStageLeft(c3po);
     showC3PO();
-    await actions.peekAbooEntrance(c3po, speak);
+    await actions.peekAbooEntrance(c3po, speak, () => showTip(tips.tapAnywhereToContinue));
     const identityConfirmed = await actions.questionIdentity(
       c3po,
       control.toggleControls,

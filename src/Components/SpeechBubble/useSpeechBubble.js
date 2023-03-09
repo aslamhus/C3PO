@@ -14,9 +14,11 @@ export const useSpeechBubble = ({
   showAnimationDuration = 0.5,
   onBeforeShowSpeechBubble,
   onShowSpeechBubble,
+  enableTapToContinue,
 }) => {
   const [bubbleText, setBubbleText] = useState('');
   const [_show, setShow] = useState(false);
+  const [showTapToContinue, setShowTapToContinue] = useState(false);
   const [isPrepared, setIsPrepared] = useState(false);
   const [arrowPosition, setArrowPosition] = useState({ left: '25%' });
   const [positions, _setPositions] = useState(null);
@@ -82,6 +84,10 @@ export const useSpeechBubble = ({
    * @returns {Boolean} - whether constraints pass or not
    */
   const applyConstraints = () => {
+    if (!bubbleRef.current) {
+      throw new Error('failed to apply constraint, could not find bubble ref');
+      return;
+    }
     const breakConstraints = doesElementBreakConstraints(bubbleRef.current.parentElement);
     if (breakConstraints) {
       const { constraintsBroken, constraintBounds } = breakConstraints;
@@ -135,7 +141,7 @@ export const useSpeechBubble = ({
     if (!bubbleRef.current) {
       throw new Error('Speech bubble has not rendered');
     }
-
+    setShowTapToContinue(false);
     setIsPrepared(false);
     if (show) {
       await hideBubble();
@@ -152,6 +158,14 @@ export const useSpeechBubble = ({
     // set scale to 1 before applying onstraints so we can calculate actual size
     await gsap.set(bubbleRef.current, { scale: 1 });
     return applyConstraints();
+  };
+
+  const handleTypingComplete = () => {
+    if (enableTapToContinue) {
+      setTimeout(() => {
+        setShowTapToContinue(true);
+      }, 200);
+    }
   };
 
   /**
@@ -211,5 +225,14 @@ export const useSpeechBubble = ({
       window.removeEventListener('resize', handleResize);
     };
   }, []);
-  return { bubbleRef, bubbleText, _show, positions, arrowPosition, parseSpeech };
+  return {
+    bubbleRef,
+    bubbleText,
+    _show,
+    showTapToContinue,
+    positions,
+    arrowPosition,
+    parseSpeech,
+    handleTypingComplete,
+  };
 };

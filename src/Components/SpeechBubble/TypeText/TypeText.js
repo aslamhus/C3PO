@@ -12,9 +12,10 @@ import './type-text.css';
  *
  * @component
  */
-const TypeText = ({ show, children, onTypingComplete, typeSpeed = 0.1 }) => {
+const TypeText = ({ show, children, onTypingComplete, onBeforeType, typeSpeed = 0.1 }) => {
   const [typedText, _setTypedText] = useState(null);
   const typedTextRef = useRef(null);
+  const typeTargetRef = useRef();
   const setTypedText = (value) => {
     typedTextRef.current = value;
     _setTypedText(value);
@@ -53,6 +54,7 @@ const TypeText = ({ show, children, onTypingComplete, typeSpeed = 0.1 }) => {
       }, typeSpeed * 1000);
     });
   };
+
   const beginTyping = async () => {
     const textNodes = getTextNodes(children);
     for (let node of textNodes) {
@@ -85,12 +87,40 @@ const TypeText = ({ show, children, onTypingComplete, typeSpeed = 0.1 }) => {
     }
   };
 
+  const renderChildrenClone = () => {
+    return React.cloneElement(children, {
+      ...children.props,
+      ref: typeTargetRef,
+      style: { visibility: 'hidden' },
+    });
+  };
+
+  /**
+   * Render type text
+   *
+   * Witness the convulted trick of maintaining the bounds of the target
+   * text container... Clone the target to be typed and replace its children with
+   * an invisible clone of its original children. We set its opacity to 0 so
+   * it is inivisble but still retains its original position in the window.
+   * Then, adjacent to the invisible clone, add an absolute positioned
+   * div which will contain the typed text.
+   *
+   * @returns {React.ReactElement}
+   */
   const renderTypeText = () => {
     return React.Children.map(children, (child) => {
       if (child.props.className.includes('type-text-target')) {
         const Clone = React.cloneElement(child, {
-          style: { opacity: 1 },
-          children: typedText,
+          style: { position: 'relative' },
+          ...child.props,
+          children: (
+            <>
+              {React.cloneElement(child, { style: { opacity: 0 } })}
+              <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+                {typedText}
+              </div>
+            </>
+          ),
         });
         return Clone;
       }
@@ -101,10 +131,14 @@ const TypeText = ({ show, children, onTypingComplete, typeSpeed = 0.1 }) => {
   useEffect(() => {
     if (show) {
       setTypedText(null);
+      if (onBeforeType instanceof Function) {
+        onBeforeType();
+      }
       beginTyping().then(handleTypingComplete);
     }
   }, [show]);
-  return <>{show ? renderTypeText() : children}</>;
+
+  return <div>{show ? renderTypeText() : children}</div>;
 };
 
 export default TypeText;

@@ -5,8 +5,16 @@ import { useSpeechBubble } from './useSpeechBubble';
 import './speech-bubble.css';
 
 export const SpeechBubble = React.memo((props) => {
-  const { positions, bubbleRef, _show, bubbleText, parseSpeech, arrowPosition } =
-    useSpeechBubble(props);
+  const {
+    _show,
+    bubbleRef,
+    bubbleText,
+    positions,
+    showTapToContinue,
+    arrowPosition,
+    handleTypingComplete,
+  } = useSpeechBubble(props);
+
   return (
     <div className="speech-bubble-container" style={{ ...positions }}>
       <div
@@ -17,16 +25,10 @@ export const SpeechBubble = React.memo((props) => {
           visibility: _show ? 'visible' : 'hidden',
         }}
       >
-        <TypeText
-          show={_show}
-          typeSpeed={0.1}
-          onTypingComplete={() => {
-            console.log('typing complete');
-          }}
-        >
+        <TypeText show={_show} typeSpeed={0.1} onTypingComplete={handleTypingComplete}>
           <div className="speech type-text-target">{bubbleText}</div>
         </TypeText>
-        {props?.showTapToContinue && <TapToContinue />}
+        {showTapToContinue && <TapToContinue />}
         <div className="bubble-arrow" style={{ ...arrowPosition }}></div>
       </div>
     </div>

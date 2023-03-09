@@ -18,13 +18,15 @@ const testAction = () => {
   }, 2000);
 };
 
-export const peekAbooEntrance = async (c3po, speak) => {
+export const peekAbooEntrance = async (c3po, speak, showTapTip) => {
   await c3po.animate(c3po.body, {
     rotate: '+30deg',
     x: '-70%',
     duration: 1.5,
   });
+  setTimeout(showTapTip, 1000);
   await speak(<>Oh I say!</>);
+
   await wait(0);
 };
 
@@ -128,7 +130,8 @@ export const startGameInstruction = async (
       <>
         Help me decode the message by <span style={{ color: 'green' }}>guessing the letters!</span>{' '}
         You're my only hope, <span style={{ color: 'red' }}>Sylvan</span>!
-      </>
+      </>,
+      { tapToContinue: false }
     );
   }
 };

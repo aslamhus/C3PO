@@ -9,9 +9,8 @@ export const useTipModal = () => {
    *Show tip
    * @param {React.Component} component - optional component to set as content
    */
-  const showTip = (component, options) => {
-    const { style } = options;
-    dispatch({ type: TIP_ACTIONS.show, payload: { component, style } });
+  const showTip = (component, options = { style: {} }) => {
+    dispatch({ type: TIP_ACTIONS.show, payload: { component, ...options } });
   };
 
   const hideTip = () => dispatch({ type: TIP_ACTIONS.hide });

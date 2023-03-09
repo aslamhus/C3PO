@@ -1,6 +1,7 @@
 import React from 'react';
 import GameStage from './Components/GameStage/GameStage.js';
 import GameControl from './Components/GameControl';
+import TipModal from './Components/UI/Modals/TipModal/TipModal.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '@fonts/starjedi/starjedi.css';
 import './fonts.css';
@@ -12,6 +13,7 @@ export default function App() {
     <div className="app">
       <GameStage></GameStage>
       <GameControl></GameControl>
+      <TipModal />
     </div>
   );
 }

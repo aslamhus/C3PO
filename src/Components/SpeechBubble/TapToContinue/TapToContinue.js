@@ -11,7 +11,7 @@ const TapToContinue = () => {
   }, []);
 
   return (
-    <div className="tap-to-continue">
+    <div className="tap-to-continue tap-gif-icon">
       <img src={tapGif} />
     </div>
   );

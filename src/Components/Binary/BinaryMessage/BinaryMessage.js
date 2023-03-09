@@ -97,7 +97,7 @@ export default function BinaryMessage({
   };
 
   const onChildAnimationComplete = (id, binary, didDecode) => {
-    console.info('child timeline complete', id, binary);
+    // console.info('child timeline complete', id, binary);
     // console.log('didDecode', didDecode);
     if (didDecode) {
       playSound(fx.success);

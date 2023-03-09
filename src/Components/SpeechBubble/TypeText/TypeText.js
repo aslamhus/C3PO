@@ -28,7 +28,12 @@ const TypeText = ({ show, children, onTypingComplete, onBeforeType, typeSpeed = 
       const childArray = React.Children.toArray(children);
       if (Array.isArray(childArray)) {
         childArray.forEach((child, index) => {
-          if (typeof child == 'string' || child.type == 'span' || child.type == 'p') {
+          if (
+            typeof child == 'string' ||
+            typeof child == 'number' ||
+            child.type == 'span' ||
+            child.type == 'p'
+          ) {
             textNodes.push(childArray[index]);
           } else {
             if (child?.props?.children) {
@@ -60,17 +65,21 @@ const TypeText = ({ show, children, onTypingComplete, onBeforeType, typeSpeed = 
   const beginTyping = async () => {
     const textNodes = getTextNodes(children);
     for (let node of textNodes) {
-      // is the node pure text?
-      if (typeof node === 'string') {
+      // is the node a primitive, i.e. string or number?
+      if (typeof node == 'number') node = node.toString();
+      if (typeof node == 'string') {
+        let length = node.length;
+        if (typeof node == 'number') {
+        }
         for (let i = 0; i < node.length; i++) {
           const char = node[i];
           await type(char);
         }
       } else {
-        // node is react component
+        // node is react component (object)
         // find text node within it.
         const text = node.props.children;
-        if (typeof text != 'string') {
+        if (typeof text != 'string' && typeof text != 'number') {
           throw new Error('text node child was not of type string');
         }
         for (let i = 0; i < text.length; i++) {
@@ -126,24 +135,15 @@ const TypeText = ({ show, children, onTypingComplete, onBeforeType, typeSpeed = 
     if (show) {
       timeouts = [];
       setTypedText(null);
-      console.log('show typed text!');
       if (onBeforeType instanceof Function) {
         onBeforeType();
       }
       beginTyping().then(handleTypingComplete);
     } else {
       /**Clean up timeouts */
-      console.log('clean up timeouts', timeouts);
       timeouts.forEach((timeout) => clearTimeout(timeout));
     }
   }, [show]);
-
-  // useEffect(() => {
-  //   return () => {
-  //     console.log('clear timeouts!', timeouts.length);
-
-  //   };
-  // }, []);
 
   return <div>{show ? renderTypeText() : children}</div>;
 };

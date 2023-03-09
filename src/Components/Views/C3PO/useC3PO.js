@@ -100,12 +100,13 @@ export const useC3PO = () => {
       c3po.celebrate(3).then(() => {
         c3po.rest();
       });
-
+      console.log('chars found', countCharsFound, typeof countCharsFound);
       let plural = countCharsFound > 1 ? 's' : '';
+      let testCount = 6;
       speak(
         <>
-          You found ${countCharsFound} <span className="letter-found">${char}</span>
-          <span style={{ fontSize: 'smaller' }}>${plural}</span>!
+          You found {6} <span className="letter-found">{char}</span>
+          <span style={{ fontSize: 'smaller' }}>{plural}</span>!
         </>,
         { tapToContinue: false }
       );
@@ -113,7 +114,7 @@ export const useC3PO = () => {
       c3po.fret();
       speak(
         <>
-          No <span style={{ color: 'red' }}>${char}</span> could be found...
+          No <span style={{ color: 'red' }}>{char}</span> could be found...
         </>,
         {
           tapToContinue: false,
@@ -132,8 +133,8 @@ export const useC3PO = () => {
   const testTranslator = async (c3po) => {
     showC3PO();
     showBinary();
-    control.toggleTranslator(true);
     control.toggleControls(true);
+    control.toggleTranslator(true, { onPressChar: guessChar });
   };
 
   const testAnimations = async (c3po) => {
@@ -155,8 +156,8 @@ export const useC3PO = () => {
     // await actions.wait(5);
     playSound(music.jawaTheme);
     const { current: c3po } = state.c3poAnimateRef;
-    // testTranslator(c3po);
-    // return;
+    testTranslator(c3po);
+    return;
 
     await actions.exitStageLeft(c3po);
     showC3PO();

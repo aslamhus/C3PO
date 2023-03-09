@@ -33,6 +33,15 @@ export const useGameControl = () => {
   };
 
   /**
+   * Disable or enable keypad.
+   *
+   * @param {Boolean} bool
+   * @returns
+   */
+  const disableKeypad = (bool) =>
+    dispatch({ type: GAME_CONTROL_ACTIONS.disableKeypad, payload: bool });
+
+  /**
    * Sets the control strip components
    *
    * @param {ReactComponent} ReactComponent
@@ -61,5 +70,6 @@ export const useGameControl = () => {
     beginGame,
     disableKeys,
     enableKeys,
+    disableKeypad,
   };
 };

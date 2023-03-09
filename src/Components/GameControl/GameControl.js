@@ -53,6 +53,7 @@ export default function GameControl({ children }) {
           <ViewScreen on={control.state.viewScreen}>
             {!control.state.showKeypad && <AskQuestion />}
             <ControlKeypad
+              disabled={control.state.keypadDisabled}
               show={control.state.showKeypad}
               onLoad={keypad.handleLoad}
               disabledKeys={control.state?.disabledKeys}

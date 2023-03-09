@@ -99,6 +99,8 @@ export const useC3PO = () => {
 
   const handleGuessAnimationComplete = async (wasCorrect, countCharsFound, char, binary) => {
     const { current: c3po } = state.c3poAnimateRef;
+
+    control.disableKeypad(false);
     if (wasCorrect) {
       // check if message is completely decoded -> game complete
       c3po.celebrate(3).then(() => {
@@ -119,7 +121,7 @@ export const useC3PO = () => {
       // give hint if there is a lowercase/uppercase letter.
       const oppositeCase = getOppositeCase(char);
       const hasOppositeCase = hasChar(oppositeCase.char, state.message);
-
+      console.log('hasOppositeCase', hasOppositeCase);
       c3po.fret();
       await speak(
         <>
@@ -140,13 +142,13 @@ export const useC3PO = () => {
             tapToContinue: false,
           };
       }
-
-      //
     }
   };
 
   const handleGuessAnimationStart = () => {
     const { current: c3po } = state.c3poAnimateRef;
+
+    control.disableKeypad(true);
     c3po.stop();
     c3po.rest();
     dismissSpeechBubble();

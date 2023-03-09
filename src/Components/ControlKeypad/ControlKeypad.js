@@ -10,6 +10,7 @@ export default function ControlKeypad({
   onPressChar,
   onLoad,
   disabledKeys,
+  disabled,
 }) {
   const keypadRef = useRef();
 
@@ -35,7 +36,14 @@ export default function ControlKeypad({
   }, [show]);
 
   return (
-    <div ref={keypadRef} className="control-keypad-container" style={{ opacity: 0 }}>
+    <div
+      ref={keypadRef}
+      className={`
+    control-keypad-container
+    ${disabled ? 'keypad-disabled' : ''}
+    `}
+      style={{ opacity: 0 }}
+    >
       {Object.entries(characterToBinaryDict[charGroup]).map((entry, index) => {
         const [char, binary] = entry;
         return (

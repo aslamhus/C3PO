@@ -9,6 +9,7 @@ export const GAME_CONTROL_ACTIONS = {
   beginGame: 'beginGame',
   setDisabledKeys: 'setDisabledKeys',
   setEnabledKeys: 'setEnabledKeys',
+  disableKeypad: 'disableKeypad',
 };
 
 export const initialState = {
@@ -21,6 +22,7 @@ export const initialState = {
   secondaryControlStripComponent: null,
   onPressChar: null,
   disabledKeys: {},
+  keypadDisabled: false,
 };
 
 export const reducer = (state = initialState, action) => {
@@ -74,15 +76,19 @@ export const reducer = (state = initialState, action) => {
 
     case 'setEnabledKeys':
     case 'setDisabledKeys':
-      console.log('action.payload', action.payload);
       const newDisabledKeys = action.payload.reduce((acc, value) => {
         acc[value] = action.type == 'setEnabledKeys' ? false : true;
         return acc;
       }, {});
-      console.log('newDisabledKeys', newDisabledKeys);
       return {
         ...state,
         disabledKeys: { ...state.disabledKeys, ...newDisabledKeys },
+      };
+
+    case 'disableKeypad':
+      return {
+        ...state,
+        keypadDisabled: action.payload,
       };
 
     default:

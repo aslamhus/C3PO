@@ -5,8 +5,10 @@ import './byte.css';
 
 export const Byte = React.forwardRef((props, ref) => {
   const {
-    src,
+    // src,
     id,
+
+    char,
     binaryCode,
     guessBinary,
     animationDelay = 0,
@@ -66,7 +68,7 @@ export const Byte = React.forwardRef((props, ref) => {
 
   return (
     <div id={id} ref={byteRef} className={isDecoded ? 'decoded' : ''}>
-      {decodedChar ? <p>{decodedChar}</p> : <img src={src}></img>}
+      {decodedChar ? <p>{decodedChar}</p> : <div>{binaryCode}</div>}
     </div>
   );
 });

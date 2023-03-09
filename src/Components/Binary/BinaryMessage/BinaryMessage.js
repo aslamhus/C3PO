@@ -4,26 +4,42 @@ import gsap from 'gsap';
 import Byte from '../Byte/Byte';
 import { useGameSound } from '../../hooks/useGameSound';
 import { fx } from '../../hooks/useGameSound';
+import { charToBinary } from '../../Translator/binaryDict';
 import { getBinaryCodeFromImageURL } from './utils';
 import './binary-message.css';
 
 export default function BinaryMessage({
+  message,
   show,
   guessChar,
   onGuessAnimationStart,
   onGuessAnimationComplete,
 }) {
-  const [byteData, setByteData] = useState(
-    images.map((url) => {
-      return {
-        url,
+  const getByteDataFromMessage = () => {
+    let data = [];
+    for (let i = 0; i < message.length; i++) {
+      const char = message[i];
+      data.push({
+        char,
         decoded: false,
-        binary: getBinaryCodeFromImageURL(url),
+        binary: charToBinary[char],
         guess: null,
         animationDelay: 0,
-      };
-    })
-  );
+      });
+    }
+    return data;
+  };
+  // console.log(
+  //   'characterToBinary',
+  //   Object.entries(binaryToCharacter).reduce((acc, entry) => {
+  //     const [key, value] = entry;
+  //     acc[value] = key;
+  //     return acc;
+  //   }, {})
+  // );
+  const [byteData, setByteData] = useState(getByteDataFromMessage());
+
+  console.log('byteData', byteData);
   const binaryRef = useRef();
   const masterTimelineRef = useRef(
     gsap.timeline({

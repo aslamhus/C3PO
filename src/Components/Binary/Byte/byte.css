@@ -1,7 +1,7 @@
 .binary-message div {
   position: relative;
   min-width: 0;
-  flex-basis: 25%;
+  /* flex-basis: 25%; */
   height: auto;
   box-sizing: border-box;
   height: auto;

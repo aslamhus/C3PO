@@ -17,11 +17,11 @@ export const initialState = {
   gameStart: false,
   viewScreen: false,
   controls: false,
-  showKeypad: false,
   primaryControlStripComponent: null,
   secondaryControlStripComponent: null,
   onPressChar: null,
   disabledKeys: {},
+  showKeypad: false,
   keypadDisabled: false,
 };
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import MenuButton from '../UI/Buttons/MenuButton/MenuButton';
+import gsap from 'gsap';
 
 /**
  * Note on useKeypad imperative sneakiness.
@@ -17,9 +18,12 @@ import MenuButton from '../UI/Buttons/MenuButton/MenuButton';
  *  But for now we are using this imperative trick.
  *
  */
-export const useKeypad = ({ setControlStripComponent }) => {
-  const [charGroup, _setCharGroup] = useState('lowercase');
+export const useKeypad = (props) => {
+  const { show, onPressChar, onLoad, disabled, setControlStripComponent } = props;
+  const [loaded, setLoaded] = useState(false);
+  const [charGroup, _setCharGroup] = useState(props.charGroup || 'lowercase');
   const charGroupRef = useRef(charGroup);
+  const keypadRef = useRef();
 
   const setCharGroup = (value) => {
     _setCharGroup(value);
@@ -30,10 +34,11 @@ export const useKeypad = ({ setControlStripComponent }) => {
    * Render control strip with keypad menu buttons
    */
   const renderControlStripComponent = (charGroup) => {
+    console.log('render contorl stirp');
     setControlStripComponent(
       <>
         <MenuButton
-          className={charGroup == 'uppercase' || charGroup == 'lowercase' ? 'active' : ''}
+          // className={charGroup == 'uppercase' || charGroup == 'lowercase' ? 'active' : ''}
           onClick={toggleLetterCase}
         >
           {charGroup == 'lowercase' ? 'AZ' : 'az'}
@@ -53,7 +58,7 @@ export const useKeypad = ({ setControlStripComponent }) => {
       </>
     );
   };
-  const handleLoad = () => renderControlStripComponent(charGroup);
+  const renderMenuButtons = () => renderControlStripComponent(charGroup);
 
   const toggleLetterCase = () => {
     const newCase = charGroupRef.current == 'uppercase' ? 'lowercase' : 'uppercase';
@@ -61,22 +66,36 @@ export const useKeypad = ({ setControlStripComponent }) => {
   };
 
   const handlePressChar = (char, binary) => {
-    // setControlStripComponent(
-    //   <>
-    //     <p>
-    //       {char} - {binary}
-    //     </p>
-    //   </>,
-    //   'secondary',
-    //   { overwrite: true }
-    // );
+    console.log('onPressChar', onPressChar);
+    if (onPressChar instanceof Function) {
+      onPressChar(char, binary);
+    }
+  };
+
+  const handleLoad = async () => {
+    await gsap.fromTo(
+      keypadRef.current,
+      { opacity: 0, y: '+50%' },
+      { opacity: 1, y: 0, duration: 1 }
+    );
+    renderMenuButtons();
+    if (onLoad instanceof Function) {
+      onLoad();
+    }
   };
 
   useEffect(() => {
-    if (charGroup) {
-      renderControlStripComponent(charGroup);
+    if (show) {
+      handleLoad();
+    }
+  }, [show]);
+
+  useEffect(() => {
+    // handleLoad();
+    if (charGroup && show) {
+      renderMenuButtons();
     }
   }, [charGroup]);
 
-  return { handlePressChar, handleLoad, charGroup };
+  return { charGroup, disabled, handlePressChar, keypadRef };
 };

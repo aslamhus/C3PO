@@ -7,7 +7,6 @@ import ViewScreen from './ViewScreen/ViewScreen';
 import AskQuestion from './AskQuestion/AskQuestion';
 import ControlKeypad from '../ControlKeypad/ControlKeypad';
 import { useGame } from '../hooks/useGame';
-import { useKeypad } from '../ControlKeypad/useKeypad';
 import './game-control.css';
 
 /**
@@ -18,10 +17,6 @@ import './game-control.css';
  */
 export default function GameControl({ children }) {
   const { stage, control } = useGame();
-
-  const keypad = useKeypad({
-    setControlStripComponent: control.setControlStripComponent,
-  });
 
   useEffect(() => {
     if (stage.state.loaded) {
@@ -55,7 +50,8 @@ export default function GameControl({ children }) {
             <ControlKeypad
               disabled={control.state.keypadDisabled}
               show={control.state.showKeypad}
-              onLoad={keypad.handleLoad}
+              // onLoad={keypad.renderMenuButtons}
+              charGroup={'lowercase'}
               disabledKeys={control.state?.disabledKeys}
               onPressChar={(char, binary) => {
                 /**
@@ -70,16 +66,8 @@ export default function GameControl({ children }) {
                  *
                  * Eventually this should be handled by ControlKeypad's context.
                  */
-                const {
-                  state: { onPressChar },
-                } = control;
-                if (onPressChar instanceof Function) {
-                  onPressChar(char, binary);
-                }
-                control.onPressChar;
-                keypad.handlePressChar(char, binary);
+                control.state?.onPressChar(char, binary);
               }}
-              charGroup={keypad.charGroup}
             />
             {children}
           </ViewScreen>

@@ -108,13 +108,13 @@ export const useC3PO = () => {
     const { current: c3po } = state.c3poAnimateRef;
     control.disableKeypad(false);
     if (wasCorrect) {
-      handleCorrectGuess(countCharsFound);
+      handleCorrectGuess(char, c3po, countCharsFound);
     } else {
-      handleIncorrectGuess(char);
+      handleIncorrectGuess(char, c3po);
     }
   };
 
-  const handleCorrectGuess = (countCharsFound) => {
+  const handleCorrectGuess = (char, c3po, countCharsFound) => {
     // check if message is completely decoded -> game complete
     c3po.celebrate(3).then(() => {
       c3po.rest();
@@ -129,9 +129,8 @@ export const useC3PO = () => {
     );
   };
 
-  const handleIncorrectGuess = async (char) => {
+  const handleIncorrectGuess = async (char, c3po) => {
     // increment bad guesses
-    // give hint if there is a lowercase/uppercase letter.
     const oppositeCase = getOppositeCase(char);
     const hasOppositeCase = hasChar(oppositeCase.char, state.message);
     c3po.fret();

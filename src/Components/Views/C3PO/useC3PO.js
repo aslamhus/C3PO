@@ -99,9 +99,11 @@ export const useC3PO = () => {
   const handleGuessAnimationComplete = (wasCorrect, countCharsFound, char, binary) => {
     const { current: c3po } = state.c3poAnimateRef;
     if (wasCorrect) {
+      // check if message is completely decoded -> game complete
       c3po.celebrate(3).then(() => {
         c3po.rest();
       });
+
       console.log('chars found', countCharsFound, typeof countCharsFound);
       let plural = countCharsFound > 1 ? 's' : '';
       speak(
@@ -112,6 +114,7 @@ export const useC3PO = () => {
         { tapToContinue: false }
       );
     } else {
+      // increment bad guesses
       c3po.fret();
       speak(
         <>

@@ -30,7 +30,6 @@ export const useKeypad = ({ setControlStripComponent }) => {
    * Render control strip with keypad menu buttons
    */
   const renderControlStripComponent = (charGroup) => {
-    console.log('charGroup', charGroup);
     setControlStripComponent(
       <>
         <MenuButton

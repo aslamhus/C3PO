@@ -39,7 +39,6 @@ export default function GameControl({ children }) {
     }
   }, [control?.state?.controls]);
 
-  console.log('disabledKeys', control.state.disabledKeys);
   return (
     <div className={`game-control-flex-wrap ${control.state?.controls ? ' show' : ' hide'}`}>
       <div className={`game-control-container`}>

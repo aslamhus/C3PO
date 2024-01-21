@@ -17,7 +17,7 @@ export const useAskQuestion = () => {
       { title: 'yes', value: true },
       { title: 'no', value: false },
     ],
-    promptDelay = 2,
+    promptDelay = 0,
   }) => {
     dispatch({ show: true, question, responses, promptDelay });
     return new Promise((resolve, reject) => {

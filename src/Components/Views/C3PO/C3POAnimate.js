@@ -1,4 +1,5 @@
 import gsap from 'gsap';
+import { speed } from './actions';
 import { getBoundsRelativeToParent } from '../../GameStage/utils';
 
 class C3POAnimate {
@@ -87,7 +88,7 @@ class C3POAnimate {
    * @param {React.RefObject<HTMLElement>} bodyRef - body ref
    * @returns {Promise}
    */
-  reset(options = { duration: 1, ease: 'slow' }) {
+  reset(options = { duration: 1 * speed, ease: 'slow' }) {
     const { duration, ease } = options;
     return new Promise((resolve) => {
       this.timeline.clear();
@@ -120,7 +121,7 @@ class C3POAnimate {
     }, []);
   }
 
-  async rest(duration = 0.5) {
+  async rest(duration = 0.5 * speed) {
     return new Promise((resolve) => {
       this.stop();
       const { leftShoulder, rightShoulder, head } = this.bodyParts;
@@ -201,10 +202,12 @@ class C3POAnimate {
     return this.timeline;
   }
 
-  think(duration = 1) {
+  think(duration = 1 * speed) {
+    // note that think never resolves, because the headscrtch animation is an infinite loop.
     return new Promise((resolve) => {
       const { leftShoulder, rightShoulder } = this.bodyParts;
       this.stop();
+
       const thinkTimeline = gsap.timeline();
       thinkTimeline.to(leftShoulder.joint, { scaleY: -1, rotate: '5deg', duration: 0.1 }, 0);
       thinkTimeline.to(leftShoulder.arm, { rotate: '-20deg', scale: 0.9, duration }, 0);
@@ -230,11 +233,11 @@ class C3POAnimate {
       headScratchTimeline.to(rightShoulder.hand, { opacity: 1, duration: 2 });
       thinkTimeline.add(headScratchTimeline, 'raiseArm');
       this.timeline.add(thinkTimeline);
-      this.timeline.play().then(() => resolve(true));
+      this.timeline.play();
     });
   }
 
-  proposeIdea(duration = 1) {
+  proposeIdea(duration = 1 * speed) {
     return new Promise((resolve) => {
       const { leftShoulder, rightShoulder } = this.bodyParts;
       const thinkTimeline = gsap.timeline({
@@ -280,7 +283,7 @@ class C3POAnimate {
    *
    * @param {String|Number} xPosition - walk to position on game stage. Can
    */
-  async walk(xPosition, options = { steps: 7, duration: 2 }) {
+  async walk(xPosition, options = { steps: 7, duration: 2 * speed }) {
     const bodyBounds = this.getBounds(this.body);
     const distance = xPosition - bodyBounds.x - window.scrollX;
     // console.log(

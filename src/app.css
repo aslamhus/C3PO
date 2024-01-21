@@ -1,7 +1,9 @@
 :root {
   --lucasfilms-blue: #207eb1;
   --lucasfilms-medium-blue: #044366;
-  --lucasfilms-dark-blue: #00121c;
+  --lucasfilms-dark-blue: #012539;
+  --lucasfilms-light-blue: #31b1d8;
+  --highlight-yellow: #f1e084;
 }
 html,
 body {

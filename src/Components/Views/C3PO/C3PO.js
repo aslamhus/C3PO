@@ -11,6 +11,7 @@ import { useC3PO } from './useC3PO';
 import { useGameStage } from '../../GameStage/hooks/useGameStage';
 import EnergyBar from '../../UI/EnergyBar';
 import './c3po.css';
+import { set } from 'lodash';
 
 const C3PO = React.forwardRef((props, ref) => {
   const {
@@ -31,6 +32,8 @@ const C3PO = React.forwardRef((props, ref) => {
     toggleSpeechBubble,
     handleGuessAnimationStart,
     handleGuessAnimationComplete,
+    setIsBinaryVisible,
+    setIsSpeaking,
     getGameStage,
     control,
   } = useC3PO();
@@ -144,6 +147,8 @@ const C3PO = React.forwardRef((props, ref) => {
             showAnimationDuration={showSpeechBubbleAnimationDuration}
             onShowSpeechBubble={() => toggleSpeechBubble(true)}
             enableTapToContinue={showTapToContinue}
+            onTypingStart={() => setIsSpeaking(true)}
+            onTypingComplete={() => setIsSpeaking(false)}
           />
           <Body ref={getC3PORef} style={{ opacity: c3poState != 'hidden' ? 1 : 0 }}></Body>
         </div>
@@ -151,6 +156,7 @@ const C3PO = React.forwardRef((props, ref) => {
       {showBinary && (
         <BinaryMessage
           show={showBinary}
+          onShow={() => setIsBinaryVisible(true)}
           message={message}
           guessChar={guessChar}
           onGuessAnimationStart={handleGuessAnimationStart}

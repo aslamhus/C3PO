@@ -14,7 +14,14 @@ import './type-text.css';
  */
 
 let timeouts = [];
-const TypeText = ({ show, children, onTypingComplete, onBeforeType, typeSpeed = 0.1 }) => {
+const TypeText = ({
+  show,
+  children,
+  onTypingStart,
+  onTypingComplete,
+  onBeforeType,
+  typeSpeed = 0.1,
+}) => {
   const [typedText, _setTypedText] = useState(null);
   const typedTextRef = useRef(null);
   const setTypedText = (value) => {
@@ -135,9 +142,12 @@ const TypeText = ({ show, children, onTypingComplete, onBeforeType, typeSpeed = 
     if (show) {
       timeouts = [];
       setTypedText(null);
-      if (onBeforeType instanceof Function) {
-        onBeforeType();
+      if (onTypingStart instanceof Function) {
+        onTypingStart();
       }
+      // if (onBeforeType instanceof Function) {
+      //   onBeforeType();
+      // }
       beginTyping().then(handleTypingComplete);
     } else {
       /**Clean up timeouts */

@@ -9,6 +9,7 @@ import './binary-message.css';
 export default function BinaryMessage({
   message,
   show,
+  onShow,
   guessChar,
   onGuessAnimationStart,
   onGuessAnimationComplete,
@@ -99,11 +100,24 @@ export default function BinaryMessage({
     childTimelinesRef.current.push(timeline);
 
   /**
-   * Animate entrance of ControlKeypad
+   * Animate entrance of binary message
    */
   useEffect(() => {
     if (show) {
-      gsap.fromTo(binaryRef.current, { opacity: 0, y: '+50%' }, { opacity: 1, y: 0, duration: 1 });
+      gsap.fromTo(
+        binaryRef.current,
+        { opacity: 0, y: '+50%' },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          onComplete: () => {
+            if (onShow instanceof Function) {
+              onShow();
+            }
+          },
+        }
+      );
     }
   }, [show]);
 

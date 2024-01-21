@@ -7,20 +7,21 @@ button {
   background: transparent;
   opacity: 1;
   /* text-transform: uppercase; */
-  color: var(--lucasfilms-blue);
   border: 3px solid var(--lucasfilms-medium-blue);
   font-size: 1.25rem;
   background-color: var(--lucasfilms-dark-blue);
+  color: var(--lucasfilms-light-blue);
+  border-radius: 20px;
 }
 button:hover,
 button.active {
-  --button-hover-color: rgb(245, 220, 77);
   opacity: 1;
   box-shadow: 0px 0px 25px 0px rgba(255, 217, 0, 0.364);
   text-shadow: 0px 0px 10px rgba(255, 217, 0, 0.562);
   cursor: pointer;
-  color: var(--button-hover-color);
-  border-color: var(--button-hover-color);
+
+  color: var(--highlight-yellow);
+  border-color: var(--highlight-yellow);
 }
 button:active {
 }

@@ -1,6 +1,7 @@
 {
   "scripts": {
     "start": "webpack serve --config './src/build/webpack.dev.js'",
+    "build": "webpack --config './src/build/webpack.prod.js'",
     "get-images": "./bin/binary-message-images.sh"
   },
   "type": "module",

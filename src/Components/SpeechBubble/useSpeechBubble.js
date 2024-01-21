@@ -15,6 +15,8 @@ export const useSpeechBubble = ({
   onBeforeShowSpeechBubble,
   onShowSpeechBubble,
   enableTapToContinue,
+  onTypingStart,
+  onTypingComplete,
 }) => {
   const [bubbleText, setBubbleText] = useState('');
   const [_show, setShow] = useState(false);
@@ -160,7 +162,18 @@ export const useSpeechBubble = ({
     return applyConstraints();
   };
 
+  const handleTypingStart = () => {
+    if (onTypingStart instanceof Function) {
+      console.log('onTypingStart');
+      onTypingStart();
+    }
+  };
+
   const handleTypingComplete = () => {
+    if (onTypingComplete instanceof Function) {
+      console.log('onTypingComplete');
+      onTypingComplete();
+    }
     if (enableTapToContinue) {
       setTimeout(() => {
         setShowTapToContinue(true);
@@ -233,6 +246,7 @@ export const useSpeechBubble = ({
     positions,
     arrowPosition,
     parseSpeech,
+    handleTypingStart,
     handleTypingComplete,
   };
 };

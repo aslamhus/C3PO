@@ -1,5 +1,6 @@
 import React from 'react';
-const speed = 0;
+export const speed = 0;
+
 const testAction = () => {
   setTimeout(() => {
     setTimeout(() => {
@@ -37,9 +38,6 @@ export const questionIdentity = async (
   askQuestion,
   dismissSpeechBubble
 ) => {
-  setTimeout(() => {
-    toggleControls(true);
-  }, 2500);
   c3po.wave();
   const response = await askQuestion({
     question: (
@@ -72,9 +70,9 @@ export const startGameInstruction = async (
   dismissSpeechBubble,
   showBinary
 ) => {
-  await c3po.animate(c3po.body, { rotate: 0, duration: 0.5 });
+  await c3po.animate(c3po.body, { rotate: 0, duration: 0.5 * speed });
 
-  await c3po.walk(-40, { steps: 9, duration: 3 });
+  await c3po.walk(-40, { steps: 9, duration: 3 * speed });
   // look around?
   await speak(
     <>
@@ -110,24 +108,27 @@ export const startGameInstruction = async (
     await speak('Fantastic!');
     await speak(
       <>
-        The code is written in <span style={{ color: 'green', fontStyle: 'italic' }}>binary</span>,
-        otherwise known as 'computer language'.
-      </>
+        The code is written in '<span style={{ color: 'green', fontStyle: 'italic' }}>binary</span>
+        ', which is how computers talk to each other.
+      </>,
+      { tapToContinue: true }
     );
+    await speak('Here is the secret message!', { tapToContinue: true });
     await showBinary();
-    await wait(2 * speed);
-    await dismissSpeechBubble();
-    await wait(1 * speed);
-
+    // await wait(2 * speed);
     c3po.think();
     await speak(
       <>
         My circuits are all full of sand from walking around{' '}
-        <span style={{ color: 'gold' }}>Tattooine</span>. I don't know how long my{' '}
-        <span className="battery">battery</span> will last!
+        <span style={{ color: 'gold' }}>Tattooine</span>.
       </>
     );
-    await wait(6 * speed);
+    await speak(
+      <>
+        I don't know how long my <span className="battery">battery</span> will last!
+      </>
+    );
+    // await wait(1 * speed);
     await speak(
       <>
         Help me decode the message by <span style={{ color: 'green' }}>guessing the letters!</span>{' '}
@@ -147,7 +148,7 @@ export const wait = (duration) => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve();
-    }, duration * 1000);
+    }, duration * 1000 * speed);
   });
 };
 

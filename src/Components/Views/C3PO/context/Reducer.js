@@ -10,6 +10,7 @@ export const C3PO_ACTIONS = {
   updateC3poState: 'updateC3poState',
   toggleSpeechBubble: 'toggleSpeechBubble',
   showBinary: 'showBinary',
+  setIsBinaryVisible: 'setIsBinaryVisible',
   guessChar: 'guessChar',
   showTapToContinue: 'showTapToContinue',
   hideTapToContinue: 'hideTapToContinue',
@@ -24,10 +25,10 @@ export const initialState = {
   speech: '',
   showSpeechBubble: false,
   showSpeechBubbleAnimationDuration: 0.5,
-  showBinary: false,
+  isBinaryVisible: false,
   showTapToContinue: false,
   guesses: {},
-  message: 'May the force be with you, Sylvan!',
+  message: 'Happy Birthday, Sylvan!',
   energy: 0.85,
 };
 

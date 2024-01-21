@@ -11,8 +11,9 @@ export const useGameControl = () => {
   const toggleControls = (bool) =>
     dispatch({ type: GAME_CONTROL_ACTIONS.toggleControls, payload: bool });
 
-  const toggleKeypad = (bool, options = { onPressChar }) =>
+  const toggleKeypad = (bool, options = { onPressChar }) => {
     dispatch({ type: GAME_CONTROL_ACTIONS.toggleKeypad, payload: [bool, options] });
+  };
 
   const beginGame = () => dispatch({ type: GAME_CONTROL_ACTIONS.beginGame });
 

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useRef } from 'react';
 import { C3POContext } from './context/context';
 import { useAskQuestion } from '../../GameControl/AskQuestion/hooks/useAskQuestion';
 import { C3PO_ACTIONS, C3POStates } from './context/Reducer';
@@ -15,9 +15,14 @@ export const useC3PO = () => {
   const control = useGameControl();
   const { playSound, music, fx } = useGameSound();
   const { ask } = useAskQuestion();
+  const isBinaryVisibleRef = useRef(false);
+  const isSpeakingRef = useRef(false);
 
   const askQuestion = async ({ question, responses }) => {
     await speak(question, { tapToContinue: false });
+    if (!control.state.controls) {
+      control.toggleControls(true);
+    }
     return ask({ question, responses });
   };
 
@@ -51,7 +56,21 @@ export const useC3PO = () => {
     });
   };
 
-  const showBinary = () => dispatch({ type: C3PO_ACTIONS.showBinary });
+  const showBinary = () => {
+    isBinaryVisibleRef.current = false;
+    return new Promise((resolve, reject) => {
+      dispatch({ type: C3PO_ACTIONS.showBinary });
+      let interval = setInterval(() => {
+        if (isBinaryVisibleRef.current == true) {
+          clearInterval(interval);
+          resolve(true);
+        }
+        console.log('is binary visible?', isBinaryVisibleRef.current);
+      }, 100);
+    });
+  };
+
+  const setIsBinaryVisible = (bool) => (isBinaryVisibleRef.current = bool);
 
   /**
    *
@@ -71,8 +90,10 @@ export const useC3PO = () => {
    * @returns
    */
   const speak = (words, options = { wait: 0, tapToContinue: true }) => {
+    isSpeakingRef.current = true;
     dispatch({ type: C3PO_ACTIONS.speak, payload: words });
     if (options.tapToContinue) {
+      // wait for user to tap to continue
       return new Promise((resolve) => {
         dispatch({ type: C3PO_ACTIONS.showTapToContinue });
         const handletapToContinue = (event) => {
@@ -85,6 +106,7 @@ export const useC3PO = () => {
         document.addEventListener('click', handletapToContinue);
       });
     } else if (options.wait) {
+      // wait for a certain amount of time
       return new Promise((resolve) => {
         resolver = resolve;
         const delay = state.showSpeechBubbleAnimationDuration;
@@ -92,9 +114,22 @@ export const useC3PO = () => {
           resolver(true);
         }, delay * 1000 + 500 + options.wait * 1000);
       });
+    } else {
+      console.log('waiting for c3po to stop speaking');
+      // wait until c3po is not speaking
+      return new Promise((resolve) => {
+        const interval = setInterval(() => {
+          if (isSpeakingRef.current == false) {
+            clearInterval(interval);
+            resolve(true);
+          }
+        }, 100);
+      });
     }
     return;
   };
+
+  const setIsSpeaking = (bool) => (isSpeakingRef.current = bool);
 
   const guessChar = (char, binary) => {
     dispatch({ type: C3PO_ACTIONS.guessChar, payload: [char, binary] });
@@ -178,8 +213,8 @@ export const useC3PO = () => {
     // await actions.wait(5);
     playSound(music.jawaTheme);
     const { current: c3po } = state.c3poAnimateRef;
-    testKeypad(c3po);
-    return;
+    // testKeypad(c3po);
+    // return;
 
     await actions.exitStageLeft(c3po);
     showC3PO();
@@ -218,6 +253,8 @@ export const useC3PO = () => {
     speak,
     dismissSpeechBubble,
     showBinary,
+    setIsBinaryVisible,
+    setIsSpeaking,
     guessChar,
     handleGuessAnimationComplete,
     handleGuessAnimationStart,

@@ -46,7 +46,7 @@ export default function GameControl({ children }) {
             <Radar className="shadow" />
           </div>
           <ViewScreen on={control.state.viewScreen}>
-            {!control.state.showKeypad && <AskQuestion />}
+            {control.state.showKeypad == false && <AskQuestion />}
             <ControlKeypad
               disabled={control.state.keypadDisabled}
               show={control.state.showKeypad}

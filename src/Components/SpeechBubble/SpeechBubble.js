@@ -12,6 +12,7 @@ export const SpeechBubble = React.memo((props) => {
     positions,
     showTapToContinue,
     arrowPosition,
+    handleTypingStart,
     handleTypingComplete,
   } = useSpeechBubble(props);
 
@@ -25,7 +26,12 @@ export const SpeechBubble = React.memo((props) => {
           visibility: _show ? 'visible' : 'hidden',
         }}
       >
-        <TypeText show={_show} typeSpeed={0.1} onTypingComplete={handleTypingComplete}>
+        <TypeText
+          show={_show}
+          typeSpeed={0.1}
+          onTypingStart={handleTypingStart}
+          onTypingComplete={handleTypingComplete}
+        >
           <div className="speech type-text-target">{bubbleText}</div>
         </TypeText>
         {showTapToContinue && <TapToContinue />}

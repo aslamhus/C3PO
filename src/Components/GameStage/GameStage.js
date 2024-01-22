@@ -3,6 +3,7 @@ import StarWarsLoader from '../StarWarsLoader/StarWarsLoader';
 import GameStartScreen from '../Views/GameStartScreen/GameStartScreen';
 import C3POProvider from '../Views/C3PO/context/C3POProvider';
 import C3PO from '../Views/C3PO';
+import SpeechBubbleProvider from '../SpeechBubble/context/SpeechBubbleProvider';
 import { AnimatePresence } from 'framer-motion';
 import { useGame } from '../hooks/useGame';
 import { GAME_STAGE_VIEWS } from './Reducer';
@@ -90,7 +91,9 @@ export default function GameStage(props) {
       <AnimatePresence>
         {stageView == 'c3po' && (
           <C3POProvider>
-            <C3PO></C3PO>
+            <SpeechBubbleProvider>
+              <C3PO></C3PO>
+            </SpeechBubbleProvider>
           </C3POProvider>
         )}
       </AnimatePresence>

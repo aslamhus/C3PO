@@ -10,15 +10,18 @@ import gsap from 'gsap';
 import { useC3PO } from './useC3PO';
 import { useGameStage } from '../../GameStage/hooks/useGameStage';
 import EnergyBar from '../../UI/EnergyBar';
+import { useAskQuestion } from '../../GameControl/AskQuestion/hooks/useAskQuestion';
 import './c3po.css';
-import { set } from 'lodash';
+import { useSpeak } from '../../SpeechBubble/useSpeak';
 
 const C3PO = React.forwardRef((props, ref) => {
+  const { ask } = useAskQuestion();
+  const { speak } = useSpeak();
   const {
     state: {
       loaded,
       message,
-      speech,
+      // speech,
       c3poState,
       showSpeechBubble,
       showSpeechBubbleAnimationDuration,
@@ -33,10 +36,10 @@ const C3PO = React.forwardRef((props, ref) => {
     handleGuessAnimationStart,
     handleGuessAnimationComplete,
     setIsBinaryVisible,
-    setIsSpeaking,
+    // setIsSpeaking,
     getGameStage,
     control,
-  } = useC3PO();
+  } = useC3PO({ speak, ask });
 
   const stage = useGameStage();
 
@@ -64,38 +67,38 @@ const C3PO = React.forwardRef((props, ref) => {
     });
   };
 
-  const animateEntrance = async () => {
-    return new Promise((resolve) => {
-      const tl = gsap.timeline({ ease: false });
-      const { current: space } = tatooineSpaceRef;
-      let y = 0;
-      let duration = 5;
-      const gameStage = getGameStage();
-      const img = space.querySelector('img');
-      const bounds = img.getBoundingClientRect();
-      console.log(`img height: ${bounds.height}, viewport height: ${window.innerHeight}`);
-      if (bounds.height > window.innerHeight) {
-        y = `${parseFloat(bounds.height - window.innerHeight) * -1}px`;
-        duration += 5;
-      }
-      console.log('y', y);
-      tl.set(gameStage, { backgroundColor: 'black' });
-      tl.set(space, {
-        y: '100%',
-        opacity: 0,
-      });
+  // const animateEntrance = async () => {
+  //   return new Promise((resolve) => {
+  //     const tl = gsap.timeline({ ease: false });
+  //     const { current: space } = tatooineSpaceRef;
+  //     let y = 0;
+  //     let duration = 5;
+  //     const gameStage = getGameStage();
+  //     const img = space.querySelector('img');
+  //     const bounds = img.getBoundingClientRect();
+  //     console.log(`img height: ${bounds.height}, viewport height: ${window.innerHeight}`);
+  //     if (bounds.height > window.innerHeight) {
+  //       y = `${parseFloat(bounds.height - window.innerHeight) * -1}px`;
+  //       duration += 5;
+  //     }
+  //     console.log('y', y);
+  //     tl.set(gameStage, { backgroundColor: 'black' });
+  //     tl.set(space, {
+  //       y: '100%',
+  //       opacity: 0,
+  //     });
 
-      tl.to(space, {
-        y,
-        opacity: 1,
-        duration,
-        onComplete: () => {
-          resolve();
-        },
-      });
-      tl.play();
-    });
-  };
+  //     tl.to(space, {
+  //       y,
+  //       opacity: 1,
+  //       duration,
+  //       onComplete: () => {
+  //         resolve();
+  //       },
+  //     });
+  //     tl.play();
+  //   });
+  // };
 
   useEffect(() => {
     if (energy) {
@@ -141,14 +144,11 @@ const C3PO = React.forwardRef((props, ref) => {
           <img src={c3po} className="c3po-reference"></img>
           <SpeechBubble
             show={showSpeechBubble}
-            speech={speech}
             anchor={speechBubbleAnchor}
             offset={{ x: 0, y: -100 }}
             showAnimationDuration={showSpeechBubbleAnimationDuration}
             onShowSpeechBubble={() => toggleSpeechBubble(true)}
             enableTapToContinue={showTapToContinue}
-            onTypingStart={() => setIsSpeaking(true)}
-            onTypingComplete={() => setIsSpeaking(false)}
           />
           <Body ref={getC3PORef} style={{ opacity: c3poState != 'hidden' ? 1 : 0 }}></Body>
         </div>

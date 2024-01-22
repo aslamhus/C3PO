@@ -126,7 +126,10 @@ const TypeText = ({
           children: (
             <>
               {React.cloneElement(child, { style: { opacity: 0 } })}
-              <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+              <div
+                className="typed-text-actual"
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+              >
                 {typedText}
               </div>
             </>
@@ -148,6 +151,7 @@ const TypeText = ({
       // if (onBeforeType instanceof Function) {
       //   onBeforeType();
       // }
+      console.log('begin typing');
       beginTyping().then(handleTypingComplete);
     } else {
       /**Clean up timeouts */

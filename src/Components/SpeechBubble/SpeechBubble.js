@@ -6,7 +6,7 @@ import './speech-bubble.css';
 
 export const SpeechBubble = React.memo((props) => {
   const {
-    _show,
+    show,
     bubbleRef,
     bubbleText,
     positions,
@@ -15,7 +15,6 @@ export const SpeechBubble = React.memo((props) => {
     handleTypingStart,
     handleTypingComplete,
   } = useSpeechBubble(props);
-
   return (
     <div className="speech-bubble-container" style={{ ...positions }}>
       <div
@@ -23,11 +22,11 @@ export const SpeechBubble = React.memo((props) => {
         className="speech-bubble"
         style={{
           transform: 'scale(1)',
-          visibility: _show ? 'visible' : 'hidden',
+          visibility: show ? 'visible' : 'hidden',
         }}
       >
         <TypeText
-          show={_show}
+          show={show}
           typeSpeed={0.1}
           onTypingStart={handleTypingStart}
           onTypingComplete={handleTypingComplete}

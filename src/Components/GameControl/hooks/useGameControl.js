@@ -1,5 +1,4 @@
 import { useContext } from 'react';
-import { useAskQuestion } from '../AskQuestion/hooks/useAskQuestion';
 import { GameControlContext } from '../Context/context';
 import { GAME_CONTROL_ACTIONS } from '../Reducer';
 export const useGameControl = () => {

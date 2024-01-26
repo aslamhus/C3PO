@@ -26,7 +26,7 @@ export const peekAbooEntrance = async (c3po, speak, showTapTip) => {
     duration: 1.5,
   });
   setTimeout(showTapTip, 1000);
-  await speak(<>Oh I say!</>);
+  await speak('Oh I say! ');
 
   await wait(0);
 };
@@ -54,22 +54,22 @@ export const questionIdentity = async (
     await c3po.rest();
     return true;
   } else {
-    speak('Oh... Sorry to have disturbed you.');
-    await wait(2 * speed);
+    await speak('Oh... Sorry to have disturbed you.');
     dismissSpeechBubble();
     await exitStageLeft(c3po, 3);
   }
   return false;
 };
 
-export const startGameInstruction = async (
+export const startGameInstruction = async ({
   c3po,
-  gameStage,
+  getGameStage,
   speak,
   askQuestion,
   dismissSpeechBubble,
-  showBinary
-) => {
+  showBinary,
+  toggleKeypad,
+}) => {
   await c3po.animate(c3po.body, { rotate: 0, duration: 0.5 * speed });
 
   await c3po.walk(-40, { steps: 9, duration: 3 * speed });
@@ -86,9 +86,9 @@ export const startGameInstruction = async (
     </>
   );
 
-  await speak(
-    "But I can't find him anywhere! Oh where has that troublesome rustbucket gone to now...."
-  );
+  await speak("But I can't find him anywhere!");
+  await speak('Oh where has that troublesome rustbucket gone to now....');
+
   await dismissSpeechBubble();
   await c3po.proposeIdea();
   const response = await askQuestion({
@@ -113,8 +113,9 @@ export const startGameInstruction = async (
       </>,
       { tapToContinue: true }
     );
-    await speak('Here is the secret message!', { tapToContinue: true });
     await showBinary();
+
+    await speak('Here is the message!', { tapToContinue: true });
     // await wait(2 * speed);
     c3po.think();
     await speak(
@@ -131,7 +132,14 @@ export const startGameInstruction = async (
     // await wait(1 * speed);
     await speak(
       <>
-        Help me decode the message by <span style={{ color: 'green' }}>guessing the letters!</span>{' '}
+        Please help me decode the message before my <span className="battery">battery</span> runs
+        out!
+      </>
+    );
+    await toggleKeypad();
+    await speak(
+      <>
+        We can decode the message by <span style={{ color: 'green' }}>guessing the letters!</span>{' '}
       </>,
       { tapToContinue: true }
     );

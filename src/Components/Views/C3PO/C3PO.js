@@ -16,7 +16,7 @@ import { useSpeak } from '../../SpeechBubble/useSpeak';
 
 const C3PO = React.forwardRef((props, ref) => {
   const { ask } = useAskQuestion();
-  const { speak } = useSpeak();
+  const { speak, dismissSpeechBubble } = useSpeak();
   const {
     state: {
       loaded,
@@ -39,7 +39,7 @@ const C3PO = React.forwardRef((props, ref) => {
     // setIsSpeaking,
     getGameStage,
     control,
-  } = useC3PO({ speak, ask });
+  } = useC3PO({ speak, ask, dismissSpeechBubble });
 
   const stage = useGameStage();
 
@@ -143,7 +143,6 @@ const C3PO = React.forwardRef((props, ref) => {
         <div className="c3po-container" style={{ backgroundImage: `url(${tatooineDesert})` }}>
           <img src={c3po} className="c3po-reference"></img>
           <SpeechBubble
-            show={showSpeechBubble}
             anchor={speechBubbleAnchor}
             offset={{ x: 0, y: -100 }}
             showAnimationDuration={showSpeechBubbleAnimationDuration}

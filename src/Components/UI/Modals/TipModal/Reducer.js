@@ -13,7 +13,7 @@ export const reducer = (state, action) => {
   switch (action.type) {
     case 'show':
       let newState = { ...state, show: true };
-      console.log('action', action);
+      // console.log('action', action);
       if (action?.payload?.component) {
         newState.content = action.payload.component;
       }

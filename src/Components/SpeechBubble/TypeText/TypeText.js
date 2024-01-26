@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './type-text.css';
+import { useTypeText } from './useTypeText';
+import { set } from 'lodash';
 
 /**
  * TypeText
@@ -20,10 +22,29 @@ const TypeText = ({
   onTypingStart,
   onTypingComplete,
   onBeforeType,
-  typeSpeed = 0.1,
+  typeSpeed: initialTypeSpeed = 0.1,
 }) => {
-  const [typedText, _setTypedText] = useState(null);
+  const [typedText, _setTypedText] = useState('test');
+  const [typeSpeed, _setTypeSpeed] = useState(initialTypeSpeed);
   const typedTextRef = useRef(null);
+  const isTypingRef = useRef(false);
+  const typeSpeedRef = useRef(initialTypeSpeed);
+
+  const setTypeSpeed = (value) => {
+    typeSpeedRef.current = value;
+    _setTypeSpeed(value);
+  };
+
+  /**
+   * The useTypeText hook is used to share the isTyping/isTypingComplete state
+   * and to interrupt the typing animation.
+   */
+  const {
+    state: { isTyping },
+    setIsTyping,
+    setIsTypingComplete,
+  } = useTypeText();
+
   const setTypedText = (value) => {
     typedTextRef.current = value;
     _setTypedText(value);
@@ -64,12 +85,14 @@ const TypeText = ({
           </>
         );
         resolve();
-      }, typeSpeed * 1000);
+      }, typeSpeedRef?.current * 1000);
       timeouts.push(timeout);
     });
   };
 
   const beginTyping = async () => {
+    setIsTyping(true);
+    // console.log('5. Begin typing', show);
     const textNodes = getTextNodes(children);
     for (let node of textNodes) {
       // is the node a primitive, i.e. string or number?
@@ -99,7 +122,17 @@ const TypeText = ({
     return;
   };
 
+  const handleTypingStart = () => {
+    setIsTyping(true);
+    setIsTypingComplete(false);
+    if (onTypingStart instanceof Function) {
+      onTypingStart();
+    }
+  };
+
   const handleTypingComplete = () => {
+    setIsTypingComplete(true);
+    setIsTyping(false);
     if (onTypingComplete instanceof Function) {
       onTypingComplete();
     }
@@ -119,17 +152,14 @@ const TypeText = ({
    */
   const renderTypeText = () => {
     return React.Children.map(children, (child) => {
-      if (child.props.className.includes('type-text-target')) {
+      if (child?.props.className.includes('type-text-target')) {
         const Clone = React.cloneElement(child, {
           style: { position: 'relative' },
           ...child.props,
           children: (
             <>
               {React.cloneElement(child, { style: { opacity: 0 } })}
-              <div
-                className="typed-text-actual"
-                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-              >
+              <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
                 {typedText}
               </div>
             </>
@@ -145,19 +175,27 @@ const TypeText = ({
     if (show) {
       timeouts = [];
       setTypedText(null);
-      if (onTypingStart instanceof Function) {
-        onTypingStart();
-      }
+      handleTypingStart();
       // if (onBeforeType instanceof Function) {
       //   onBeforeType();
       // }
-      console.log('begin typing');
+      // console.log('begin typing');
       beginTyping().then(handleTypingComplete);
     } else {
       /**Clean up timeouts */
       timeouts.forEach((timeout) => clearTimeout(timeout));
     }
   }, [show]);
+
+  useEffect(() => {
+    isTypingRef.current = isTyping;
+    if (isTyping == false) {
+      // typing can be interrupted or cut short by setting isTyping to false
+      setTypeSpeed(0);
+    } else {
+      setTypeSpeed(initialTypeSpeed);
+    }
+  }, [isTyping]);
 
   return <div>{show ? renderTypeText() : children}</div>;
 };

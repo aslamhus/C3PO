@@ -9,7 +9,8 @@ import { SpeechBubbleContext } from './context/context.js';
 import { actions } from './context/Reducer.js';
 
 export const useSpeechBubble = ({
-  show: initialShow = false, // initial show state
+  // show: initialShow, // initial show state
+
   anchor = null,
   offset = { x: 0, y: 0 },
   showAnimationDuration = 0.5,
@@ -20,30 +21,36 @@ export const useSpeechBubble = ({
   onShowSpeechBubble = null,
 }) => {
   const context = React.useContext(SpeechBubbleContext);
-  const [state, dispatch] = context;
-  const { speech, bubbleText, show, showTapToContinue, isPrepared, arrowPosition, positions } =
-    state;
+  const [
+    { speech, bubbleText, show, showTapToContinue, isPrepared, arrowPosition, positions },
+    dispatch,
+  ] = context;
 
-  // const [speech, setSpeech] = useState('');
-  // const [bubbleText, setBubbleText] = useState('');
-  // const [_show, setShow] = useState(false);
-  // const [showTapToContinue, setShowTapToContinue] = useState(false);
-  // const [isPrepared, setIsPrepared] = useState(false);
-  // const [arrowPosition, setArrowPosition] = useState({ left: '25%' });
-  // const [positions, _setPositions] = useState(null);
   const positionsRef = useRef(positions);
   const bubbleRef = useRef();
 
-  /** Dispatches */
   const setShow = (value) => {
-    console.log('setShow', value);
     dispatch({ type: actions.show, payload: value });
   };
-  const setShowTapToContinue = (value) =>
-    dispatch({ type: actions.showTapToContinue, payload: value });
-  const setBubbleText = (value) => dispatch({ type: actions.setBubbleText, payload: value });
+  // const setShowTapToContinue = (value) => {
+  //   console.log('useSpeechBubble setShowTapToContinue', value);
+  //   dispatch({ type: actions.showTapToContinue, payload: value });
+  // };
+
+  /**
+   * Bubble text is the internal state of the received speech.
+   * It is set when speech is received.
+   *
+   * @param {*} value
+   */
+  const setBubbleText = (value) => {
+    dispatch({ type: actions.setBubbleText, payload: value });
+  };
+
   const setIsPrepared = (value) => dispatch({ type: actions.setIsPrepared, payload: value });
+
   const setArrowPosition = (value) => dispatch({ type: actions.setArrowPosition, payload: value });
+
   const setPositions = (value) => {
     positionsRef.current = value;
     dispatch({ type: actions.setPositions, payload: value });
@@ -139,6 +146,7 @@ export const useSpeechBubble = ({
   const showBubble = async () => {
     computeFontSize();
     await gsap.set(bubbleRef.current, { scale: 0 });
+    // setting show to true will begin typing
     setShow(true);
     await gsap.to(bubbleRef.current, { opacity: 1, scale: 1, duration: showAnimationDuration });
     if (onShowSpeechBubble instanceof Function) {
@@ -160,9 +168,11 @@ export const useSpeechBubble = ({
     if (!bubbleRef.current) {
       throw new Error('Speech bubble has not rendered');
     }
-    setShowTapToContinue(false);
+    // setShowTapToContinue(false);
     setIsPrepared(false);
+    // if bubble is already showing, hide it
     if (show) {
+      // console.log('hiding bubble');
       await hideBubble();
     }
     // setting bubble text triggers the process showing the speech bubble
@@ -182,7 +192,7 @@ export const useSpeechBubble = ({
   const handleTypingStart = () => {
     // setIsSpeaking(true);
     if (onTypingStart instanceof Function) {
-      console.log('onTypingStart');
+      // console.log('onTypingStart');
       onTypingStart();
     }
   };
@@ -190,14 +200,14 @@ export const useSpeechBubble = ({
   const handleTypingComplete = () => {
     // setIsSpeaking(false);
     if (onTypingComplete instanceof Function) {
-      console.log('onTypingComplete');
+      // console.log('onTypingComplete');
       onTypingComplete();
     }
-    if (enableTapToContinue) {
-      setTimeout(() => {
-        setShowTapToContinue(true);
-      }, 200);
-    }
+    // if (enableTapToContinue) {
+    //   setTimeout(() => {
+    //     setShowTapToContinue(true);
+    //   }, 200);
+    // }
   };
 
   /**
@@ -209,7 +219,8 @@ export const useSpeechBubble = ({
    * - fire 'onBeforeShowSpeechBubble'
    */
   useEffect(() => {
-    console.log('bubbleRef', bubbleRef);
+    if (!speech) return;
+    // console.log('1. Receive new speech', speech);
     speech && prepareBubble();
   }, [speech]);
 
@@ -223,6 +234,7 @@ export const useSpeechBubble = ({
    */
   useEffect(() => {
     if (positions) {
+      // console.log('2. Adjust positions');
       setArrowPosition(findArrowPosition());
       checkConstraints().then((pass) => {
         if (pass) setIsPrepared(true);
@@ -238,17 +250,11 @@ export const useSpeechBubble = ({
    * - animate entrance
    */
   useEffect(() => {
-    if (isPrepared) showBubble();
-  }, [isPrepared]);
-
-  /**
-   * If parent show state differs from internal show state
-   */
-  useEffect(() => {
-    if (initialShow != show) {
-      show ? showBubble() : hideBubble();
+    if (isPrepared) {
+      // console.log('3. isPrepared - show the speech bubble');
+      showBubble();
     }
-  }, [show]);
+  }, [isPrepared]);
 
   useEffect(() => {
     document.addEventListener(GAME_STAGE_EVENTS.updateconstraints, applyConstraints);
@@ -258,6 +264,7 @@ export const useSpeechBubble = ({
       window.removeEventListener('resize', handleResize);
     };
   }, []);
+
   return {
     bubbleRef,
     bubbleText,

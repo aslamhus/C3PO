@@ -28,11 +28,12 @@ export const SpeechBubble = React.memo((props) => {
         <TypeText
           show={show}
           typeSpeed={0.1}
-          onTypingStart={handleTypingStart}
+          onTypingStTart={handleTypingStart}
           onTypingComplete={handleTypingComplete}
         >
           <div className="speech type-text-target">{bubbleText}</div>
         </TypeText>
+        {/* Displays tap to continue icon bottom right of speech bubble */}
         {showTapToContinue && <TapToContinue />}
         <div className="bubble-arrow" style={{ ...arrowPosition }}></div>
       </div>

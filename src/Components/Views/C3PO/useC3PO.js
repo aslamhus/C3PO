@@ -9,13 +9,13 @@ import { useGameSound } from '../../hooks/useGameSound';
 import { useGameControl } from '../../GameControl/hooks/useGameControl';
 
 let resolver;
-export const useC3PO = ({ speak, ask }) => {
+export const useC3PO = ({ speak, dismissSpeechBubble, ask }) => {
   const [state, dispatch] = useContext(C3POContext);
   // game control
   const control = useGameControl();
 
   const askQuestion = async ({ question, responses }) => {
-    await speak(question, { tapToContinue: false });
+    await speak(question, { tapToContinue: false, wait: 1 });
     if (!control.state.controls) {
       control.toggleControls(true);
     }
@@ -43,17 +43,6 @@ export const useC3PO = ({ speak, ask }) => {
 
   const toggleSpeechBubble = (bool) =>
     dispatch({ type: C3PO_ACTIONS.toggleSpeechBubble, payload: bool });
-
-  const dismissSpeechBubble = () => {
-    toggleSpeechBubble(false);
-    return new Promise((resolve) => {
-      resolver = resolve;
-      const delay = state.showSpeechBubbleAnimationDuration;
-      setTimeout(() => {
-        resolver(true);
-      }, delay * 1000);
-    });
-  };
 
   const showBinary = () => {
     isBinaryVisibleRef.current = false;
@@ -177,18 +166,18 @@ export const useC3PO = ({ speak, ask }) => {
       await speak('Thank goodness!');
       await dismissSpeechBubble();
       await actions.wait(1);
-      await actions.startGameInstruction(
+      await actions.startGameInstruction({
         c3po,
-        getGameStage(),
+        getGameStage: getGameStage(),
         speak,
         askQuestion,
         dismissSpeechBubble,
-        showBinary
-      );
+        showBinary,
+        toggleKeypad: () => control.toggleKeypad(true, { onPressChar: guessChar }),
+      });
       c3po.stop();
       c3po.rest();
       console.log('toggle keypad!');
-      control.toggleKeypad(true, { onPressChar: guessChar });
       // showKeypad();
     } else {
       // end game.

@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
-import gsap from 'gsap';
-import Byte from '../Byte/Byte';
-import { useGameSound } from '../../hooks/useGameSound';
-import { fx } from '../../hooks/useGameSound';
-import { getByteDataFromMessage } from './utils';
-import './binary-message.css';
+import React, { useState, useEffect, useRef } from "react";
+import gsap from "gsap";
+import Byte from "../Byte/Byte";
+import { useGameSound } from "../../hooks/useGameSound";
+import { fx } from "../../hooks/useGameSound";
+import { getByteDataFromMessage } from "./utils";
+import "./binary-message.css";
+
+const animationSpeed = 0.5;
 
 export default function BinaryMessage({
   message,
@@ -14,19 +16,19 @@ export default function BinaryMessage({
   onGuessAnimationStart,
   onGuessAnimationComplete,
 }) {
-  const [byteData, setByteData] = useState(getByteDataFromMessage(message));
-
+  const [byteData, setByteData] = useState(
+    getByteDataFromMessage(message.toUpperCase()),
+  );
   const binaryRef = useRef();
   const masterTimelineRef = useRef(
     gsap.timeline({
       paused: true,
       onComplete: handleGuessAnimationComplete,
       onStart: handleGuessAnimationStart,
-    })
+    }),
   );
-  const childTimelinesRef = useRef([]);
-  const { playSound } = useGameSound();
-  const columnCount = 4;
+  const childTimelinesRef = useRef({});
+  const { cueSoundFx, cueMusic } = useGameSound();
 
   /**
    * Guess
@@ -40,37 +42,101 @@ export default function BinaryMessage({
   const guess = (guessChar) => {
     const [char, binary] = guessChar;
     let delay = 0,
-      delayIncrement = 0.01,
+      delayIncrement = 0.05 * animationSpeed,
       guessWasCorrect = false,
       countCharsFound = 0;
+
     const { current: masterTl } = masterTimelineRef;
+    // clear animation timeline
     masterTl.clear();
     setByteData((prev) => {
-      return prev.map((data, index) => {
+      let bits = prev.map((data, index) => {
+        // if not decoded add to animation timeline
         if (!data.decoded) {
-          data.animationDelay = delay;
-          const childTl = childTimelinesRef.current[index];
-          childTl.play();
-          childTl.progress(0);
-          masterTl.add(childTl, delay);
-          delay += delayIncrement;
+          if (childTimelinesRef.current[index]) {
+            data.animationDelay = delay;
+            const childTl = childTimelinesRef.current[index];
+            childTl.play();
+            childTl.progress(0);
+            masterTl.add(childTl, delay);
+            delay += delayIncrement;
+          }
         }
+        // count the number of characters found
         if (data.binary == binary) {
           countCharsFound++;
           guessWasCorrect = true;
         }
         data.guess = binary;
+
+        return data;
+      });
+
+      return bits;
+    });
+
+    cueSoundFx(fx.binaryDecoder);
+    masterTl.eventCallback("onStart", () =>
+      handleGuessAnimationStart(guessWasCorrect, countCharsFound, char, binary),
+    );
+
+    masterTl.eventCallback("onComplete", () =>
+      handleGuessAnimationComplete(
+        guessWasCorrect,
+        countCharsFound,
+        char,
+        binary,
+      ),
+    );
+    masterTl.play(0);
+  };
+
+  const handleCharDecoded = ({ char, binaryCode, id }) => {
+    setByteData((prev) => {
+      return prev.map((data) => {
+        if (data.binary == binaryCode) {
+          data.decoded = true;
+        }
         return data;
       });
     });
-    playSound(fx.binaryDecoder);
-    masterTl.eventCallback('onStart', () =>
-      handleGuessAnimationStart(guessWasCorrect, countCharsFound, char, binary)
-    );
-    masterTl.eventCallback('onComplete', () =>
-      handleGuessAnimationComplete(guessWasCorrect, countCharsFound, char, binary)
-    );
-    masterTl.play(0);
+  };
+
+  const connectFullWords = (byteData) => {
+    const bits = [];
+    let foundWord = false;
+    byteData.forEach((bit, index) => {
+      if (bit.char == " " || bit.char == ".") {
+        // go backward until you hit another space or first char
+        let prev = index - 1;
+        let decoded = false;
+        while (prev > -1 && byteData[prev].char != " ") {
+          decoded = byteData[prev].decoded;
+          if (!decoded) {
+            break;
+          }
+          prev--;
+        }
+        if (decoded) {
+          foundWord = true;
+          const decodedWord = byteData.slice(prev + 1, index);
+          const fullWord = decodedWord.map((d) => d.char).join(" ");
+          bits.splice(decodedWord.length * -1);
+          bits.push({
+            wordFound: true,
+            char: fullWord,
+            decoded: true,
+          });
+        }
+      }
+
+      bits.push(bit);
+    });
+    if (foundWord) {
+      // force all to rerender
+      // setByteData([...bits.map((b) => ({ ...b, key: crypto.randomUUID() }))]);
+      setByteData(bits);
+    }
   };
 
   const handleGuessAnimationComplete = (wasCorrect, char, binary) => {
@@ -78,8 +144,9 @@ export default function BinaryMessage({
       onGuessAnimationComplete(wasCorrect, char, binary);
     }
     if (!wasCorrect) {
-      playSound(fx.error);
+      cueSoundFx(fx.error);
     }
+    connectFullWords(byteData);
   };
 
   const handleGuessAnimationStart = () => {
@@ -89,15 +156,15 @@ export default function BinaryMessage({
   };
 
   const onChildAnimationComplete = (id, binary, didDecode) => {
-    // console.info('child timeline complete', id, binary);
-    // console.log('didDecode', didDecode);
     if (didDecode) {
-      playSound(fx.success);
+      cueSoundFx(fx.success);
     }
   };
 
-  const addByteAnimationToTimeline = (timeline, id, binary) =>
-    childTimelinesRef.current.push(timeline);
+  const addByteAnimationToTimeline = (timeline, index, binary, char, ref) => {
+    console.log("add child timeline", index, char);
+    childTimelinesRef.current[index] = timeline;
+  };
 
   /**
    * Animate entrance of binary message
@@ -106,7 +173,7 @@ export default function BinaryMessage({
     if (show) {
       gsap.fromTo(
         binaryRef.current,
-        { opacity: 0, y: '+50%' },
+        { opacity: 0, y: "+50%" },
         {
           opacity: 1,
           y: 0,
@@ -116,7 +183,7 @@ export default function BinaryMessage({
               onShow();
             }
           },
-        }
+        },
       );
     }
   }, [show]);
@@ -132,25 +199,35 @@ export default function BinaryMessage({
 
   return (
     <div ref={binaryRef} className="binary-message" style={{ opacity: 0 }}>
-      {byteData.map((data, index) => {
-        return (
-          <React.Fragment key={`binary-message-img-${data.binary}-${index}`}>
-            <Byte
-              // src={data.url}
-              id={`binary-message-${index}`}
-              binaryCode={data.binary}
-              guessBinary={data.guess}
-              char={data.char}
-              animationDelay={data.animationDelay}
-              onAnimationComplete={onChildAnimationComplete}
-              onBuildAnimationTimeline={addByteAnimationToTimeline}
-            />
-            {/* {index > 1 && (index + 1) % columnCount == 0 && (
+      <div className="binary-message-scroll-container">
+        {byteData.map((data, index) => {
+          return (
+            <React.Fragment
+              key={`binary-message-img-${data.binary}-${index}-${data.key ?? index}`}
+            >
+              <Byte
+                // src={data.url}
+
+                {...data}
+                id={`binary-message-${index}`}
+                index={index}
+                binaryCode={data.binary}
+                guessBinary={data.guess}
+                char={data.char}
+                wordFound={data?.wordFound}
+                animationDelay={data.animationDelay}
+                onAnimationComplete={onChildAnimationComplete}
+                onBuildAnimationTimeline={addByteAnimationToTimeline}
+                onDecoded={handleCharDecoded}
+                animationSpeed={animationSpeed}
+              />
+              {/* {index > 1 && (index + 1) % columnCount == 0 && (
               <div style={{ flexBasis: '100%', height: 0, width: 0 }}></div>
             )} */}
-          </React.Fragment>
-        );
-      })}
+            </React.Fragment>
+          );
+        })}
+      </div>
     </div>
   );
 }

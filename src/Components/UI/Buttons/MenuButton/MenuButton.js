@@ -1,7 +1,7 @@
 import React from 'react';
 import { fx } from '../../../hooks/useGameSound';
 import GameButton from '../GameButton';
-import './menu-button.css';
+import './menu-button.scss';
 
 const MenuButton = React.forwardRef((props, ref) => {
   const { className } = props;

@@ -1,0 +1,32 @@
+# C3PO To do
+
+## General
+
+- Add tooltip that shows where the battery is
+- Add help messages
+- Add colour to C3PO as battery increases
+- make R2D2 disappear behind the sand dune and occasionally pop up
+- Add ending
+- Add gameover when battery is low
+- Add sand animation when C3PO taps his head
+- add loading screen to load all assets (esp. backgrounds before fadeing in game)
+- add c3po mouth movements when speaking
+- You should be able to drag the control screen to hide it
+
+## Hints
+
+- Add hint when battery is low
+- Add hint to try capital letters
+- Add hint to try lowercase letters
+
+## Features
+
+- Hint option shows up in game controller somehow
+- Allow C3PO to use some of his battery to decode some letters
+- Add menu option to add your own secret message
+
+## Levels
+
+## Bugs
+
+- On game over, music needs to stop, and gameover music needs to play

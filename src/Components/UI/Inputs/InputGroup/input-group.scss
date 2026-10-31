@@ -1,0 +1,35 @@
+@use "../../../../styles/vars";
+
+.input-group {
+  display: flex;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  span {
+    position: relative;
+    transition: all 0.3s ease;
+  }
+  span:nth-of-type(1) {
+    border-top-left-radius: 50%;
+    border-bottom-left-radius: 50%;
+    background: vars.$primary-200;
+    width: 1rem;
+  }
+  span:nth-of-type(2) {
+    border-top-right-radius: 50%;
+    border-bottom-right-radius: 50%;
+    background: vars.$primary-200;
+    width: 1rem;
+  }
+  //   where the inputs are stacks
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  &.has-focus {
+    gap: 0rem;
+    span {
+      background: vars.$primary-100;
+    }
+  }
+}

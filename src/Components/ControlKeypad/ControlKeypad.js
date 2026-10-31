@@ -1,9 +1,9 @@
-import React from 'react';
-import Char from './Char/Char';
-import { characterToBinaryDict } from './binaryDict';
-import { useKeypad } from './useKeypad';
-import { useGameControl } from '../GameControl/hooks/useGameControl';
-import './control-keypad.css';
+import React from "react";
+import Char from "./Char/Char";
+import { characterToBinaryDict } from "./binaryDict";
+import { useKeypad } from "./useKeypad";
+import { useGameControl } from "../GameControl/hooks/useGameControl";
+import "./control-keypad.css";
 
 export default function ControlKeypad(props) {
   const { setControlStripComponent } = useGameControl();
@@ -18,10 +18,11 @@ export default function ControlKeypad(props) {
       ref={keypadRef}
       className={`
     control-keypad-container
-    ${disabled ? 'keypad-disabled' : ''}
+    ${disabled ? "keypad-disabled" : ""}
     `}
-      style={{ opacity: 0 }}
+      style={{ opacity: 0, display: props.show ? "inherit" : "none" }}
     >
+      {/* Display all keys */}
       {Object.entries(characterToBinaryDict[charGroup]).map((entry, index) => {
         const [char, binary] = entry;
         return (
@@ -32,7 +33,7 @@ export default function ControlKeypad(props) {
               binary={binary}
               disabled={props.disabledKeys?.[char]}
             />
-            {char == 'd' && <div className="break"></div>}
+            {char == "d" && <div className="break"></div>}
           </React.Fragment>
         );
       })}

@@ -1,0 +1,15 @@
+.R2D2 {
+  z-index: 0;
+  position: absolute;
+  bottom: 53%;
+  left: 50%;
+  /* border: 2px solid black; */
+  width: auto;
+  aspect-ratio: 4/5;
+  height: 5%;
+  object-fit: contain;
+}
+.R2D2 img {
+  width: 100%;
+  height: 100%;
+}

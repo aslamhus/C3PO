@@ -1,8 +1,8 @@
-import React from 'react';
-import TapToContinue from './TapToContinue';
-import TypeText from './TypeText';
-import { useSpeechBubble } from './useSpeechBubble';
-import './speech-bubble.css';
+import React from "react";
+import TapToContinue from "./TapToContinue";
+import TypeText from "./TypeText";
+import { useSpeechBubble } from "./useSpeechBubble";
+import "./speech-bubble.scss";
 
 export const SpeechBubble = React.memo((props) => {
   const {
@@ -15,19 +15,19 @@ export const SpeechBubble = React.memo((props) => {
     handleTypingStart,
     handleTypingComplete,
   } = useSpeechBubble(props);
+
   return (
     <div className="speech-bubble-container" style={{ ...positions }}>
       <div
         ref={bubbleRef}
         className="speech-bubble"
         style={{
-          transform: 'scale(1)',
-          visibility: show ? 'visible' : 'hidden',
+          transform: "scale(1)",
+          visibility: show ? "visible" : "hidden",
         }}
       >
         <TypeText
           show={show}
-          typeSpeed={0.1}
           onTypingStTart={handleTypingStart}
           onTypingComplete={handleTypingComplete}
         >

@@ -7,6 +7,7 @@
   top: 0;
   left: 0;
 }
+
 .game-start-screen {
   position: absolute;
   background: black;
@@ -14,12 +15,12 @@
   z-index: 1049;
 }
 .space-overlay {
-  opacity: 1;
+  opacity: 0;
   mix-blend-mode: hard-light;
   z-index: 1;
 }
 .space-overlay.distant-stars {
-  opacity: 1;
+  opacity: 0;
   z-index: 1;
 }
 .game-start-screen .game-title {

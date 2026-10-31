@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
-import MenuButton from '../UI/Buttons/MenuButton/MenuButton';
-import gsap from 'gsap';
+import React, { useEffect, useRef, useState } from "react";
+import MenuButton from "../UI/Buttons/MenuButton/MenuButton";
+import gsap from "gsap";
 
 /**
  * Note on useKeypad imperative sneakiness.
@@ -19,9 +19,10 @@ import gsap from 'gsap';
  *
  */
 export const useKeypad = (props) => {
-  const { show, onPressChar, onLoad, disabled, setControlStripComponent } = props;
+  const { show, onPressChar, onLoad, disabled, setControlStripComponent } =
+    props;
   const [loaded, setLoaded] = useState(false);
-  const [charGroup, _setCharGroup] = useState(props.charGroup || 'lowercase');
+  const [charGroup, _setCharGroup] = useState("uppercase");
   const charGroupRef = useRef(charGroup);
   const keypadRef = useRef();
 
@@ -36,31 +37,32 @@ export const useKeypad = (props) => {
   const renderControlStripComponent = (charGroup) => {
     setControlStripComponent(
       <>
-        <MenuButton
+        {/* <MenuButton
           // className={charGroup == 'uppercase' || charGroup == 'lowercase' ? 'active' : ''}
           onClick={toggleLetterCase}
         >
           {charGroup == 'lowercase' ? 'AZ' : 'az'}
-        </MenuButton>
+        </MenuButton> */}
         <MenuButton
-          className={charGroup == 'numbers' ? 'active' : ''}
-          onClick={() => setCharGroup('numbers')}
+          className={charGroup == "numbers" ? "active" : ""}
+          onClick={() => setCharGroup("numbers")}
         >
           123
         </MenuButton>
         <MenuButton
-          className={charGroup == 'punctuation' ? 'active' : ''}
-          onClick={() => setCharGroup('punctuation')}
+          className={charGroup == "punctuation" ? "active" : ""}
+          onClick={() => setCharGroup("punctuation")}
         >
           #+=
         </MenuButton>
-      </>
+      </>,
     );
   };
   const renderMenuButtons = () => renderControlStripComponent(charGroup);
 
   const toggleLetterCase = () => {
-    const newCase = charGroupRef.current == 'uppercase' ? 'lowercase' : 'uppercase';
+    const newCase =
+      charGroupRef.current == "uppercase" ? "lowercase" : "uppercase";
     setCharGroup(newCase);
   };
 
@@ -73,8 +75,8 @@ export const useKeypad = (props) => {
   const handleLoad = async () => {
     await gsap.fromTo(
       keypadRef.current,
-      { opacity: 0, y: '+50%' },
-      { opacity: 1, y: 0, duration: 1 }
+      { opacity: 0, y: "+50%" },
+      { opacity: 1, y: 0, duration: 1 },
     );
     renderMenuButtons();
     if (onLoad instanceof Function) {

@@ -1,47 +1,43 @@
-import React, { useState, useRef, useContext, useEffect } from 'react';
-import c3po from '@images/C-3P0.png';
-import SpeechBubble from '../../SpeechBubble/SpeechBubble';
-import Body from './Body/Body';
-import C3POAnimate from './C3POAnimate';
-import TatooineFromSpace from '../TatooineFromSpace';
-import tatooineDesert from '@images/backgrounds/tatooine.png';
-import BinaryMessage from '../../Binary/BinaryMessage';
-import gsap from 'gsap';
-import { useC3PO } from './useC3PO';
-import { useGameStage } from '../../GameStage/hooks/useGameStage';
-import EnergyBar from '../../UI/EnergyBar';
-import { useAskQuestion } from '../../GameControl/AskQuestion/hooks/useAskQuestion';
-import './c3po.css';
-import { useSpeak } from '../../SpeechBubble/useSpeak';
+import React, { useState, useRef, useEffect } from "react";
+import c3po from "@images/C-3P0.png";
+import SpeechBubble from "../../SpeechBubble/SpeechBubble";
+import Body from "./Body/Body";
+import C3POAnimate from "./C3POAnimate";
+import TatooineFromSpace from "../TatooineFromSpace";
+import BinaryMessage from "../../Binary/BinaryMessage";
+import { useC3PO } from "./useC3PO";
+import { useGameStage } from "../../GameStage/hooks/useGameStage";
+import EnergyBar from "../../UI/EnergyBar";
+import { main } from "./game/main";
+import "./c3po.css";
+import TatooineBackground from "./TatooineBackground/TatooineBackground";
+import R2D2 from "./R2D2/R2D2";
+import useGameOptions from "../../GameOptions/hooks/useGameOptions";
+import useGamePlayer from "../../GamePlayer/hooks/useGamePlayer";
 
 const C3PO = React.forwardRef((props, ref) => {
-  const { ask } = useAskQuestion();
-  const { speak, dismissSpeechBubble } = useSpeak();
-  const {
-    state: {
-      loaded,
-      message,
-      // speech,
-      c3poState,
-      showSpeechBubble,
-      showSpeechBubbleAnimationDuration,
-      guessChar,
-      showBinary,
-      showTapToContinue,
-      energy,
-    },
-    startC3POGame,
-    loadC3PO,
-    toggleSpeechBubble,
-    handleGuessAnimationStart,
-    handleGuessAnimationComplete,
-    setIsBinaryVisible,
-    // setIsSpeaking,
-    getGameStage,
-    control,
-  } = useC3PO({ speak, ask, dismissSpeechBubble });
-
   const stage = useGameStage();
+  // get state, actions, game control, and sound control from useC3PO hook
+  const { state, actions, control, sound } = useC3PO({ stage });
+
+  const { player } = useGamePlayer();
+
+  const {
+    loaded,
+    message,
+    c3poState,
+    showSpeechBubbleAnimationDuration,
+    guessChar,
+    showBinary,
+    showTapToContinue,
+    energy,
+    isSpeaking,
+    isTypingComplete,
+  } = state;
+
+  // handle game start by passing game state, actions, game control, and sound control to main game loop
+  const startC3POGame = () =>
+    main(state, actions, control, sound, stage, player);
 
   const [showTatooineFromSpace, setShowTatooineFromSpace] = useState(false);
   const [showTatooineDesert, setShowTatooineDesert] = useState(false);
@@ -61,106 +57,45 @@ const C3PO = React.forwardRef((props, ref) => {
     }
     c3poRef.current = el;
     c3poAnimateRef.current = new C3POAnimate(c3poRef, stage.getGameStage());
-    loadC3PO({
+    actions.loadC3PO({
       c3poRef,
       c3poAnimateRef,
     });
   };
 
-  // const animateEntrance = async () => {
-  //   return new Promise((resolve) => {
-  //     const tl = gsap.timeline({ ease: false });
-  //     const { current: space } = tatooineSpaceRef;
-  //     let y = 0;
-  //     let duration = 5;
-  //     const gameStage = getGameStage();
-  //     const img = space.querySelector('img');
-  //     const bounds = img.getBoundingClientRect();
-  //     console.log(`img height: ${bounds.height}, viewport height: ${window.innerHeight}`);
-  //     if (bounds.height > window.innerHeight) {
-  //       y = `${parseFloat(bounds.height - window.innerHeight) * -1}px`;
-  //       duration += 5;
-  //     }
-  //     console.log('y', y);
-  //     tl.set(gameStage, { backgroundColor: 'black' });
-  //     tl.set(space, {
-  //       y: '100%',
-  //       opacity: 0,
-  //     });
-
-  //     tl.to(space, {
-  //       y,
-  //       opacity: 1,
-  //       duration,
-  //       onComplete: () => {
-  //         resolve();
-  //       },
-  //     });
-  //     tl.play();
-  //   });
-  // };
-
-  useEffect(() => {
-    if (energy) {
-      control.setControlStripComponent(<EnergyBar now={energy} />, 'secondary', {
-        overwrite: true,
-      });
-    }
-  }, [energy]);
-
   useEffect(() => {
     if (loaded) {
-      console.info('startC3poGame', loaded);
-      setSpeechBubbleAnchor(c3poRef.current.querySelector('.head'));
+      setSpeechBubbleAnchor(c3poRef.current.querySelector(".head"));
       startC3POGame();
-      control.setControlStripComponent(<EnergyBar now={energy} />, 'secondary', {
-        overwrite: true,
-      });
+      // control.setControlStripComponent(<EnergyBar now={energy} />, 'secondary', {
+      //   overwrite: true,
+      // });
     }
   }, [loaded]);
-
-  // const variants = {
-  //   initial: {
-  //     opacity: 0,
-  //     y: '100%',
-  //   },
-  //   enter: {
-  //     opacity: 1,
-  //     y: '0',
-  //     transition: { duration: 1 },
-  //   },
-  //   exit: {
-  //     y: '-100%',
-  //     opacity: 0,
-  //     transition: { duration: 2 },
-  //   },
-  // };
 
   return (
     <>
       {showTatooineDesert && <TatooineFromSpace ref={tatooineSpaceRef} />}
       {!showTatooineDesert && (
-        <div className="c3po-container" style={{ backgroundImage: `url(${tatooineDesert})` }}>
+        <div className="c3po-container">
+          <TatooineBackground>
+            {/* R2D2 Sprite hiding in the background */}
+            {/* <R2D2 /> */}
+          </TatooineBackground>
+          {/* C3PO sprite */}
           <img src={c3po} className="c3po-reference"></img>
           <SpeechBubble
             anchor={speechBubbleAnchor}
             offset={{ x: 0, y: -100 }}
             showAnimationDuration={showSpeechBubbleAnimationDuration}
-            onShowSpeechBubble={() => toggleSpeechBubble(true)}
             enableTapToContinue={showTapToContinue}
           />
-          <Body ref={getC3PORef} style={{ opacity: c3poState != 'hidden' ? 1 : 0 }}></Body>
+          <Body
+            ref={getC3PORef}
+            style={{ opacity: c3poState != "hidden" ? 1 : 0 }}
+            isSpeaking={isSpeaking}
+          ></Body>
         </div>
-      )}
-      {showBinary && (
-        <BinaryMessage
-          show={showBinary}
-          onShow={() => setIsBinaryVisible(true)}
-          message={message}
-          guessChar={guessChar}
-          onGuessAnimationStart={handleGuessAnimationStart}
-          onGuessAnimationComplete={handleGuessAnimationComplete}
-        ></BinaryMessage>
       )}
     </>
   );

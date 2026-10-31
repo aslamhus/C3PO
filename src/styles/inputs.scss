@@ -1,0 +1,62 @@
+@use "_vars";
+@use "sass:color";
+input {
+  position: relative;
+  color: vars.$primary-200;
+  background: vars.$primary-800;
+  font-size: 1.25em;
+  border: 1px solid vars.$primary-400;
+  border-top-color: vars.$primary-100;
+  padding: 0.45rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-align: center;
+  font-weight: bold;
+  &::placeholder {
+    color: color.adjust(vars.$primary-200, $lightness: -20%, $saturation: -20%);
+
+    height: auto;
+  }
+  &:focus {
+    outline: none;
+    box-shadow: 0px 0px 2px 2px vars.$primary-100;
+  }
+  &::-webkit-textfield-decoration-container {
+    display: none; /* or whatever styling you want */
+  }
+  &::-webkit-caps-lock-indicator {
+    visibility: hidden;
+    display: none !important;
+  }
+
+  &::-webkit-credentials-auto-fill-button {
+    visibility: hidden;
+    display: none !important;
+  }
+}
+
+input[type="range"] {
+  border: none;
+  color: red;
+  &::-webkit-slider-runnable-track {
+    color: yellow;
+
+    background: vars.$primary-900;
+  }
+  &::-webkit-slider-thumb {
+    background: vars.$primary-200;
+  }
+  &:active::-webkit-slider-thumb {
+    background: vars.$highlight-yellow;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: green !important;
+  }
+  ::-webkit-scrollbar-button {
+    background: green !important;
+  }
+}
+
+label {
+  font-size: 1.25rem;
+}

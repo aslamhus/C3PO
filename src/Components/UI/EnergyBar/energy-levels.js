@@ -16,9 +16,9 @@ export const getEnergyLevel = (energy) => {
   switch (true) {
     case energy >= 1:
       return levels.full;
-    case energy > 0.75:
+    case energy >= 0.7:
       return levels.high;
-    case energy > 0.5 && energy <= 0.75:
+    case energy > 0.5 && energy < 0.75:
       return levels.mid;
     case energy > 0.3 && energy <= 0.5:
       return levels.low;

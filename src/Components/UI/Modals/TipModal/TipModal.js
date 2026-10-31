@@ -1,15 +1,15 @@
-import React, { useEffect } from 'react';
-import { useTipModal } from './useTipModal';
-import { motion } from 'framer-motion';
-import './tip-modal.css';
+import React, { useEffect } from "react";
+import { useTipModal } from "./useTipModal";
+import { motion } from "framer-motion";
+import "./tip-modal.scss";
 
 export default function TipModal() {
   const { state: tip, hideTip } = useTipModal();
 
   useEffect(() => {
-    document.addEventListener('click', hideTip);
+    document.addEventListener("click", hideTip);
     return () => {
-      document.removeEventListener('click', hideTip);
+      document.removeEventListener("click", hideTip);
     };
   }, []);
 
@@ -19,13 +19,13 @@ export default function TipModal() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: '100%' }}
+      initial={{ opacity: 0, y: "100%" }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 1 }}
       className="tip-modal"
       style={tip?.style}
     >
-      {tip.content}
+      <div className="tip-body">{tip.content}</div>
     </motion.div>
   );
 }

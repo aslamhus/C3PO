@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import './type-text.css';
-import { useTypeText } from './useTypeText';
-import { set } from 'lodash';
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import "./type-text.css";
+import { useTypeText } from "./useTypeText";
 
 /**
  * TypeText
@@ -22,9 +21,9 @@ const TypeText = ({
   onTypingStart,
   onTypingComplete,
   onBeforeType,
-  typeSpeed: initialTypeSpeed = 0.1,
+  typeSpeed: initialTypeSpeed = 0.05, // where 0 is fastest
 }) => {
-  const [typedText, _setTypedText] = useState('test');
+  const [typedText, _setTypedText] = useState("test");
   const [typeSpeed, _setTypeSpeed] = useState(initialTypeSpeed);
   const typedTextRef = useRef(null);
   const isTypingRef = useRef(false);
@@ -57,10 +56,10 @@ const TypeText = ({
       if (Array.isArray(childArray)) {
         childArray.forEach((child, index) => {
           if (
-            typeof child == 'string' ||
-            typeof child == 'number' ||
-            child.type == 'span' ||
-            child.type == 'p'
+            typeof child == "string" ||
+            typeof child == "number" ||
+            child.type == "span" ||
+            child.type == "p"
           ) {
             textNodes.push(childArray[index]);
           } else {
@@ -82,7 +81,7 @@ const TypeText = ({
           <>
             {typedTextRef.current}
             {char}
-          </>
+          </>,
         );
         resolve();
       }, typeSpeedRef?.current * 1000);
@@ -96,10 +95,10 @@ const TypeText = ({
     const textNodes = getTextNodes(children);
     for (let node of textNodes) {
       // is the node a primitive, i.e. string or number?
-      if (typeof node == 'number') node = node.toString();
-      if (typeof node == 'string') {
+      if (typeof node == "number") node = node.toString();
+      if (typeof node == "string") {
         let length = node.length;
-        if (typeof node == 'number') {
+        if (typeof node == "number") {
         }
         for (let i = 0; i < node.length; i++) {
           const char = node[i];
@@ -109,8 +108,11 @@ const TypeText = ({
         // node is react component (object)
         // find text node within it.
         const text = node.props.children;
-        if (typeof text != 'string' && typeof text != 'number') {
-          throw new Error('text node child was not of type string');
+        if (typeof text != "string" && typeof text != "number") {
+          throw new Error(
+            "Expected text node child to be of type string, but found: " +
+              typeof text,
+          );
         }
         for (let i = 0; i < text.length; i++) {
           const char = text[i];
@@ -152,14 +154,22 @@ const TypeText = ({
    */
   const renderTypeText = () => {
     return React.Children.map(children, (child) => {
-      if (child?.props.className.includes('type-text-target')) {
+      if (child?.props.className.includes("type-text-target")) {
         const Clone = React.cloneElement(child, {
-          style: { position: 'relative' },
+          style: { position: "relative" },
           ...child.props,
           children: (
             <>
               {React.cloneElement(child, { style: { opacity: 0 } })}
-              <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                }}
+              >
                 {typedText}
               </div>
             </>

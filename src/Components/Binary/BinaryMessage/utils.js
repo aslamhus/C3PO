@@ -1,7 +1,7 @@
-import { charToBinary } from '../../ControlKeypad/binaryDict';
+import { charToBinary } from "../../ControlKeypad/binaryDict";
 
 export const getBinaryCodeFromImageURL = (url) => {
-  const prefix = 'binary-message_0000s_';
+  const prefix = "binary-message_0000s_";
   const regex = new RegExp(`${prefix}[^-]*-(.*)\.png`);
   return url.match(regex)[1];
 };
@@ -16,6 +16,7 @@ export const getByteDataFromMessage = (message) => {
       binary: charToBinary[char],
       guess: null,
       animationDelay: 0,
+      wordFound: false,
     });
   }
   return data;

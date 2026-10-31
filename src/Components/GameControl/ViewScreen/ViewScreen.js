@@ -1,12 +1,12 @@
-import React from 'react';
-import './view-screen.css';
+import React from "react";
+import "./view-screen.scss";
 
 export default function ViewScreen({ on, children }) {
   return (
     <div
       className={`
         control-view-screen shadow
-        ${on ? 'on' : ''}
+        ${on ? "on" : ""}
         `}
     >
       {children}

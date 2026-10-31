@@ -1,16 +1,14 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useGameStage } from '../GameStage/hooks/useGameStage';
-import { GAME_STAGE_EVENTS } from '../GameStage/events';
-import { constraints } from '../GameStage/constraints';
-import gsap from 'gsap';
-import _debounce from 'lodash/debounce';
-import * as textFit from '../../utils/textFit.min.js';
-import { SpeechBubbleContext } from './context/context.js';
-import { actions } from './context/Reducer.js';
+import React, { useEffect, useState, useRef } from "react";
+import { useGameStage } from "../GameStage/hooks/useGameStage";
+import { GAME_STAGE_EVENTS } from "../GameStage/events";
+import { constraints } from "../GameStage/constraints";
+import gsap from "gsap";
+import _debounce from "lodash/debounce";
+import * as textFit from "../../utils/textFit.min.js";
+import { SpeechBubbleContext } from "./context/context.js";
+import { actions } from "./context/Reducer.js";
 
 export const useSpeechBubble = ({
-  // show: initialShow, // initial show state
-
   anchor = null,
   offset = { x: 0, y: 0 },
   showAnimationDuration = 0.5,
@@ -22,7 +20,15 @@ export const useSpeechBubble = ({
 }) => {
   const context = React.useContext(SpeechBubbleContext);
   const [
-    { speech, bubbleText, show, showTapToContinue, isPrepared, arrowPosition, positions },
+    {
+      speech,
+      bubbleText,
+      show,
+      showTapToContinue,
+      isPrepared,
+      arrowPosition,
+      positions,
+    },
     dispatch,
   ] = context;
 
@@ -32,10 +38,6 @@ export const useSpeechBubble = ({
   const setShow = (value) => {
     dispatch({ type: actions.show, payload: value });
   };
-  // const setShowTapToContinue = (value) => {
-  //   console.log('useSpeechBubble setShowTapToContinue', value);
-  //   dispatch({ type: actions.showTapToContinue, payload: value });
-  // };
 
   /**
    * Bubble text is the internal state of the received speech.
@@ -47,9 +49,11 @@ export const useSpeechBubble = ({
     dispatch({ type: actions.setBubbleText, payload: value });
   };
 
-  const setIsPrepared = (value) => dispatch({ type: actions.setIsPrepared, payload: value });
+  const setIsPrepared = (value) =>
+    dispatch({ type: actions.setIsPrepared, payload: value });
 
-  const setArrowPosition = (value) => dispatch({ type: actions.setArrowPosition, payload: value });
+  const setArrowPosition = (value) =>
+    dispatch({ type: actions.setArrowPosition, payload: value });
 
   const setPositions = (value) => {
     positionsRef.current = value;
@@ -65,16 +69,22 @@ export const useSpeechBubble = ({
 
   const findArrowPosition = () => {
     let arrowPosition;
-    const { left: anchorLeft, width: anchorWidth, height } = getPositionRelativeToGameStage(anchor);
+    const {
+      left: anchorLeft,
+      width: anchorWidth,
+      height,
+    } = getPositionRelativeToGameStage(anchor);
     const constraintBounds = getComputedConstraints();
-    const bubbleContainerBounds = getPositionRelativeToGameStage(bubbleRef.current.parentElement);
+    const bubbleContainerBounds = getPositionRelativeToGameStage(
+      bubbleRef.current.parentElement,
+    );
     let arrowLeft = anchorLeft + anchorWidth - bubbleContainerBounds.left;
     // let arrowLeftPercent = (arrowLeft / bubbleContainerBounds.width) * 100;
     if (anchorLeft + anchorWidth < constraintBounds.width / 2) {
-      arrowPosition = { left: arrowLeft + 'px' };
+      arrowPosition = { left: arrowLeft + "px" };
     } else {
       // later, the arrow should flip and adjust from the right
-      arrowPosition = { left: arrowLeft + 'px' };
+      arrowPosition = { left: arrowLeft + "px" };
     }
 
     return arrowPosition;
@@ -82,7 +92,8 @@ export const useSpeechBubble = ({
 
   const setSpeechBubblePosition = () => {
     if (!anchor) return;
-    const { left, bottom, width, height } = getPositionRelativeToGameStage(anchor);
+    const { left, bottom, width, height } =
+      getPositionRelativeToGameStage(anchor);
     const gameStageBounds = getGameStage().getBoundingClientRect();
     const leftPx = left + width / 2 + offset.x;
     const leftPercent = (leftPx / gameStageBounds.width) * 100;
@@ -91,11 +102,15 @@ export const useSpeechBubble = ({
     setPositions({
       left: `${leftPercent}%`,
       bottom: `${bottomPercent}%`,
-      top: 'unset',
-      right: 'unset',
-      width: 'unset',
-      height: 'unset',
+      top: "unset",
+      right: "unset",
+      width: "unset",
+      height: "unset",
     });
+  };
+
+  const handleGameStageUpdated = () => {
+    applyConstraints();
   };
 
   /**
@@ -110,20 +125,23 @@ export const useSpeechBubble = ({
    * @returns {Boolean} - whether constraints pass or not
    */
   const applyConstraints = () => {
+    if (!positionsRef?.current) return;
     if (!bubbleRef.current) {
-      throw new Error('failed to apply constraint, could not find bubble ref');
-      return;
+      throw new Error("failed to apply constraint, could not find bubble ref");
     }
-    const breakConstraints = doesElementBreakConstraints(bubbleRef.current.parentElement);
+    const breakConstraints = doesElementBreakConstraints(
+      bubbleRef.current.parentElement,
+    );
     if (breakConstraints) {
       const { constraintsBroken, constraintBounds } = breakConstraints;
-      console.error('broken constraints', constraintsBroken);
+      console.error("broken constraints", constraintsBroken);
       const adjustedPosition = constraintsBroken.reduce((acc, constraint) => {
-        if (constraint != 'width' && constraint != 'height') {
-          acc[constraint] = `${constraintBounds[`${constraint}Percent`] * 100}%`;
+        if (constraint != "width" && constraint != "height") {
+          acc[constraint] =
+            `${constraintBounds[`${constraint}Percent`] * 100}%`;
           // calculate percent values
           const opposite = constraints[constraint].opposite;
-          acc[opposite] = '';
+          acc[opposite] = "";
         } else {
           // do something
         }
@@ -139,7 +157,11 @@ export const useSpeechBubble = ({
   const parseSpeech = (speech) => ({ __html: speech });
 
   const hideBubble = async () => {
-    await gsap.to(bubbleRef.current, { scale: 0, opacity: 0, duration: showAnimationDuration });
+    await gsap.to(bubbleRef.current, {
+      scale: 0,
+      opacity: 0,
+      duration: showAnimationDuration,
+    });
     setShow(false);
   };
 
@@ -148,25 +170,30 @@ export const useSpeechBubble = ({
     await gsap.set(bubbleRef.current, { scale: 0 });
     // setting show to true will begin typing
     setShow(true);
-    await gsap.to(bubbleRef.current, { opacity: 1, scale: 1, duration: showAnimationDuration });
+    await gsap.to(bubbleRef.current, {
+      opacity: 1,
+      scale: 1,
+      duration: showAnimationDuration,
+    });
     if (onShowSpeechBubble instanceof Function) {
       onShowSpeechBubble(bubbleRef?.current);
     }
   };
 
-  const computeFontSize = () => textFit(bubbleRef.current.querySelector('.speech'));
+  const computeFontSize = () =>
+    textFit(bubbleRef.current.querySelector(".speech"));
 
   const handleResize = React.useCallback(
     _debounce(() => {
       applyConstraints();
       computeFontSize();
     }, 50),
-    []
+    [],
   );
 
   const prepareBubble = async () => {
     if (!bubbleRef.current) {
-      throw new Error('Speech bubble has not rendered');
+      throw new Error("Speech bubble has not rendered");
     }
     // setShowTapToContinue(false);
     setIsPrepared(false);
@@ -203,11 +230,6 @@ export const useSpeechBubble = ({
       // console.log('onTypingComplete');
       onTypingComplete();
     }
-    // if (enableTapToContinue) {
-    //   setTimeout(() => {
-    //     setShowTapToContinue(true);
-    //   }, 200);
-    // }
   };
 
   /**
@@ -231,6 +253,9 @@ export const useSpeechBubble = ({
    * by 'prepareBubble'. But if constraints are broken by
    * the position set in prepareBubble, we may need to set
    * the positions again, at which we will checkConstraintsAndArrowPosition
+   *
+   * !IMPORTANT: There is a potential for an infinite loop here. When positions are updated
+   * checkConstraints is called, which updates the positions if constraints are broken.
    */
   useEffect(() => {
     if (positions) {
@@ -257,11 +282,17 @@ export const useSpeechBubble = ({
   }, [isPrepared]);
 
   useEffect(() => {
-    document.addEventListener(GAME_STAGE_EVENTS.updateconstraints, applyConstraints);
-    window.addEventListener('resize', handleResize);
+    document.addEventListener(
+      GAME_STAGE_EVENTS.updateconstraints,
+      handleGameStageUpdated,
+    );
+    window.addEventListener("resize", handleResize);
     return () => {
-      document.removeEventListener('updateconstraints', applyConstraints);
-      window.removeEventListener('resize', handleResize);
+      document.removeEventListener(
+        GAME_STAGE_EVENTS.updateconstraints,
+        handleGameStageUpdated,
+      );
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 

@@ -20,14 +20,14 @@ export default function EnergyBar({ now = 1 }) {
 
   const handleAnimations = () => {
     animateEnergyChange();
-    energyGlowTimeline.current.clear();
-    if (energy < 0.49 && energy > 0.25) {
-      animateEnergyGlow();
-    } else if (energy <= 0.25 && energy > 0.1) {
-      animateEnergyGlow({ duration: 0.75, color: 'yellow' });
-    } else if (energy <= 0.1) {
-      animateEnergyGlow({ duration: 0.5, color: 'white' });
-    }
+    // energyGlowTimeline.current.clear();
+    // if (energy < 0.49 && energy > 0.25) {
+    //   animateEnergyGlow();
+    // } else if (energy <= 0.25 && energy > 0.1) {
+    //   animateEnergyGlow({ duration: 0.75, color: 'yellow' });
+    // } else if (energy <= 0.1) {
+    //   animateEnergyGlow({ duration: 0.5, color: 'white' });
+    // }
   };
 
   const animateEnergyGlow = (options = { duration: 1, color: 'rgb(84, 6, 84)' }) => {
@@ -48,6 +48,7 @@ export default function EnergyBar({ now = 1 }) {
 
   const getEnergyBarBackground = () => {
     switch (getEnergyLevel(energy)) {
+      case levels.full:
       case levels.high:
         return 'green';
       case levels.mid:
@@ -77,13 +78,13 @@ export default function EnergyBar({ now = 1 }) {
         <h3>C3PO Battery</h3>
         <EnergyPercent energy={energy} />
       </div>
-      <div className="energy-bar">
+      <div className={`energy-bar energy-level-${getEnergyLevel(energy)}`}>
         <div
           ref={energyBarRef}
-          className="energy"
-          style={{
-            background: getEnergyBarBackground(),
-          }}
+          className={`energy`}
+          // style={{
+          //   background: getEnergyBarBackground(),
+          // }}
         ></div>
       </div>
     </div>
@@ -93,6 +94,7 @@ export default function EnergyBar({ now = 1 }) {
 const EnergyPercent = ({ energy }) => {
   const getEnergyColor = () => {
     switch (getEnergyLevel(energy)) {
+      case levels.full:
       case levels.high:
         return 'green';
       case levels.mid:

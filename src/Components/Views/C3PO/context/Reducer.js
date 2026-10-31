@@ -1,70 +1,75 @@
 export const C3POStates = {
-  REST: 'rest',
-  HIDDEN: 'hidden',
-  SHOW: 'show',
+  REST: "rest",
+  HIDDEN: "hidden",
+  SHOW: "show",
 };
 
 export const C3PO_ACTIONS = {
-  load: 'load',
-  speak: 'speak',
-  updateC3poState: 'updateC3poState',
-  toggleSpeechBubble: 'toggleSpeechBubble',
-  showBinary: 'showBinary',
-  setIsBinaryVisible: 'setIsBinaryVisible',
-  guessChar: 'guessChar',
-  showTapToContinue: 'showTapToContinue',
-  hideTapToContinue: 'hideTapToContinue',
-  setEnergy: 'setEnergy',
+  load: "load",
+  speak: "speak",
+  updateC3poState: "updateC3poState",
+  toggleSpeechBubble: "toggleSpeechBubble",
+  showBinary: "showBinary",
+  setIsBinaryVisible: "setIsBinaryVisible",
+  guessChar: "guessChar",
+  showTapToContinue: "showTapToContinue",
+  hideTapToContinue: "hideTapToContinue",
+  setEnergy: "setEnergy",
+  setGameOver: "setGameOver",
+  setGameComplete: "setGameComplete",
 };
 
 export const initialState = {
   loaded: false,
+  gameOver: false,
+  gameComplete: false,
   c3poState: C3POStates.HIDDEN,
   c3poRef: null,
   c3poAnimateRef: null,
-  speech: '',
+  speech: "",
   showSpeechBubble: false,
   showSpeechBubbleAnimationDuration: 0.5,
   isBinaryVisible: false,
   showTapToContinue: false,
   guesses: {},
-  message: 'Happy Birthday, Sylvan!',
-  energy: 0.85,
+  message: "Space cats are the best cats.",
+  // energy: 0.85,
+  energy: 0.1,
 };
 
 export const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case 'load':
+    case "load":
       return {
         ...state,
         c3poRef: action.payload.c3poRef,
         c3poAnimateRef: action.payload.c3poAnimateRef,
         loaded: true,
       };
-    case 'speak':
+    case "speak":
       return {
         ...state,
         speech: action.payload,
       };
 
-    case 'updateC3poState':
+    case "updateC3poState":
       return {
         ...state,
         c3poState: C3POStates[action.payload],
       };
-    case 'toggleSpeechBubble':
+    case "toggleSpeechBubble":
       return {
         ...state,
         showSpeechBubble: action.payload,
       };
 
-    case 'showBinary':
+    case "showBinary":
       return {
         ...state,
         showBinary: true,
       };
 
-    case 'guessChar':
+    case "guessChar":
       const [char, binary] = action.payload;
       return {
         ...state,
@@ -72,23 +77,31 @@ export const reducer = (state = initialState, action) => {
         guesses: { ...state.guesses, [char]: binary },
       };
 
-    case 'showTapToContinue':
+    case "showTapToContinue":
       return {
         ...state,
         showTapToContinue: true,
       };
-    case 'hideTapToContinue':
+    case "hideTapToContinue":
       return {
         ...state,
         showTapToContinue: false,
       };
-    case 'setEnergy':
+    case "setEnergy":
       let energy = action.payload;
-      const [, increment, decrement, value] = energy.match(/(\+=)?(-=)?([0-9]*?\.[0-9]*)/);
+      const [, increment, decrement, value] = energy.match(
+        /(\+=)?(-=)?([0-9]*?\.[0-9]*)/,
+      );
       if (increment) {
         energy = parseFloat(state.energy) + parseFloat(value);
       } else if (decrement) {
         energy = parseFloat(state.energy) - parseFloat(value);
+      }
+      // limit energy to 0 and 1
+      if (energy > 1) {
+        energy = 1;
+      } else if (energy < 0.01) {
+        energy = 0;
       }
       return {
         ...state,

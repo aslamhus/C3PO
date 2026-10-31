@@ -1,0 +1,27 @@
+@use "@styles/_vars";
+
+.control-view-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--view-screen-font);
+  flex-basis: 80%;
+  flex-grow: 0.8;
+  width: 90%;
+  height: 90%;
+  // background: rgba(0, 0, 0, 0.292);
+  background: vars.$primary-900;
+  border-radius: 20px;
+  border: 3px solid black;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  overflow: hidden;
+  /* Note: viewscreen is always fixed height with no overflow, but 
+  child components of viewscreen could scroll */
+}
+
+.control-view-screen.on {
+  transition: all 0.35s linear;
+  background: rgb(8, 47, 15);
+}

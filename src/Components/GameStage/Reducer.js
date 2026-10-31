@@ -1,51 +1,59 @@
 export const GAME_STAGE_VIEWS = {
-  startScreen: 'startScreen',
-  c3po: 'c3po',
+  startScreen: "startScreen",
+  c3po: "c3po",
 };
 
 export const GAME_STAGE_ACTIONS = {
-  setGameStageView: 'setGameStageView',
-  toggleShowLoader: 'showLoader',
-  setConstraints: 'setConstraints',
-  load: 'load',
+  setGameStageView: "setGameStageView",
+  toggleShowLoader: "showLoader",
+  setConstraints: "setConstraints",
+  load: "load",
+  blur: "blur",
 };
 
 export const initialState = {
   stageView: GAME_STAGE_VIEWS.startScreen,
   loaded: false,
   gameStageRef: null,
+  blur: false,
   showLoader: false,
-  constraints: { x: [0, '50%'], y: [0, '100%'] },
+  constraints: { x: [0, "50%"], y: [0, "100%"] },
 };
 
 export const reducer = (state, action) => {
   switch (action.type) {
-    case 'setGameStageView':
+    case "setGameStageView":
       return {
         ...state,
         stageView: action.payload,
       };
 
-    case 'toggleShowLoader':
+    case "toggleShowLoader":
       return {
         ...state,
         showLoader: action.payload,
       };
 
-    case 'setConstraints':
+    case "setConstraints":
       return {
         ...state,
         constraints: action.payload,
       };
 
-    case 'load':
+    case "load":
       return {
         ...state,
         loaded: true,
         gameStageRef: action.payload,
       };
 
+    case "blur":
+      return {
+        ...state,
+        blur: action.payload,
+      };
+
     default:
-      throw new Error('unrecognised dispatch type');
+      throw new Error("unrecognised dispatch type");
   }
 };

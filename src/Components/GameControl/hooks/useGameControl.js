@@ -1,6 +1,7 @@
-import { useContext } from 'react';
-import { GameControlContext } from '../Context/context';
-import { GAME_CONTROL_ACTIONS } from '../Reducer';
+import { useContext, useEffect } from "react";
+import { GameControlContext } from "../Context/context";
+import { GAME_CONTROL_ACTIONS } from "../Context/Reducer";
+
 export const useGameControl = () => {
   const [state, dispatch] = useContext(GameControlContext);
 
@@ -11,10 +12,25 @@ export const useGameControl = () => {
     dispatch({ type: GAME_CONTROL_ACTIONS.toggleControls, payload: bool });
 
   const toggleKeypad = (bool, options = { onPressChar }) => {
-    dispatch({ type: GAME_CONTROL_ACTIONS.toggleKeypad, payload: [bool, options] });
+    dispatch({
+      type: GAME_CONTROL_ACTIONS.toggleKeypad,
+      payload: [bool, options],
+    });
   };
 
+  /**
+   * Begin the game
+   *
+   * Sets the gameStart state to true and resets the game state
+   */
   const beginGame = () => dispatch({ type: GAME_CONTROL_ACTIONS.beginGame });
+
+  /**
+   * End game
+   *
+   * Sets the gameStart state to false and resets the game state
+   */
+  const endGame = () => dispatch({ type: GAME_CONTROL_ACTIONS.endGame });
 
   /**
    * Disable ControlKeypad keys
@@ -48,16 +64,31 @@ export const useGameControl = () => {
    */
   const setControlStripComponent = (
     ReactComponent,
-    type = 'primary',
-    options = { overwrite: true }
+    type = "primary",
+    options = { overwrite: true },
   ) => {
     dispatch({
       type:
-        type == 'primary'
+        type == "primary"
           ? GAME_CONTROL_ACTIONS.setPrimaryControlStripComponent
           : GAME_CONTROL_ACTIONS.setSecondaryControlStripComponent,
       payload: ReactComponent,
       options,
+    });
+  };
+
+  const setCustomViewScreenComponents = (components) => {
+    if (!Array.isArray(components)) components = [components];
+    dispatch({
+      type: GAME_CONTROL_ACTIONS.setCustomViewScreenComponents,
+      payload: components,
+    });
+  };
+
+  const addCustomViewScreenComponent = (component) => {
+    dispatch({
+      type: GAME_CONTROL_ACTIONS.addCustomViewScreenComponent,
+      payload: component,
     });
   };
 
@@ -68,8 +99,11 @@ export const useGameControl = () => {
     toggleKeypad,
     setControlStripComponent,
     beginGame,
+    endGame,
     disableKeys,
     enableKeys,
     disableKeypad,
+    setCustomViewScreenComponents,
+    addCustomViewScreenComponent,
   };
 };

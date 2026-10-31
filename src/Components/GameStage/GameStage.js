@@ -1,15 +1,15 @@
-import React, { useEffect, useRef } from 'react';
-import StarWarsLoader from '../StarWarsLoader/StarWarsLoader';
-import GameStartScreen from '../Views/GameStartScreen/GameStartScreen';
-import C3POProvider from '../Views/C3PO/context/C3POProvider';
-import C3PO from '../Views/C3PO';
-import SpeechBubbleProvider from '../SpeechBubble/context/SpeechBubbleProvider';
-import { AnimatePresence } from 'framer-motion';
-import { useGame } from '../hooks/useGame';
-import { GAME_STAGE_VIEWS } from './Reducer';
-import { GAME_STAGE_EVENTS } from './events';
-import './game-stage.css';
-// import TipModal from '../UI/Modals/TipModal';
+import React, { useEffect, useRef } from "react";
+import StarWarsLoader from "../StarWarsLoader/StarWarsLoader";
+import GameStartScreen from "../Views/GameStartScreen/GameStartScreen";
+import C3POProvider from "../Views/C3PO/context/C3POProvider";
+import C3PO from "../Views/C3PO";
+import SpeechBubbleProvider from "../SpeechBubble/context/SpeechBubbleProvider";
+import { AnimatePresence } from "framer-motion";
+import { useGame } from "../hooks/useGame";
+import { GAME_STAGE_VIEWS } from "./Reducer";
+import { GAME_STAGE_EVENTS } from "./events";
+import "./game-stage.css";
+import classNames from "classnames";
 
 /**
  * A note about GameStage bounds.
@@ -23,7 +23,7 @@ import './game-stage.css';
 export default function GameStage(props) {
   const {
     stage: {
-      state: { showLoader, stageView, constraints },
+      state: { showLoader, stageView, constraints, blur },
       loadGameStage,
       setGameStageView,
     },
@@ -34,6 +34,10 @@ export default function GameStage(props) {
   } = useGame();
 
   const ref = useRef();
+
+  const gameStageClassName = classNames("game-stage", {
+    "game-stage-blur": blur,
+  });
 
   const assignPixelFormat = (value) => (isNaN(value) ? value : `${value}px`);
 
@@ -56,6 +60,8 @@ export default function GameStage(props) {
   useEffect(() => {
     if (gameStart) {
       setGameStageView(GAME_STAGE_VIEWS.c3po);
+    } else {
+      setGameStageView(GAME_STAGE_VIEWS.startScreen);
     }
   }, [gameStart]);
 
@@ -71,32 +77,39 @@ export default function GameStage(props) {
    */
   useEffect(() => {
     document.dispatchEvent(
-      new CustomEvent(GAME_STAGE_EVENTS.updateconstraints, { detail: constraints })
+      new CustomEvent(GAME_STAGE_EVENTS.updateconstraints, {
+        detail: constraints,
+      }),
     );
   }, [constraints]);
 
   return (
-    <div className="game-stage" ref={ref}>
-      <div className="game-stage-constraints" style={applyConstraints(constraints)}></div>
+    <div className={gameStageClassName} ref={ref}>
+      <div
+        className="game-stage-constraints"
+        style={applyConstraints(constraints)}
+      ></div>
       {showLoader && <StarWarsLoader />}
-      <AnimatePresence>
-        {stageView == 'startScreen' && (
-          <GameStartScreen
-            onPressGameStart={() => {
-              beginGame();
-            }}
-          />
+      <div className="game-stage-container">
+        {stageView == "startScreen" && (
+          <AnimatePresence>
+            <GameStartScreen
+              onPressGameStart={() => {
+                beginGame();
+              }}
+            />
+          </AnimatePresence>
         )}
-      </AnimatePresence>
-      <AnimatePresence>
-        {stageView == 'c3po' && (
-          <C3POProvider>
-            <SpeechBubbleProvider>
-              <C3PO></C3PO>
-            </SpeechBubbleProvider>
-          </C3POProvider>
-        )}
-      </AnimatePresence>
+        <AnimatePresence>
+          {stageView == "c3po" && (
+            <C3POProvider>
+              <SpeechBubbleProvider>
+                <C3PO></C3PO>
+              </SpeechBubbleProvider>
+            </C3POProvider>
+          )}
+        </AnimatePresence>
+      </div>
 
       {props.children}
     </div>

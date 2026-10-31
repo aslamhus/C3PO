@@ -1,6 +1,6 @@
-import { useGameStage } from '../GameStage/hooks/useGameStage';
-import { useGameControl } from '../GameControl/hooks/useGameControl';
-import { useGameSound } from './useGameSound';
+import { useGameStage } from "../GameStage/hooks/useGameStage";
+import { useGameControl } from "../GameControl/hooks/useGameControl";
+import { useGameSound } from "./useGameSound";
 
 /**
  * useGame hook
@@ -14,6 +14,5 @@ export const useGame = () => {
   const stage = useGameStage();
   const control = useGameControl();
   const sound = useGameSound();
-
   return { stage, control, sound };
 };

@@ -1,0 +1,24 @@
+// lucasfilms colors
+
+$lucasfilms-100: #31b1d8;
+$lucasfilms-200: #207eb1;
+$lucasfilms-400: #044366;
+$lucasfilms-600: #012539;
+$lucasfilms-800: #01151f;
+$lucasfilms-900: #010d14;
+$highlight-yellow: #f1e084;
+// palette
+$primary-100: $lucasfilms-100;
+$primary-200: $lucasfilms-200;
+$primary-400: $lucasfilms-400;
+$primary-600: $lucasfilms-600;
+$primary-800: $lucasfilms-800;
+$primary-900: $lucasfilms-900;
+$secondary-400: $highlight-yellow;
+
+// buttons
+$button-background-color: $primary-600;
+$button-color: $primary-100;
+$button-border-color: $primary-400;
+$button-active-color: $secondary-400;
+$button-active-border-color: $secondary-400;

@@ -1,0 +1,25 @@
+.tatooine-bg-container {
+  position: absolute;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+}
+.tatooine-background,
+.tatooine-midground,
+.tatooine-foreground {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.tatooine-background {
+  z-index: 0;
+}
+.tatooine-midground {
+  z-index: 1;
+}
+.tatooine-foreground {
+  z-index: 2;
+}

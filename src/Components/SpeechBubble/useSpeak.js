@@ -1,8 +1,9 @@
-import React, { useContext, useRef, useEffect, useState } from 'react';
+import React, { useContext, useRef, useEffect, useState } from "react";
 
-import { SpeechBubbleContext } from './context/context';
-import { actions } from './context/Reducer';
-import { useTypeText } from './TypeText/useTypeText';
+import { SpeechBubbleContext } from "./context/context";
+import { actions } from "./context/Reducer";
+import { useTypeText } from "./TypeText/useTypeText";
+import { tap } from "lodash";
 
 export const useSpeak = () => {
   const [state, dispatch] = React.useContext(SpeechBubbleContext);
@@ -13,6 +14,10 @@ export const useSpeak = () => {
   const [tapCount, _setTapCount] = useState(0);
   const isSpeakingRef = useRef(false);
   const tapCountRef = useRef(0);
+  const setIsSpeaking = (value) => {
+    isSpeakingRef.current = value;
+    dispatch({ type: actions.setIsSpeaking, payload: value });
+  };
 
   const setTapCount = (value) => {
     tapCountRef.current = value;
@@ -20,7 +25,7 @@ export const useSpeak = () => {
   };
 
   const handleTypingComplete = () => {
-    isSpeakingRef.current = false;
+    setIsSpeaking(false);
     // set tap count to 1
     setTapCount(1);
     if (state.tapToContinue) {
@@ -28,20 +33,22 @@ export const useSpeak = () => {
     }
   };
 
-  const handleBeforeSpeak = () => {
+  const handleBeforeSpeak = (tapToContinue) => {
+    setIsSpeaking(true);
     // wait for user to tap to continue
-    setTapToContinue(true);
+    setTapToContinue(tapToContinue);
     setShowTapToContinue(false);
     // reset tap count
     setTapCount(0);
   };
 
   const handleTaps = () => {
-    document.body.style.cursor = '';
+    document.body.style.cursor = "";
     // increment tap count
     setTapCount(tapCountRef.current + 1);
     if (tapCountRef.current === 1) {
       setIsTyping(false);
+      setIsSpeaking(false);
       // complete the type text animation
     }
     if (tapCountRef.current > 1) {
@@ -60,10 +67,10 @@ export const useSpeak = () => {
    * @returns
    */
   const speak = (words, options = { wait: 0, tapToContinue: true }) => {
-    isSpeakingRef.current = false;
     dispatch({ type: actions.speak, payload: words });
+
+    handleBeforeSpeak(options.tapToContinue);
     if (options.tapToContinue) {
-      handleBeforeSpeak();
       return new Promise((resolve) => {
         /**
          * Handle tap to continue (click anywhere on the screen)
@@ -78,42 +85,43 @@ export const useSpeak = () => {
         const handletapToContinue = (event) => {
           event.preventDefault();
           let taps = handleTaps();
-          console.log('taps', taps);
           if (taps >= 2) {
-            document.removeEventListener('click', handletapToContinue);
+            document.removeEventListener("click", handletapToContinue);
             resolve(true);
           }
         };
-        document.addEventListener('click', handletapToContinue);
+        document.addEventListener("click", handletapToContinue);
       });
     } else if (options.wait) {
-      console.log('waiting for a certain amount of time');
+      // console.log("waiting for a certain amount of time");
       /**
        * In this instance, we are waiting for a certain amount of time.
        * This is sometimes used when we want ask a question, and wait for the user to respond.
        *
        * Here we can tap to continue, but not to resolve the promise.
        */
-      // wait for a certain amount of time
-      handleBeforeSpeak();
+
       return new Promise((resolve) => {
         const handletapToContinue = (event) => {
           event.preventDefault();
           let taps = handleTaps();
           if (taps >= 1) {
-            document.removeEventListener('click', handletapToContinue);
+            document.removeEventListener("click", handletapToContinue);
           }
         };
-        document.addEventListener('click', handletapToContinue);
+        document.addEventListener("click", handletapToContinue);
         // resolve after wait duration
         const delay = state.showAnimationDuration;
-        setTimeout(() => {
-          // resolver(true);
-          resolve(true);
-        }, delay * 1000 + 500 + options.wait * 1000);
+        setTimeout(
+          () => {
+            // resolver(true);
+            resolve(true);
+          },
+          delay * 1000 + 500 + options.wait * 1000,
+        );
       });
     } else {
-      console.log('waiting for c3po to stop speaking');
+      // console.log("waiting for c3po to stop speaking");
       // wait until c3po is not speaking
       return new Promise((resolve) => {
         const interval = setInterval(() => {
@@ -121,7 +129,7 @@ export const useSpeak = () => {
             clearInterval(interval);
             resolve(true);
           }
-        }, 100);
+        }, 500);
       });
     }
     return;
@@ -137,7 +145,8 @@ export const useSpeak = () => {
     });
   };
 
-  const setTapToContinue = (value) => dispatch({ type: actions.setTapToContinue, payload: value });
+  const setTapToContinue = (value) =>
+    dispatch({ type: actions.setTapToContinue, payload: value });
 
   const setShowTapToContinue = (value) =>
     dispatch({ type: actions.showTapToContinue, payload: value });
@@ -147,5 +156,5 @@ export const useSpeak = () => {
       handleTypingComplete();
     }
   }, [isTypingComplete]);
-  return { speak, dismissSpeechBubble };
+  return { speak, dismissSpeechBubble, isSpeakingRef, state };
 };

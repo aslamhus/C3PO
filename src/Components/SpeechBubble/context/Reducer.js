@@ -1,31 +1,33 @@
 export const initialState = {
   show: false,
-  speech: '',
-  bubbleText: '',
+  speech: "",
+  bubbleText: "",
   anchor: null,
   offset: { x: 0, y: 0 },
   showAnimationDuration: 0.5,
   showTapToContinue: false,
   tapToContinue: false,
   isPrepared: false,
-  arrowPosition: { left: '25%' },
+  arrowPosition: { left: "25%" },
   positions: null,
   enableTapToContinue: true,
   onTypingStart: null,
   onTypingComplete: null,
   onBeforeShowSpeechBubble: null,
   onShowSpeechBubble: null,
+  isSpeaking: false,
 };
 
 export const actions = {
-  speak: 'speak',
-  show: 'show',
-  showTapToContinue: 'showTapToContinue', // the visible state of the showTapToContinue
-  setTapToContinue: 'setTapToContinue', // option to show tap to continue
-  setBubbleText: 'setBubbleText',
-  setIsPrepared: 'setIsPrepared',
-  setArrowPosition: 'setArrowPosition',
-  setPositions: 'setPositions',
+  speak: "speak",
+  show: "show",
+  showTapToContinue: "showTapToContinue", // the visible state of the showTapToContinue
+  setTapToContinue: "setTapToContinue", // option to show tap to continue
+  setBubbleText: "setBubbleText",
+  setIsPrepared: "setIsPrepared",
+  setArrowPosition: "setArrowPosition",
+  setPositions: "setPositions",
+  setIsSpeaking: "setIsSpeaking",
 };
 
 export const reducer = (state = initialState, action) => {
@@ -45,8 +47,13 @@ export const reducer = (state = initialState, action) => {
         speech: action.payload,
       };
 
+    case actions.setIsSpeaking:
+      return {
+        ...state,
+        isSpeaking: action.payload,
+      };
+
     case actions.showTapToContinue:
-      console.log('reduceer action -> showTapToContinue', action.payload);
       return {
         ...state,
         showTapToContinue: action.payload,

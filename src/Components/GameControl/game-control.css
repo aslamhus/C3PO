@@ -1,8 +1,8 @@
 .game-control-flex-wrap {
   --game-control-edge-size: 20px;
-  --game-control-edge-border-size: 5px;
-  --game-control-edge-border-color: rgb(94, 94, 94);
-  --game-control-bg: rgb(28, 28, 28);
+  --game-control-edge-border-size: 3px;
+  --game-control-edge-border-color: rgb(55, 55, 55);
+  --game-control-bg: rgb(25, 25, 25);
 }
 .game-control-flex-wrap {
   position: absolute;

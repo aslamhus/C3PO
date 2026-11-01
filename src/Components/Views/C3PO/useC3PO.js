@@ -9,16 +9,18 @@ import { useGameSound } from "../../hooks/useGameSound";
 import { useGameControl } from "../../GameControl/hooks/useGameControl";
 import { useAskQuestion } from "../../GameControl/AskQuestion/hooks/useAskQuestion";
 import { useSpeak } from "../../SpeechBubble/useSpeak";
+import useGamePlayer from "../../GamePlayer/hooks/useGamePlayer";
 
 export const useC3PO = ({ stage }) => {
   const [state, dispatch] = useContext(C3POContext);
 
+  const { player } = useGamePlayer();
   const { ask } = useAskQuestion();
   const {
     speak,
     dismissSpeechBubble,
     state: { isSpeaking, isTypingComplete },
-  } = useSpeak();
+  } = useSpeak(state.c3poAnimateRef);
   // game control
   const control = useGameControl();
 
@@ -53,21 +55,15 @@ export const useC3PO = ({ stage }) => {
 
   const toggleSpeechBubble = (bool) =>
     dispatch({ type: C3PO_ACTIONS.toggleSpeechBubble, payload: bool });
-
+  /**
+   * TO DO: this needs to set the custom view screen component instead,
+   * or use a useEffect to check if showBinary is true
+   */
   const showBinary = () => {
     isBinaryVisibleRef.current = false;
     return new Promise((resolve, reject) => {
       dispatch({ type: C3PO_ACTIONS.showBinary });
       resolve(true);
-      // this needs to set the custom view screen component instead, or use a useEffect to check if showBinary is true
-
-      // let interval = setInterval(() => {
-      //   if (isBinaryVisibleRef.current == true) {
-      //     clearInterval(interval);
-      //     resolve(true);
-      //   }
-      //   console.log('is binary visible?', isBinaryVisibleRef.current);
-      // }, 100);
     });
   };
 
@@ -107,7 +103,7 @@ export const useC3PO = ({ stage }) => {
     if (wasCorrect) {
       handleCorrectGuess(char, c3po, countCharsFound);
     } else {
-      handleIncorrectGuess(char, c3po);
+      handleIncorrectGuess(char, c3po, countCharsFound);
     }
   };
 
@@ -118,17 +114,15 @@ export const useC3PO = ({ stage }) => {
     });
     let increment = parseFloat(Number(countCharsFound) * 0.05);
     setEnergy(`+=${increment}`);
-    let player = "Player";
     let phrases = [
-      `Well done, Master ${player}!`,
+      `Well done, Master ${player.name}!`,
       `I say!`,
-      `I'm feeling better already`,
       `Thank the maker!`,
       `Oh, Excellent!`,
       `Hurray!`,
       `Oh, wonderful!`,
       `I'm impressed!`,
-      `You're doing it!`,
+      `I was starting to worry!`,
       `Marvellous!`,
       `This is easy!`,
       `Bravo!`,
@@ -149,16 +143,32 @@ export const useC3PO = ({ stage }) => {
     // );
   };
 
-  const handleIncorrectGuess = async (char, c3po) => {
+  const handleIncorrectGuess = async (char, c3po, countCharsFound) => {
     // increment bad guesses
     setEnergy("-=0.1");
-    const oppositeCase = getOppositeCase(char);
-    const hasOppositeCase = hasChar(oppositeCase.char, state.message);
+    // const oppositeCase = getOppositeCase(char);
+    // const hasOppositeCase = hasChar(oppositeCase.char, state.message);
+    const numberOfChars = state.message.length - countCharsFound;
+    const allKeys = control.getKeys();
+    const possibleKeysToGuess = allKeys.filter(
+      (key) => !control.state.disabledKeys[key],
+    ).length;
+    const correctCharsDistinct = Object.keys(
+      Array.from(state.message).reduce((acc, char) => {
+        acc[char] = true;
+        return acc;
+      }, {}),
+    );
+    const energyLeft = (parseFloat(state.energy) - 0.1) * 10;
+    const p =
+      1 - (1 - correctCharsDistinct.length / possibleKeysToGuess) ** energyLeft;
+    // numberOfChars * energyLeft / possibleKeysToGuess
     c3po.fret();
-    let survivalChance = Math.floor(Math.random() * 100) + 3000;
+    // let survivalChance = Math.floor(Math.random() * 100) + 3000;
+    let survivalChance = p.toFixed(5);
     let phrases = [
-      `Oh, dear...`,
-      `We're doomed`,
+      `Oh dear...`,
+      `We're doomed.`,
       `Low... battery... `,
       `I've got a bad feeling about this...`,
       `How did it come to this?`,
@@ -171,7 +181,7 @@ export const useC3PO = ({ stage }) => {
       "Hmm....",
       "Dear me.",
       "I feel faint...",
-      `Our chances of survival are ${survivalChance} to 1!`,
+      `Our chances of survival are ${survivalChance}!`,
     ];
 
     let randIndex = Math.floor(Math.random() * phrases.length);
@@ -182,9 +192,9 @@ export const useC3PO = ({ stage }) => {
     //   </>,
     //   { tapToContinue: hasOppositeCase }
     // );
-    if (hasOppositeCase) {
-      hint(oppositeCase, c3po);
-    }
+    // if (hasOppositeCase) {
+    //   hint(oppositeCase, c3po);
+    // }
   };
 
   const hint = async (oppositeCase, c3po) => {

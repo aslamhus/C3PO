@@ -75,6 +75,17 @@ class C3POAnimate {
   }
 
   /**
+   * Set current action (like talk or breathe)
+   * @param {GSAPTimeline} tl
+   */
+  setCurrentAction(tl) {
+    if (this.currentAction) {
+      // this.currentAction.kill();
+    }
+    this.currentAction = tl;
+  }
+
+  /**
    * immediate stop
    */
   stop() {
@@ -83,6 +94,9 @@ class C3POAnimate {
     return this.timeline;
   }
 
+  revertCurrentAction() {
+    this.currentAction.revert();
+  }
   /**
    * C3PO returns to original position
    * and clear timeline.
@@ -474,9 +488,9 @@ class C3POAnimate {
       duration: breathDuration / 5,
       delay: 0.2,
     });
-    headShake.to(head, { rotate: "+=3deg", duration: breathDuration / 5 });
-    headShake.to(head, { rotate: "-=2deg", duration: breathDuration / 5 });
     headShake.to(head, { rotate: "+=2deg", duration: breathDuration / 5 });
+    headShake.to(head, { rotate: "-=1deg", duration: breathDuration / 5 });
+    headShake.to(head, { rotate: "+=1deg", duration: breathDuration / 5 });
     /** hips and legs */
     // const hipsShift = gsap.timeline({ repeat: -1, yoyo: true, repeatDelay: 7 });
 
@@ -521,6 +535,35 @@ class C3POAnimate {
       "breatheIn",
     );
     return torsoBreathe;
+  }
+
+  speak(repeat = -1) {
+    return new Promise((resolve) => {
+      const {
+        body: { body },
+        head: { head },
+        hips: { hips, leftLeg, rightLeg },
+        torso: { torso, chest, stomach },
+        leftShoulder,
+        rightShoulder,
+      } = this.bodyParts;
+      const tl = gsap.timeline({
+        repeat: repeat || -1,
+      });
+      tl.to(
+        head,
+        {
+          scaleY: 1.025,
+          duration: 0.2,
+          yoyo: true,
+          //  ease: "power1.inOut"
+        },
+        0,
+      );
+      tl.to(head, { scaleX: 0.975, duration: 0.2, yoyo: true }, 0.1);
+      tl.play();
+      this.setCurrentAction(tl);
+    });
   }
 
   celebrate(repeat) {
@@ -664,7 +707,7 @@ class C3POAnimate {
 
       // tl.to(leftShoulder.mainArm, { , duration: prepareDuration }, 0);
       tl.play();
-      this.currentAction = tl;
+      this.setCurrentAction(tl);
     });
   }
 

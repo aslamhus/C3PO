@@ -1,5 +1,5 @@
 .body .head {
-  animation: head-shake 5s ease alternate infinite;
+  /* animation: head-shake 5s ease alternate infinite; */
 }
 /* .body .left-arm {
   animation: head-shake 2s ease alternate infinite;

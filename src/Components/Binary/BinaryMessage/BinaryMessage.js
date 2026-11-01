@@ -27,7 +27,7 @@ export default function BinaryMessage({
       onStart: handleGuessAnimationStart,
     }),
   );
-  const childTimelinesRef = useRef({});
+  const childTimelinesRef = useRef([]);
   const { cueSoundFx, cueMusic } = useGameSound();
 
   /**
@@ -52,15 +52,22 @@ export default function BinaryMessage({
     setByteData((prev) => {
       let bits = prev.map((data, index) => {
         // if not decoded add to animation timeline
+        if (!childTimelinesRef.current[index]) {
+          console.log("🚨 timeline does not exist for index", index, data);
+          return data;
+        }
+        const [childTl, id, char] = childTimelinesRef.current[index];
         if (!data.decoded) {
           if (childTimelinesRef.current[index]) {
             data.animationDelay = delay;
-            const childTl = childTimelinesRef.current[index];
+            console.log("play animation", id, char);
             childTl.play();
             childTl.progress(0);
             masterTl.add(childTl, delay);
             delay += delayIncrement;
           }
+        } else {
+          console.log("❌ do not play animation", id, char);
         }
         // count the number of characters found
         if (data.binary == binary) {
@@ -161,9 +168,31 @@ export default function BinaryMessage({
     }
   };
 
-  const addByteAnimationToTimeline = (timeline, index, binary, char, ref) => {
-    console.log("add child timeline", index, char);
-    childTimelinesRef.current[index] = timeline;
+  const addByteAnimationToTimeline = (id, timeline, char) => {
+    console.log("add child timeline", id, char);
+    childTimelinesRef.current.push([timeline, id, char]);
+  };
+
+  const removeByteAnimationTimeline = (id, char) => {
+    console.log("removeByteAnimationTimeline", id, char);
+
+    childTimelinesRef.current = childTimelinesRef.current.filter(
+      ([timeline, _id]) => {
+        // if (id == _id) {
+        //   console.log("---> remove", id, _id);
+        // }
+        return _id != id;
+      },
+    );
+    console.log("----> new timeline", childTimelinesRef.current);
+    // let animationIndex = childTimelinesRef.current.findIndex(
+    //   ([timeline, _id]) => {
+    //     return (id = _id);
+    //   },
+    // );
+
+    // console.log("remove timeline", { animationIndex, remove_id: id });
+    // childTimelinesRef.current = childTimelinesRef.current.splice(index, 1);
   };
 
   /**
@@ -203,7 +232,7 @@ export default function BinaryMessage({
         {byteData.map((data, index) => {
           return (
             <React.Fragment
-              key={`binary-message-img-${data.binary}-${index}-${data.key ?? index}`}
+              key={`binary-message-img-${data?.binary}-${index}-${data.key ?? index}`}
             >
               <Byte
                 // src={data.url}
@@ -218,6 +247,7 @@ export default function BinaryMessage({
                 animationDelay={data.animationDelay}
                 onAnimationComplete={onChildAnimationComplete}
                 onBuildAnimationTimeline={addByteAnimationToTimeline}
+                onRemoveAnimationTimeline={removeByteAnimationTimeline}
                 onDecoded={handleCharDecoded}
                 animationSpeed={animationSpeed}
               />

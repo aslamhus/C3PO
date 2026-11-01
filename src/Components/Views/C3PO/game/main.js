@@ -56,12 +56,13 @@ export const main = async (state, actions, control, sound, stage, player) => {
   // return;
   await gameEvents.exitStageLeft(c3po);
   showC3PO();
-  // await gameEvents.peekAbooEntrance(c3po, speak, () =>
-  //   showTip(tips.tapAnywhereToContinue),
-  // );
   let skipQuestionIdentity = true,
     skipInstruction = true;
+  // TODO: add skip function
+  // showTip(<div onClick={null}>Skip</div>);
+
   if (!skipQuestionIdentity) {
+    await gameEvents.peekAbooEntrance(c3po, speak);
     const identityConfirmed = await gameEvents.questionIdentity(
       c3po,
       control.toggleControls,

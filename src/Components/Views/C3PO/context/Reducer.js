@@ -32,9 +32,9 @@ export const initialState = {
   isBinaryVisible: false,
   showTapToContinue: false,
   guesses: {},
-  message: "Space cats are the best cats.",
+  message: "May the force be with you.",
   // energy: 0.85,
-  energy: 0.1,
+  energy: 1,
 };
 
 export const reducer = (state = initialState, action) => {

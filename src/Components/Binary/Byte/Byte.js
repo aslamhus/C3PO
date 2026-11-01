@@ -18,17 +18,25 @@ export const Byte = React.forwardRef((props, ref) => {
     animationDelay = 0,
     onAnimationComplete,
     onBuildAnimationTimeline,
+    onRemoveAnimationTimeline,
     onDecoded,
-    isDecoded: _isDecoded,
+    decoded,
     wordFound = false,
     animationSpeed,
   } = props;
 
   const byteRef = useRef();
-  const [isDecoded, setIsDecoded] = useState(false);
-  const [decodedChar, setDecodedChar] = useState("");
+  const [isDecoded, setIsDecoded] = useState(decoded);
+  const [decodedChar, setDecodedChar] = useState(
+    decoded ? binaryToCharacter[guessBinary] : "",
+  );
   const [animationComplete, setAnimationComplete] = useState(false);
-  const [timeline, setTimeline] = useState(null);
+  const [timeline, _setTimeline] = useState(null);
+  const timelineRef = useRef(null);
+  const setTimeline = (value) => {
+    _setTimeline(value);
+    timelineRef.current = value;
+  };
 
   const byteClassNames = classNames(`byte`, {
     decoded: isDecoded || wordFound,
@@ -43,7 +51,7 @@ export const Byte = React.forwardRef((props, ref) => {
     setTimeline(timeline);
 
     if (onBuildAnimationTimeline instanceof Function) {
-      onBuildAnimationTimeline(timeline, index, binaryCode, char);
+      onBuildAnimationTimeline(id, timeline, char);
     }
   };
 
@@ -77,7 +85,11 @@ export const Byte = React.forwardRef((props, ref) => {
   useEffect(() => {
     if (guessBinary && !isDecoded) {
       setTimeout(() => {
-        timeline?.eventCallback("onComplete", () => setAnimationComplete(true));
+        if (timeline) {
+          timeline.eventCallback("onComplete", () =>
+            setAnimationComplete(true),
+          );
+        }
       }, animationDelay * 1000);
     }
   }, [guessBinary]);
@@ -93,6 +105,11 @@ export const Byte = React.forwardRef((props, ref) => {
     buildAnimation();
   }, []);
 
+  useEffect(() => {
+    return () => {
+      onRemoveAnimationTimeline(id, char, index);
+    };
+  }, [id]);
   return (
     <div
       id={id}
@@ -101,8 +118,10 @@ export const Byte = React.forwardRef((props, ref) => {
       data-char={char}
       data-binary-code={binaryCode}
     >
-      {decodedChar && <p className="letter-found">{decodedChar}</p>}
-      {!decodedChar && !wordFound && <div>{binaryCode}</div>}
+      {isDecoded && !wordFound && (
+        <p className="letter-found">{decodedChar ?? "??"}</p>
+      )}
+      {!isDecoded && !wordFound && <div>{binaryCode}</div>}
       {wordFound && <p className="word-found">{char}</p>}
     </div>
   );

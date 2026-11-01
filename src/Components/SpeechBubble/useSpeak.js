@@ -5,7 +5,7 @@ import { actions } from "./context/Reducer";
 import { useTypeText } from "./TypeText/useTypeText";
 import { tap } from "lodash";
 
-export const useSpeak = () => {
+export const useSpeak = (c3poAnimateRef) => {
   const [state, dispatch] = React.useContext(SpeechBubbleContext);
   const {
     state: { isTypingComplete },
@@ -30,6 +30,9 @@ export const useSpeak = () => {
     setTapCount(1);
     if (state.tapToContinue) {
       setShowTapToContinue(true);
+    }
+    if (c3poAnimateRef?.current) {
+      c3poAnimateRef.current.revertCurrentAction();
     }
   };
 
@@ -68,6 +71,10 @@ export const useSpeak = () => {
    */
   const speak = (words, options = { wait: 0, tapToContinue: true }) => {
     dispatch({ type: actions.speak, payload: words });
+    console.log("speak -> ref", c3poAnimateRef);
+    if (c3poAnimateRef?.current) {
+      c3poAnimateRef.current.speak();
+    }
 
     handleBeforeSpeak(options.tapToContinue);
     if (options.tapToContinue) {

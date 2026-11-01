@@ -34,8 +34,8 @@ export const startGameInstruction = async ({
   const response = await askQuestion({
     question: (
       <>
-        <span style={{ color: "red" }}>Sylvan</span>, will you help me decode
-        the message?
+        <span style={{ color: "red" }}>{player.name}</span>, will you help me
+        decode the message?
       </>
     ),
     responses: [
@@ -60,8 +60,8 @@ export const startGameInstruction = async ({
 
     await speak(
       <>
-        Oh! My circuits are full of sand from walking around this dreadful
-        desert!
+        Oh! My circuits are full of sand from walking around{" "}
+        <span style={{ color: "gold" }}>Tattooine</span>!
       </>,
       { tapToContinue: true },
     );
@@ -94,7 +94,8 @@ export const startGameInstruction = async ({
     c3po.rest();
     await speak(
       <>
-        You're my only hope, <span style={{ color: "red" }}>Sylvan</span>!
+        You're my only hope, <span style={{ color: "red" }}>{player.name}</span>
+        !
       </>,
       { tapToContinue: true },
     );

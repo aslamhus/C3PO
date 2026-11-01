@@ -1,6 +1,7 @@
 import { useContext, useEffect } from "react";
 import { GameControlContext } from "../Context/context";
 import { GAME_CONTROL_ACTIONS } from "../Context/Reducer";
+import { characterToBinaryDict } from "../../ControlKeypad/binaryDict";
 
 export const useGameControl = () => {
   const [state, dispatch] = useContext(GameControlContext);
@@ -58,6 +59,19 @@ export const useGameControl = () => {
     dispatch({ type: GAME_CONTROL_ACTIONS.disableKeypad, payload: bool });
 
   /**
+   * Returns a list of the keys (disabled or enabled)
+   */
+  const getKeys = () => {
+    let keys = Object.keys(characterToBinaryDict).reduce((acc, charGroup) => {
+      const charGroupKeys = characterToBinaryDict[charGroup] ?? [];
+      if (!charGroupKeys) return acc;
+      acc.push(...Object.keys(charGroupKeys));
+      return acc;
+    }, []);
+    return keys;
+  };
+
+  /**
    * Sets the control strip components
    *
    * @param {ReactComponent} ReactComponent
@@ -102,6 +116,7 @@ export const useGameControl = () => {
     endGame,
     disableKeys,
     enableKeys,
+    getKeys,
     disableKeypad,
     setCustomViewScreenComponents,
     addCustomViewScreenComponent,

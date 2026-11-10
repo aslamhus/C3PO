@@ -1,27 +1,29 @@
-import React from 'react';
+import React from "react";
 
 export const GAME_CONTROL_ACTIONS = {
-  toggleViewScreen: 'toggleViewScreen',
-  toggleControls: 'toggleControls',
-  toggleKeypad: 'toggleKeypad',
-  setPrimaryControlStripComponent: 'setPrimaryControlStripComponent',
-  setSecondaryControlStripComponent: 'setSecondaryControlStripComponent',
-  setCustomViewScreenComponents: 'setCustomViewScreenComponents',
-  addCustomViewScreenComponent: 'addCustomViewScreenComponent',
-  beginGame: 'beginGame',
-  endGame: 'endGame',
-  setDisabledKeys: 'setDisabledKeys',
-  setEnabledKeys: 'setEnabledKeys',
-  disableKeypad: 'disableKeypad',
+  toggleViewScreen: "toggleViewScreen",
+  toggleControls: "toggleControls",
+  toggleKeypad: "toggleKeypad",
+  setPrimaryControlStripComponent: "setPrimaryControlStripComponent",
+  setSecondaryControlStripComponent: "setSecondaryControlStripComponent",
+  setTertiaryControlStripComponent: "setTertiaryControlStripComponent",
+  setCustomViewScreenComponents: "setCustomViewScreenComponents",
+  addCustomViewScreenComponent: "addCustomViewScreenComponent",
+  beginGame: "beginGame",
+  endGame: "endGame",
+  setDisabledKeys: "setDisabledKeys",
+  setEnabledKeys: "setEnabledKeys",
+  disableKeypad: "disableKeypad",
 };
 
 export const initialState = {
-  state: 'initial',
+  state: "initial",
   gameStart: false,
   viewScreen: false,
   controls: false,
   primaryControlStripComponent: null,
   secondaryControlStripComponent: null,
+  tertiaryControlStripComponent: null,
   onPressChar: null,
   disabledKeys: {},
   showKeypad: false,
@@ -32,25 +34,25 @@ export const initialState = {
 export const reducer = (state = initialState, action) => {
   const { options, payload, type } = action;
   switch (type) {
-    case 'beginGame':
+    case "beginGame":
       return {
         ...state,
         gameStart: true,
       };
     // end game and reset state
-    case 'endGame':
+    case "endGame":
       return initialState;
-    case 'toggleViewScreen':
+    case "toggleViewScreen":
       return {
         ...state,
         viewScreen: payload,
       };
-    case 'toggleControls':
+    case "toggleControls":
       return {
         ...state,
         controls: payload,
       };
-    case 'toggleKeypad':
+    case "toggleKeypad":
       const [bool, options] = payload;
       return {
         ...state,
@@ -58,32 +60,56 @@ export const reducer = (state = initialState, action) => {
         onPressChar: options?.onPressChar,
       };
 
-    case 'setPrimaryControlStripComponent':
-    case 'setSecondaryControlStripComponent':
-      const { primaryControlStripComponent } = state;
+    case "setPrimaryControlStripComponent":
+    case "setSecondaryControlStripComponent":
+    case "setTertiaryControlStripComponent":
+      const {
+        primaryControlStripComponent,
+        secondaryControlStripComponent,
+        tertiaryControlStripComponent,
+      } = state;
       const update = {};
-      const component = action.options?.overwrite ? (
-        payload
-      ) : (
-        <>
-          {primaryControlStripComponent}
-          {payload}
-        </>
-      );
-      if (action.type == 'setPrimaryControlStripComponent') {
-        update.primaryControlStripComponent = component;
-      } else {
-        update.secondaryControlStripComponent = component;
+      const overwrite = action?.options?.overwrite ?? false;
+      switch (action?.type) {
+        case GAME_CONTROL_ACTIONS.setPrimaryControlStripComponent:
+          update.primaryControlStripComponent = (
+            <ControlStripComponent
+              component={payload}
+              prevComponent={primaryControlStripComponent}
+              overwrite={overwrite}
+            />
+          );
+
+          break;
+        case GAME_CONTROL_ACTIONS.setSecondaryControlStripComponent:
+          update.secondaryControlStripComponent = (
+            <ControlStripComponent
+              component={payload}
+              prevComponent={secondaryControlStripComponent}
+              overwrite={overwrite}
+            />
+          );
+          break;
+        case GAME_CONTROL_ACTIONS.setTertiaryControlStripComponent:
+          update.tertiaryControlStripComponent = (
+            <ControlStripComponent
+              component={payload}
+              prevComponent={tertiaryControlStripComponent}
+              overwrite={overwrite}
+            />
+          );
+          break;
       }
+
       return {
         ...state,
         ...update,
       };
 
-    case 'setEnabledKeys':
-    case 'setDisabledKeys':
+    case "setEnabledKeys":
+    case "setDisabledKeys":
       const newDisabledKeys = action.payload.reduce((acc, value) => {
-        acc[value] = action.type == 'setEnabledKeys' ? false : true;
+        acc[value] = action.type == "setEnabledKeys" ? false : true;
         return acc;
       }, {});
       return {
@@ -91,25 +117,43 @@ export const reducer = (state = initialState, action) => {
         disabledKeys: { ...state.disabledKeys, ...newDisabledKeys },
       };
 
-    case 'disableKeypad':
+    case "disableKeypad":
       return {
         ...state,
         keypadDisabled: action.payload,
       };
 
-    case 'setCustomViewScreenComponents':
+    case "setCustomViewScreenComponents":
       return {
         ...state,
         customViewScreenComponents: payload,
       };
 
-    case 'addCustomViewScreenComponent':
+    case "addCustomViewScreenComponent":
       return {
         ...state,
-        customViewScreenComponents: [...state.customViewScreenComponents, payload],
+        customViewScreenComponents: [
+          ...state.customViewScreenComponents,
+          payload,
+        ],
       };
 
     default:
       return initialState;
   }
+};
+
+const ControlStripComponent = ({ overwrite, component, prevComponent }) => {
+  return (
+    <>
+      {overwrite ? (
+        component
+      ) : (
+        <>
+          {prevComponent}
+          {component}
+        </>
+      )}
+    </>
+  );
 };

@@ -9,6 +9,7 @@ import ControlKeypad from "../ControlKeypad/ControlKeypad";
 import { useGame } from "../hooks/useGame";
 import OptionsMenu from "../GameOptions/Components/OptionsMenu/OptionsMenu";
 import "./game-control.css";
+import { CONTROL_STRIP_TYPE } from "./hooks/useGameControl";
 
 /**
  * GameControl
@@ -27,7 +28,7 @@ export default function GameControl({ children }) {
 
   useEffect(() => {
     if (stage.state.loaded) {
-      control.setControlStripComponent(<Clock />, "secondary");
+      control.setControlStripComponent(<Clock />, CONTROL_STRIP_TYPE.TERTIARY);
     }
   }, [stage.state.loaded]);
 
@@ -56,7 +57,11 @@ export default function GameControl({ children }) {
           <div className="game-control">
             <div className="control-row">
               <ControlStripGroup className="shadow">
+                {/* TODO: add default static noise graphic when no component */}
                 {control.state?.primaryControlStripComponent}
+              </ControlStripGroup>
+              <ControlStripGroup className="shadow">
+                {control.state.secondaryControlStripComponent}
               </ControlStripGroup>
               <Radar className="shadow" />
             </div>
@@ -95,7 +100,7 @@ export default function GameControl({ children }) {
             <div className="control-row">
               <Radar className="shadow" />
               <ControlStripGroup className="shadow">
-                {control.state?.secondaryControlStripComponent}
+                {control.state?.tertiaryControlStripComponent}
               </ControlStripGroup>
             </div>
           </div>

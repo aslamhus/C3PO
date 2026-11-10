@@ -5,20 +5,20 @@ import { useGameSound } from "../../hooks/useGameSound";
 import { fx } from "../../hooks/useGameSound";
 import { getByteDataFromMessage } from "./utils";
 import "./binary-message.css";
+import { useGameControl } from "../../GameControl/hooks/useGameControl";
 
 const animationSpeed = 0.5;
 
 export default function BinaryMessage({
   message,
+  decoded = [false, true, false, true, true, true],
   show,
   onShow,
   guessChar,
   onGuessAnimationStart,
   onGuessAnimationComplete,
 }) {
-  const [byteData, setByteData] = useState(
-    getByteDataFromMessage(message.toUpperCase()),
-  );
+  const [byteData, setByteData] = useState([]);
   const binaryRef = useRef();
   const masterTimelineRef = useRef(
     gsap.timeline({
@@ -29,6 +29,7 @@ export default function BinaryMessage({
   );
   const childTimelinesRef = useRef([]);
   const { cueSoundFx, cueMusic } = useGameSound();
+  const control = useGameControl();
 
   /**
    * Guess
@@ -52,24 +53,7 @@ export default function BinaryMessage({
     setByteData((prev) => {
       let bits = prev.map((data, index) => {
         // if not decoded add to animation timeline
-        if (!childTimelinesRef.current[index]) {
-          console.log("🚨 timeline does not exist for index", index, data);
-          return data;
-        }
-        const [childTl, id, char] = childTimelinesRef.current[index];
-        if (!data.decoded) {
-          if (childTimelinesRef.current[index]) {
-            data.animationDelay = delay;
-            console.log("play animation", id, char);
-            childTl.play();
-            childTl.progress(0);
-            masterTl.add(childTl, delay);
-            delay += delayIncrement;
-          }
-        } else {
-          console.log("❌ do not play animation", id, char);
-        }
-        // count the number of characters found
+
         if (data.binary == binary) {
           countCharsFound++;
           guessWasCorrect = true;
@@ -80,6 +64,13 @@ export default function BinaryMessage({
       });
 
       return bits;
+    });
+    childTimelinesRef.current.forEach(([childTl, id, char]) => {
+      // console.log("play animation for", char, { timelinesChar: char });
+      childTl.play();
+      childTl.progress(0);
+      masterTl.add(childTl, delay);
+      delay += delayIncrement;
     });
 
     cueSoundFx(fx.binaryDecoder);
@@ -113,7 +104,7 @@ export default function BinaryMessage({
     const bits = [];
     let foundWord = false;
     byteData.forEach((bit, index) => {
-      if (bit.char == " " || bit.char == ".") {
+      if (bit.char == " " || bit.char == "." || bit.char == "!") {
         // go backward until you hit another space or first char
         let prev = index - 1;
         let decoded = false;
@@ -169,30 +160,17 @@ export default function BinaryMessage({
   };
 
   const addByteAnimationToTimeline = (id, timeline, char) => {
-    console.log("add child timeline", id, char);
+    // console.log("add child timeline", id, char);
     childTimelinesRef.current.push([timeline, id, char]);
   };
 
   const removeByteAnimationTimeline = (id, char) => {
-    console.log("removeByteAnimationTimeline", id, char);
-
     childTimelinesRef.current = childTimelinesRef.current.filter(
       ([timeline, _id]) => {
-        // if (id == _id) {
-        //   console.log("---> remove", id, _id);
-        // }
         return _id != id;
       },
     );
-    console.log("----> new timeline", childTimelinesRef.current);
-    // let animationIndex = childTimelinesRef.current.findIndex(
-    //   ([timeline, _id]) => {
-    //     return (id = _id);
-    //   },
-    // );
-
-    // console.log("remove timeline", { animationIndex, remove_id: id });
-    // childTimelinesRef.current = childTimelinesRef.current.splice(index, 1);
+    // console.log("----> new timeline", childTimelinesRef.current);
   };
 
   /**
@@ -225,6 +203,18 @@ export default function BinaryMessage({
       guess(guessChar);
     }
   }, [guessChar]);
+
+  useEffect(() => {
+    const data = getByteDataFromMessage(message.toUpperCase(), decoded);
+    const preDecodedChars = data
+      .filter((bit) => bit.decoded)
+      .map((bit) => bit.char);
+
+    setByteData(data);
+    if (preDecodedChars.length) {
+      // control.disableKeys(preDecodedChars);
+    }
+  }, [message]);
 
   return (
     <div ref={binaryRef} className="binary-message" style={{ opacity: 0 }}>

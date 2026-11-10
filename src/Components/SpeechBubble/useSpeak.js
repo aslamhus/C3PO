@@ -4,7 +4,15 @@ import { SpeechBubbleContext } from "./context/context";
 import { actions } from "./context/Reducer";
 import { useTypeText } from "./TypeText/useTypeText";
 import { tap } from "lodash";
+import C3POAnimate from "../Views/C3PO/C3POAnimate";
 
+/**
+ * @typedef {Object} c3poAnimateRef
+ * @property {C3POAnimate} current
+ *
+ * @param {c3poAnimateRef} c3poAnimateRef
+ * @returns
+ */
 export const useSpeak = (c3poAnimateRef) => {
   const [state, dispatch] = React.useContext(SpeechBubbleContext);
   const {
@@ -31,9 +39,7 @@ export const useSpeak = (c3poAnimateRef) => {
     if (state.tapToContinue) {
       setShowTapToContinue(true);
     }
-    if (c3poAnimateRef?.current) {
-      c3poAnimateRef.current.revertCurrentAction();
-    }
+    c3poAnimateRef.current.stopSpeaking();
   };
 
   const handleBeforeSpeak = (tapToContinue) => {
@@ -71,7 +77,6 @@ export const useSpeak = (c3poAnimateRef) => {
    */
   const speak = (words, options = { wait: 0, tapToContinue: true }) => {
     dispatch({ type: actions.speak, payload: words });
-    console.log("speak -> ref", c3poAnimateRef);
     if (c3poAnimateRef?.current) {
       c3poAnimateRef.current.speak();
     }

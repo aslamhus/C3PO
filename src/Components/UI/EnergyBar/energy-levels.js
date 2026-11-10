@@ -1,9 +1,9 @@
 export const levels = {
-  danger: 'danger',
-  low: 'low',
-  mid: 'mid',
-  high: 'high',
-  full: 'full',
+  danger: "danger",
+  low: "low",
+  mid: "mid",
+  high: "high",
+  full: "full",
 };
 
 /**
@@ -16,13 +16,13 @@ export const getEnergyLevel = (energy) => {
   switch (true) {
     case energy >= 1:
       return levels.full;
-    case energy >= 0.7:
+    case energy >= 0.75 && energy < 1:
       return levels.high;
-    case energy > 0.5 && energy < 0.75:
-      return levels.mid;
-    case energy > 0.3 && energy <= 0.5:
-      return levels.low;
-    case energy <= 0.3:
-      return levels.danger;
+    case energy >= 0.5 && energy < 0.75:
+      return levels.mid; // faint
+    case energy > 0.25 && energy < 0.5:
+      return levels.low; // dazed
+    case energy <= 0.25:
+      return levels.danger; // near death
   }
 };

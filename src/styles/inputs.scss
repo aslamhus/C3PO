@@ -12,6 +12,7 @@ input {
   text-transform: uppercase;
   text-align: center;
   font-weight: bold;
+
   &::placeholder {
     color: color.adjust(vars.$primary-200, $lightness: -20%, $saturation: -20%);
 
@@ -33,6 +34,11 @@ input {
     visibility: hidden;
     display: none !important;
   }
+}
+// errors
+input.error {
+  border-color: red;
+  box-shadow: inset 0px 0px 2px 2px red;
 }
 
 input[type="range"] {

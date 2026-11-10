@@ -108,7 +108,11 @@ const TypeText = ({
         // node is react component (object)
         // find text node within it.
         const text = node.props.children;
-        if (typeof text != "string" && typeof text != "number") {
+        if (
+          typeof text != "string" &&
+          typeof text != "number" &&
+          typeof text != "object"
+        ) {
           throw new Error(
             "Expected text node child to be of type string, but found: " +
               typeof text,

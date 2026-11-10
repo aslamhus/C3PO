@@ -1,19 +1,30 @@
 import { useContext } from "react";
 import { GamePlayerContext } from "../Context/context";
 import { GAME_PLAYER_ACTIONS } from "../Context/Reducer";
+import Player from "../Player";
 
+/**
+ * @typedef {Object} UseGamePlayerReturn
+ * @property {Player} player
+ * @property {Function} setPlayer
+ *
+ * @returns {UseGamePlayerReturn}
+ */
 export default function useGamePlayer() {
   const [state, dispatch] = useContext(GamePlayerContext);
 
-  const { player } = state ?? {};
-  const setPlayerName = (name) =>
-    dispatch({ type: GAME_PLAYER_ACTIONS.setPlayerName, payload: name });
+  const { player, players } = state ?? {};
 
-  const getLastSavedState = () => {};
+  /**
+   * @param {Player} player
+   * @returns
+   */
+  const setPlayer = (player) => {
+    dispatch({ type: GAME_PLAYER_ACTIONS.setPlayer, payload: player });
+  };
 
   return {
-    state,
     player,
-    setPlayerName,
+    setPlayer,
   };
 }

@@ -9,9 +9,11 @@ import classNames from "classnames";
 const showBoundingBox = false;
 
 const Body = React.forwardRef((props, ref) => {
-  const { children, style, isSpeaking } = props;
+  const { children, style, isSpeaking, className, ...otherProps } = props;
+  const bodyClassName = classNames("body-container", className);
+  console.log(props.className);
   return (
-    <div className="body-container" style={style}>
+    <div className={bodyClassName} style={style} {...otherProps}>
       {children}
       <div
         ref={ref}

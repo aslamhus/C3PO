@@ -14,11 +14,19 @@ import TatooineBackground from "./TatooineBackground/TatooineBackground";
 import R2D2 from "./R2D2/R2D2";
 import useGameOptions from "../../GameOptions/hooks/useGameOptions";
 import useGamePlayer from "../../GamePlayer/hooks/useGamePlayer";
+import { CONTROL_STRIP_TYPE } from "../../GameControl/hooks/useGameControl";
 
 const C3PO = React.forwardRef((props, ref) => {
   const stage = useGameStage();
   // get state, actions, game control, and sound control from useC3PO hook
-  const { state, actions, control, sound } = useC3PO({ stage });
+  const {
+    state,
+    actions,
+    control,
+    sound,
+    bodyClassNames,
+    energyLevelClassName,
+  } = useC3PO({ stage });
 
   const { player } = useGamePlayer();
 
@@ -67,9 +75,6 @@ const C3PO = React.forwardRef((props, ref) => {
     if (loaded) {
       setSpeechBubbleAnchor(c3poRef.current.querySelector(".head"));
       startC3POGame();
-      // control.setControlStripComponent(<EnergyBar now={energy} />, 'secondary', {
-      //   overwrite: true,
-      // });
     }
   }, [loaded]);
 
@@ -78,7 +83,7 @@ const C3PO = React.forwardRef((props, ref) => {
       {showTatooineDesert && <TatooineFromSpace ref={tatooineSpaceRef} />}
       {!showTatooineDesert && (
         <div className="c3po-container">
-          <TatooineBackground>
+          <TatooineBackground className={energyLevelClassName}>
             {/* R2D2 Sprite hiding in the background */}
             {/* <R2D2 /> */}
           </TatooineBackground>
@@ -91,6 +96,7 @@ const C3PO = React.forwardRef((props, ref) => {
             enableTapToContinue={showTapToContinue}
           />
           <Body
+            className={`${bodyClassNames} ${energyLevelClassName}`}
             ref={getC3PORef}
             style={{ opacity: c3poState != "hidden" ? 1 : 0 }}
             isSpeaking={isSpeaking}

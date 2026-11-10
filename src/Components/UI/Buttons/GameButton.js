@@ -1,7 +1,9 @@
 import React from "react";
 import { useGameSound } from "../../hooks/useGameSound";
+import classNames from "classnames";
 
 const FONT_SIZES = {
+  xs: "0.75em",
   sm: "1em",
   medium: "1.25em",
   lg: "1.5em",
@@ -17,10 +19,20 @@ function GameButton({
   children,
   disabled,
   size,
+  active = false,
 }) {
   const { cueSoundFx } = useGameSound();
 
   const fontSize = FONT_SIZES[size] ?? FONT_SIZES.medium;
+
+  const buttonClassname = classNames(
+    "game-button",
+    size ? `game-button-${size}` : "",
+    className,
+    {
+      active: active,
+    },
+  );
 
   const handleClick = async (event) => {
     if (onClick instanceof Function) {
@@ -35,7 +47,7 @@ function GameButton({
     <button
       onClick={handleClick}
       style={{ fontSize, ...style }}
-      className={className}
+      className={buttonClassname}
       id={id}
       value={value}
       disabled={disabled}

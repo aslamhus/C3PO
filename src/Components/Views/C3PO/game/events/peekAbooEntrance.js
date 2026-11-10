@@ -7,7 +7,7 @@ export const peekAbooEntrance = async (c3po, speak, showTapTip) => {
     duration: 1.5,
   });
   setTimeout(showTapTip, 1000);
-  await speak("Oh, I say! ");
+  await speak("Oh, I say!");
 
   await wait(0);
 };

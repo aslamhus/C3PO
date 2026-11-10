@@ -1,15 +1,31 @@
-import React, { useContext, useRef, useEffect } from "react";
+import React, { useContext, useRef, useEffect, useMemo } from "react";
 import BinaryMessage from "../../Binary/BinaryMessage";
 import EnergyBar from "../../UI/EnergyBar";
+import ScoreCard from "../../UI/ScoreCard/ScoreCard";
 import { C3POContext } from "./context/context";
 import { C3PO_ACTIONS, C3POStates } from "./context/Reducer";
 import { useTipModal } from "../../UI/Modals/TipModal/useTipModal";
 import { getOppositeCase, hasChar } from "./utils";
 import { useGameSound } from "../../hooks/useGameSound";
-import { useGameControl } from "../../GameControl/hooks/useGameControl";
+
+import {
+  CONTROL_STRIP_TYPE,
+  useGameControl,
+} from "../../GameControl/hooks/useGameControl";
 import { useAskQuestion } from "../../GameControl/AskQuestion/hooks/useAskQuestion";
 import { useSpeak } from "../../SpeechBubble/useSpeak";
 import useGamePlayer from "../../GamePlayer/hooks/useGamePlayer";
+import classNames from "classnames";
+import { getEnergyLevel } from "../../UI/EnergyBar/energy-levels";
+
+const C3POFeeling = {
+  ["near-death"]: (energy) => energy <= 0.1,
+  dazed: (energy) => energy <= 0.25 && energy > 0.1,
+  faint: (energy) => energy > 0.25 && energy < 0.5,
+  normal: (energy) => energy >= 0.5 && energy < 0.7,
+  well: (energy) => energy >= 0.7 && energy < 0.9,
+  excellent: (energy) => energy >= 0.9,
+};
 
 export const useC3PO = ({ stage }) => {
   const [state, dispatch] = useContext(C3POContext);
@@ -23,6 +39,16 @@ export const useC3PO = ({ stage }) => {
   } = useSpeak(state.c3poAnimateRef);
   // game control
   const control = useGameControl();
+
+  const energyLevelClassName = classNames(
+    `energy-level-${getEnergyLevel(state.energy)}`,
+  );
+
+  const bodyClassNames = classNames({
+    faint: C3POFeeling.faint(state.energy),
+    dazed: C3POFeeling.dazed(state.energy),
+    ["near-death"]: C3POFeeling["near-death"](state.energy),
+  });
 
   const askQuestion = async ({ question, responses }) => {
     // set the game stage constraints for the control pad
@@ -87,8 +113,8 @@ export const useC3PO = ({ stage }) => {
     const { current: c3po } = state.c3poAnimateRef;
 
     control.disableKeypad(true);
-    c3po.stop();
     c3po.rest();
+    c3po.look("right");
     dismissSpeechBubble();
   };
 
@@ -109,28 +135,53 @@ export const useC3PO = ({ stage }) => {
 
   const handleCorrectGuess = (char, c3po, countCharsFound) => {
     // check if message is completely decoded -> game complete
-    c3po.celebrate(3).then(() => {
-      c3po.rest();
-    });
-    let increment = parseFloat(Number(countCharsFound) * 0.05);
+
+    if (char === " ") {
+      countCharsFound /= 2;
+    }
+    let increment = parseFloat(Number(countCharsFound) * 0.025);
+    const currentEnergy = state.energy + increment;
     setEnergy(`+=${increment}`);
     let phrases = [
-      `Well done, Master ${player.name}!`,
-      `I say!`,
-      `Thank the maker!`,
-      `Oh, Excellent!`,
+      <>
+        Well done, master <span className="player">{player.getName()}!</span>
+      </>,
+      `I believe in you!`,
+      `Oh, excellent!`,
       `Hurray!`,
       `Oh, wonderful!`,
       `I'm impressed!`,
-      `I was starting to worry!`,
-      `Marvellous!`,
-      `This is easy!`,
       `Bravo!`,
       `Good guessing!`,
-      `Almost there!`,
-      `I think we're going to make it!`,
     ];
+    if (
+      C3POFeeling["near-death"](currentEnergy) ||
+      C3POFeeling.dazed(currentEnergy) ||
+      C3POFeeling.faint(currentEnergy)
+    ) {
+      phrases = [
+        `I was starting to worry!`,
+        `I think we're going to make it!`,
+        `Thank the maker!`,
+        `I never doubted you!`,
+        `I can see again!`,
+        "Oh, oh, that's much better!",
+      ];
+    }
+    if (
+      C3POFeeling.well(currentEnergy) ||
+      C3POFeeling.excellent(currentEnergy)
+    ) {
+      phrases = [
+        `Almost there!`,
+        `I wish R2 could see this!`,
+        `You're quite clever...for a human being.`,
+        "It's quite possible we're going to make it.",
 
+        `This is easy!`,
+      ];
+    }
+    c3po.celebrate(3);
     let randIndex = Math.floor(Math.random() * phrases.length);
     speak(<>{phrases[randIndex] ?? "Hmmm..."}</>, { tapToContinue: false });
     // let plural = countCharsFound > 1 ? "s" : "";
@@ -145,7 +196,10 @@ export const useC3PO = ({ stage }) => {
 
   const handleIncorrectGuess = async (char, c3po, countCharsFound) => {
     // increment bad guesses
-    setEnergy("-=0.1");
+    const energyDecrement = 0.1;
+    const currentEnergy = state.energy - energyDecrement;
+    setEnergy(`-=${energyDecrement}`);
+
     // const oppositeCase = getOppositeCase(char);
     // const hasOppositeCase = hasChar(oppositeCase.char, state.message);
     const numberOfChars = state.message.length - countCharsFound;
@@ -163,28 +217,66 @@ export const useC3PO = ({ stage }) => {
     const p =
       1 - (1 - correctCharsDistinct.length / possibleKeysToGuess) ** energyLeft;
     // numberOfChars * energyLeft / possibleKeysToGuess
-    c3po.fret();
+
     // let survivalChance = Math.floor(Math.random() * 100) + 3000;
     let survivalChance = p.toFixed(5);
+
+    // actions
+    if (currentEnergy <= 0.25) {
+      c3po.dazed();
+    } else {
+      c3po.fret();
+    }
+    //phrases
+
     let phrases = [
       `Oh dear...`,
+      `Oh, wonderful...`,
       `We're doomed.`,
-      `Low... battery... `,
+
       `I've got a bad feeling about this...`,
       `How did it come to this?`,
       `I blame R2.`,
+      "Well, don't blame me.",
       `I'm not long for this world...`,
-      `I'm afraid not.`,
-      `Oh...`,
-      `Not quite.`,
+
+      "I seem to be made to suffer. It's my lot in life.",
       "Goodness...",
-      "Hmm....",
-      "Dear me.",
-      "I feel faint...",
-      `Our chances of survival are ${survivalChance}!`,
+
+      `Our chances of survival are approximately ${survivalChance}!`,
     ];
+    if (C3POFeeling.faint(currentEnergy)) {
+      phrases = [
+        `I'm afraid not.`,
+        `Oh...`,
+        `Not quite.`,
+        "I need an oil bath....",
+        "Sometimes I just don't understand human behaviour.",
+        "Well, that's not right.",
+        "I've looked better",
+        "Oh my circuits...",
+      ];
+    }
+    if (
+      C3POFeeling["near-death"](currentEnergy) ||
+      C3POFeeling.dazed(currentEnergy)
+    ) {
+      phrases = [
+        `Low... battery... `,
+        "I'm fading...",
+        "I feel faint...",
+        "ZZzzzzzppt---fs",
+        "Everything is going rather grey...",
+        "I'm not ready to die!",
+        <>
+          I feel sketchy, master{" "}
+          <span className="player">{player.getName()}...</span>
+        </>,
+      ];
+    }
 
     let randIndex = Math.floor(Math.random() * phrases.length);
+
     speak(<>{phrases[randIndex] ?? "Hmmm..."}</>, { tapToContinue: false });
     // await speak(
     //   <>
@@ -222,7 +314,7 @@ export const useC3PO = ({ stage }) => {
     if (state.energy) {
       control.setControlStripComponent(
         <EnergyBar now={state.energy} />,
-        "secondary",
+        CONTROL_STRIP_TYPE.TERTIARY,
         {
           overwrite: true,
         },
@@ -232,6 +324,12 @@ export const useC3PO = ({ stage }) => {
       // game over
       handleGameOver();
     }
+  }, [state.energy]);
+
+  useEffect(() => {
+    const { current: c3po } = state.c3poAnimateRef || {};
+    if (!c3po) return;
+    // c3po energy animations
   }, [state.energy]);
 
   useEffect(() => {
@@ -255,7 +353,16 @@ export const useC3PO = ({ stage }) => {
     }
   }, [state.showBinary, state.guessChar]);
 
+  useEffect(() => {
+    control.setControlStripComponent(
+      <ScoreCard></ScoreCard>,
+      CONTROL_STRIP_TYPE.PRIMARY,
+    );
+  }, []);
+
   return {
+    bodyClassNames,
+    energyLevelClassName,
     state: {
       ...state,
       isSpeaking,

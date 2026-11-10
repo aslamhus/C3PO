@@ -35,8 +35,9 @@ C3PO's animations may overflow its bounds, however.
   /* background: rgba(14, 5, 123, 0.646); */
 }
 .body.is-speaking {
-  .left-eye .color,
-  .right-eye .color {
+  // body {
+  .left-eye .color img,
+  .right-eye .color img {
     animation: eye-flash 0.2s linear alternate infinite;
     animation-delay: 0;
   }
@@ -137,6 +138,7 @@ it, the eyes lose their position when the viewport is very small **/
 
 /** torso **/
 .body > .torso {
+  z-index: 2;
   position: absolute;
   width: 39%;
   height: auto;
@@ -144,6 +146,7 @@ it, the eyes lose their position when the viewport is very small **/
   left: 27%;
   aspect-ratio: 469 / 604;
 }
+
 .body-part.torso {
   top: 0;
   left: 0;
@@ -314,3 +317,87 @@ Transparent reference image for sizes **/
   object-fit: cover;
 }
 /** colorize **/
+
+.faint {
+  --opacity: 0.9;
+  .body-part figure.color {
+    animation: fading 1s alternate-reverse infinite ease-in;
+  }
+}
+.dazed {
+  --opacity: 0.7;
+  // .body-part:not(.head):not(.torso) figure.color {
+  .body-part figure.color {
+    animation: fading 1.5s alternate-reverse infinite ease-in;
+  }
+}
+.near-death {
+  --opacity: 0.5;
+  .body-part figure.color {
+    animation: fading 1.5s alternate-reverse infinite ease-in;
+  }
+}
+
+@keyframes fading {
+  0% {
+    opacity: var(--opacity);
+  }
+
+  100% {
+    opacity: calc(var(--opacity) - 0.2);
+  }
+}
+/** C3PO torso battery **/
+.energy-level-full .body-part.torso::after {
+  --background: rgb(6, 196, 72);
+  --duration: 3s;
+}
+.energy-level-high .body-part.torso::after {
+  --background: rgba(18, 255, 101, 0.258);
+  mix-blend-mode: color;
+  --duration: 2s;
+}
+.energy-level-mid .body-part.torso::after {
+  --background: rgba(255, 255, 0, 0.49);
+  mix-blend-mode: color;
+  --duration: 1.5s;
+}
+
+.energy-level-low .body-part.torso::after {
+  --background: rgba(255, 255, 7, 0.529);
+  mix-blend-mode: hard-light;
+  --duration: 1s;
+}
+.energy-level-danger .body-part.torso::after {
+  --background: red;
+  --color: rgb(239, 246, 177);
+  --duration: 1s;
+}
+.body-part.torso::after {
+  content: "";
+
+  --color: var(--primary-energy-color);
+  --duration: 1.5s;
+  position: absolute;
+  top: 61%;
+  left: 42%;
+  width: 32%;
+  aspect-ratio: 1;
+  height: auto;
+  border-radius: 50%;
+  transition: background 0.3s ease;
+  background: var(--background);
+  box-shadow: 0px 0px 10px 2px var(--color);
+  opacity: 0.25;
+  // mix-blend-mode: lighten;
+  mix-blend-mode: color-dodge;
+  animation: glow var(--duration) alternate infinite;
+}
+@keyframes glow {
+  from {
+    opacity: 0.25;
+  }
+  to {
+    opacity: 0.5;
+  }
+}

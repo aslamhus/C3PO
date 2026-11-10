@@ -1,0 +1,27 @@
+.custom-confirm {
+  font-size: 1em;
+  & .screen-modal-container {
+    max-width: 600px;
+  }
+}
+.custom-confirm-buttons-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2em;
+}
+.custom-confirm strong {
+  font-size: 2em;
+}
+.custom-confirm .confirm-body {
+  font-size: 1.5em;
+}
+.custom-confirm-buttons-container button {
+  margin: 0 0.5em;
+  font-size: 1em;
+}
+.custom-confirm .custom-modal-header .header-container {
+  padding-bottom: 0;
+}
+.custom-confirm .custom-modal-body {
+  padding-top: 0;
+}

@@ -1,0 +1,49 @@
+@use "./_vars";
+
+.dropdown-menu {
+  --bs-dropdown-zindex: 1000;
+  --bs-dropdown-min-width: 6rem;
+  --bs-dropdown-padding-x: 0;
+  --bs-dropdown-padding-y: 0.5rem;
+  --bs-dropdown-spacer: 0.125rem;
+  --bs-dropdown-font-size: 1rem;
+  --bs-dropdown-color: #{vars.$primary-800};
+  --bs-dropdown-bg: #{vars.$primary-200};
+  --bs-dropdown-border-color: #{vars.$primary-200};
+  --bs-dropdown-border-radius: var(--bs-border-radius);
+  --bs-dropdown-border-width: var(--bs-border-width);
+  --bs-dropdown-inner-border-radius: calc(
+    var(--bs-border-radius) - var(--bs-border-width)
+  );
+  --bs-dropdown-divider-bg: var(--bs-border-color-translucent);
+  --bs-dropdown-divider-margin-y: 0.5rem;
+  --bs-dropdown-box-shadow: var(--bs-box-shadow);
+  --bs-dropdown-link-color: #{vars.$primary-800};
+  --bs-dropdown-link-hover-color: #{vars.$highlight-yellow};
+  --bs-dropdown-link-hover-bg: transparent;
+  --bs-dropdown-link-active-color: #fff;
+  --bs-dropdown-link-active-bg: #{vars.$primary-800};
+  --bs-dropdown-link-disabled-color: var(--bs-tertiary-color);
+  --bs-dropdown-item-padding-x: 1rem;
+  --bs-dropdown-item-padding-y: 0.25rem;
+  --bs-dropdown-header-color: #6c757d;
+  --bs-dropdown-header-padding-x: 1rem;
+  --bs-dropdown-header-padding-y: 0.5rem;
+  & button {
+    width: auto;
+  }
+}
+
+.dropdown-item {
+  color: vars.$primary-600;
+  &:hover {
+    background: vars.$primary-100;
+    color: white;
+  }
+}
+.dropdown-item.danger {
+  &:hover {
+    background: vars.$danger-100;
+    color: vars.$danger-800;
+  }
+}

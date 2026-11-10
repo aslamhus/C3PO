@@ -29,6 +29,10 @@ export const music = {
   binarySunet,
 };
 
+const trackGainModulatio = {
+  [fx.binaryDecoder]: 0.65,
+};
+
 export const TRACK_TYPES = {
   MUSIC: "music",
   FX: "fx",
@@ -37,7 +41,9 @@ import GameSoundContext from "./context";
 import { useContext } from "react";
 import MusicTrack from "./classes/MusicTrack";
 import SoundFXTrack from "./classes/SoundFXTrack";
-import { actions } from "./Reducer";
+import { GAME_SOUND_ACTIONS } from "./Reducer";
+import useSave from "../../GameSave/hooks/useSave";
+import useGamePlayer from "../../GamePlayer/hooks/useGamePlayer";
 
 export const useGameSound = () => {
   const [state, dispatch, audioContextRef, trackManagerRef] =
@@ -45,16 +51,27 @@ export const useGameSound = () => {
 
   const { musicGain, fxGain } = state;
 
+  const { player } = useGamePlayer();
+
   const cueTrack = async (src, type) => {
+    const modulation = trackGainModulatio[src] ?? 1;
     // find or create new music track
     let track = trackManagerRef.current.findTrack(src, type);
     if (!track) {
       switch (type) {
         case TRACK_TYPES.FX:
-          track = new SoundFXTrack(src, audioContextRef.current, fxGain);
+          track = new SoundFXTrack(
+            src,
+            audioContextRef.current,
+            fxGain * modulation,
+          );
           break;
         case TRACK_TYPES.MUSIC:
-          track = new MusicTrack(src, audioContextRef.current, musicGain);
+          track = new MusicTrack(
+            src,
+            audioContextRef.current,
+            musicGain * modulation,
+          );
           break;
       }
       trackManagerRef.current.addTrack(track);
@@ -89,12 +106,16 @@ export const useGameSound = () => {
 
   const setMusicGain = (value) => {
     trackManagerRef.current.setMusicGain(value);
-    dispatch({ type: actions.setMusicGain, payload: value });
+    player.options.setMusicGain(value);
+    // Note: we save when closing options menu
+    dispatch({ type: GAME_SOUND_ACTIONS.setMusicGain, payload: value });
   };
 
   const setFXGain = (value) => {
     trackManagerRef.current.setFXGain(value);
-    dispatch({ type: actions.setFXGain, payload: value });
+    player.options.setFXGain(value);
+    // Note: we save when closing options menu
+    dispatch({ type: GAME_SOUND_ACTIONS.setFXGain, payload: value });
   };
 
   return {

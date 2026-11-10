@@ -6,6 +6,7 @@ import {
 import { getTimeline, animateDecode } from "./animations";
 import "./byte.css";
 import classNames from "classnames";
+import gsap from "gsap";
 
 export const Byte = React.forwardRef((props, ref) => {
   const {
@@ -43,7 +44,7 @@ export const Byte = React.forwardRef((props, ref) => {
     "word-found": wordFound,
   });
 
-  const buildAnimation = () => {
+  const buildGuessAnimation = () => {
     const timeline = getTimeline(byteRef, colors, {
       duration: 0.3 * animationSpeed,
       delay: 0,
@@ -55,12 +56,33 @@ export const Byte = React.forwardRef((props, ref) => {
     }
   };
 
+  const removeGuessAnimation = () => onRemoveAnimationTimeline(id, char, index);
+
+  const startDecodeSuccessAnimation = () => {
+    const tl = gsap.timeline({
+      paused: true,
+      yoyo: 1,
+    });
+    tl.add(gsap.set(byteRef.current, { background: "red", color: "black" }, 0));
+    tl.add(gsap.to(byteRef.current, { scale: 2, duration: 0.25 }));
+    tl.add(
+      gsap.to(byteRef.current, {
+        scale: 1,
+        duration: 0.25,
+        background: "inherit",
+      }),
+    );
+    tl.timeScale(1.2);
+    tl.play();
+  };
   const handleDecode = () => {
-    if (!guessBinary || !binaryCode) return;
+    // if (!guessBinary || !binaryCode) return;
     if (guessBinary == binaryCode) {
       // success animation
-      setDecodedChar(binaryToCharacter[guessBinary]);
+      startDecodeSuccessAnimation();
+      setDecodedChar(char);
       setIsDecoded(true);
+
       if (onDecoded instanceof Function) {
         onDecoded({ char, binaryCode, id });
       }
@@ -69,9 +91,35 @@ export const Byte = React.forwardRef((props, ref) => {
     return false;
   };
 
-  const handleAnimationComplete = () => {
+  const startWordFoundAnimation = () => {
+    return;
+    const tl = gsap.timeline({
+      paused: true,
+      yoyo: 1,
+    });
+    tl.add(
+      gsap.set(byteRef.current, { background: "green", color: "black" }, 0),
+    );
+    tl.add(
+      gsap.to(byteRef.current, {
+        scale: 1,
+        border: "2px solid green",
+        duration: 0.25,
+      }),
+    );
+    tl.add(
+      gsap.to(byteRef.current, {
+        scale: 1,
+        duration: 0.25,
+        background: "inherit",
+      }),
+    );
+    tl.timeScale(1.2);
+    tl.play();
+  };
+
+  const handleGuessAnimationComplete = () => {
     const didDecode = handleDecode();
-    setAnimationComplete(false);
     if (onAnimationComplete instanceof Function) {
       onAnimationComplete(id, binaryCode, didDecode);
     }
@@ -86,30 +134,32 @@ export const Byte = React.forwardRef((props, ref) => {
     if (guessBinary && !isDecoded) {
       setTimeout(() => {
         if (timeline) {
-          timeline.eventCallback("onComplete", () =>
-            setAnimationComplete(true),
-          );
+          timeline.eventCallback("onComplete", handleGuessAnimationComplete);
         }
       }, animationDelay * 1000);
     }
   }, [guessBinary]);
 
   useEffect(() => {
-    if (animationComplete) {
-      handleAnimationComplete();
+    if (decoded) {
+      removeGuessAnimation();
     }
-  }, [animationComplete]);
+  }, [decoded]);
+
+  useEffect(() => {
+    if (wordFound) {
+      startWordFoundAnimation();
+    }
+  }, [wordFound]);
 
   useEffect(() => {
     if (isDecoded) return;
-    buildAnimation();
+    buildGuessAnimation();
+    return () => {
+      removeGuessAnimation();
+    };
   }, []);
 
-  useEffect(() => {
-    return () => {
-      onRemoveAnimationTimeline(id, char, index);
-    };
-  }, [id]);
   return (
     <div
       id={id}
@@ -119,7 +169,7 @@ export const Byte = React.forwardRef((props, ref) => {
       data-binary-code={binaryCode}
     >
       {isDecoded && !wordFound && (
-        <p className="letter-found">{decodedChar ?? "??"}</p>
+        <p className="letter-found">{char ?? "??"}</p>
       )}
       {!isDecoded && !wordFound && <div>{binaryCode}</div>}
       {wordFound && <p className="word-found">{char}</p>}

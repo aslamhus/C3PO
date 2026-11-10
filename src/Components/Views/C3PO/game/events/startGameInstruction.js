@@ -14,15 +14,19 @@ export const startGameInstruction = async ({
   await c3po.animate(c3po.bodyParts.rightShoulder.arm, { rotate: "20deg" });
   await c3po.walk(-40, { steps: 9, duration: 3 * speed });
   // look around?
+  let yas = "Princess Yasmine";
+  if (player.getName() === "SYLVAN" || player.getName() === "DEXTER") {
+    yas = "Yasmine Chachi";
+  }
   await speak(
     <>
       <span style={{ color: "red" }}>{player?.name}</span>, I need your help to
-      decode a message from <span style={{ color: "red" }}>Yasmine Chachi</span>
+      decode a message from <span style={{ color: "red" }}>{yas}</span>
     </>,
   );
   await speak(
     <>
-      Normally, I'd ask <span style={{ color: "blue" }}>R2D2 to help.</span>
+      Normally, I'd ask <span className="R2D2-key-word">R2D2</span> for help.
     </>,
   );
 
@@ -34,7 +38,7 @@ export const startGameInstruction = async ({
   const response = await askQuestion({
     question: (
       <>
-        <span style={{ color: "red" }}>{player.name}</span>, will you help me
+        <span className="player">{player.getName()}</span>, will you help me
         decode the message?
       </>
     ),
@@ -44,24 +48,24 @@ export const startGameInstruction = async ({
     ],
   });
   if (response == "Okay") {
-    c3po.stop();
+    // c3po.stop();
     c3po.rest();
     await speak("Thank the maker!");
     await showBinary();
     await speak(
       <>
-        The code is written in
+        The code is written in{" "}
         <span style={{ color: "green", fontStyle: "italic" }}>binary</span>.
       </>,
       { tapToContinue: true },
     );
 
-    c3po.think();
+    c3po.removeSand();
 
     await speak(
       <>
         Oh! My circuits are full of sand from walking around{" "}
-        <span style={{ color: "gold" }}>Tattooine</span>!
+        <span style={{ className: "tatooine" }}>Tatooine</span>!
       </>,
       { tapToContinue: true },
     );
@@ -84,6 +88,7 @@ export const startGameInstruction = async ({
       </>,
     );
     await toggleKeypad();
+    c3po.look("right");
     await speak(
       <>
         We can decode the message by{" "}
@@ -92,10 +97,10 @@ export const startGameInstruction = async ({
       { tapToContinue: true },
     );
     c3po.rest();
+    c3po.look("straight");
     await speak(
       <>
-        You're my only hope, <span style={{ color: "red" }}>{player.name}</span>
-        !
+        You're my only hope, <span className="player">{player.getName()}</span>!
       </>,
       { tapToContinue: true },
     );

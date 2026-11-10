@@ -1,58 +1,45 @@
-import React, { useRef } from "react";
-import GameInput from "../../UI/Inputs/GameInput";
-import InputGroup from "../../UI/Inputs/InputGroup/InputGroup";
-import ControlStripGroup from "../../GameControl/ControlStripGroup";
+import React, { useState, useRef, useEffect } from "react";
 import ScreenModal from "../../UI/Modals/ScreenModal/ScreenModal";
-import GameButton from "../../UI/Buttons/GameButton";
 import { fx, useGameSound } from "../../hooks/useGameSound";
-export default function SelectPlayer({ onSelect, show, onClose }) {
-  const formRef = useRef();
+import CreatePlayer from "./CreatePlayer";
+import useSave from "../../GameSave/hooks/useSave";
+import ChoosePlayer from "./ChoosePlayer";
+import GameButton from "../../UI/Buttons/GameButton";
+import { AnimatePresence, motion } from "framer-motion";
 
+export default function SelectPlayer({
+  currentPlayer,
+  onSelectPlayer,
+  show,
+  onClose,
+}) {
   const { cueSoundFx, cueMusic } = useGameSound();
+  const [portal, setPortal] = useState(null);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // console.log("formRef validity", formRef.current.checkValidity());
-    const formData = new FormData(formRef.current);
-    if (formRef.current.checkValidity()) {
-      handleFormSuccess(formData);
-    } else {
-      handleFormError();
+  const ref = (el) => {
+    if (!el) return;
+    setPortal(el);
+  };
+
+  const { createPlayer, saveFiles, hasSaves, removeSaveFile, savePlayer } =
+    useSave();
+  const [showCreatePlayerModal, setShowCreatePlayerModal] = useState(false);
+
+  const handleCreateNewPlayer = (player) => {
+    createPlayer(player);
+    onSelectPlayer(player);
+  };
+
+  const handleSelectPlayer = (player) => {
+    savePlayer(player);
+    onSelectPlayer(player);
+  };
+
+  const handleCloseModal = () => {
+    setShowCreatePlayerModal(false);
+    if (onClose instanceof Function) {
+      onClose();
     }
-  };
-
-  /**
-   *
-   * @param {FormData} formData
-   */
-  const handleFormSuccess = (formData) => {
-    // console.log("handleFormScucess", formData);
-    const data = {};
-    formData.forEach((value, key) => {
-      // console.log(value, key);
-      data[key] = value;
-    });
-    if (onSelect instanceof Function) {
-      onSelect(data);
-    }
-  };
-
-  const handleFormError = () => {
-    const inputs = formRef.current.querySelectorAll("input");
-    inputs.forEach((input) => {
-      if (!input.checkValidity()) {
-        // console.log("valid?", input, input.checkValidity());
-        // input.setCustomValidity("hi boo");
-      }
-    });
-    cueSoundFx(fx.error);
-  };
-
-  const handleSelect = (event) => {
-    event.preventDefault();
-    formRef.current.dispatchEvent(
-      new Event("submit", { cancelable: true, bubbles: true }),
-    );
   };
 
   return (
@@ -61,37 +48,46 @@ export default function SelectPlayer({ onSelect, show, onClose }) {
         show={show}
         style={{ top: "50%" }}
         width="500px"
-        onClose={onClose}
+        onClose={handleCloseModal}
+        ref={ref}
       >
+        <ScreenModal.Header>
+          <h3>Choose Player</h3>
+        </ScreenModal.Header>
         <ScreenModal.Body>
-          <form
-            ref={formRef}
-            onSubmit={handleSubmit}
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <h4>Enter name</h4>
-            <InputGroup
+          {hasSaves && !showCreatePlayerModal && (
+            <div
               style={{
                 display: "flex",
                 justifyContent: "center",
+                flexDirection: "column",
+                alignItems: "stretch",
               }}
             >
-              <GameInput
-                type="text"
-                name="name"
-                placeholder=""
-                minLength="3"
-                required
-                autoComplete="country"
+              <ChoosePlayer
+                saveFiles={saveFiles}
+                onDeletePlayer={removeSaveFile}
+                onSelectPlayer={handleSelectPlayer}
+                currentPlayer={currentPlayer}
               />
-            </InputGroup>
-            <GameButton onClick={handleSelect}>OK</GameButton>
-          </form>
+              <GameButton onClick={() => setShowCreatePlayerModal(true)}>
+                New Player
+              </GameButton>
+            </div>
+          )}
+          {(showCreatePlayerModal || !hasSaves) && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              // exit={{ opacity: 0 }}
+            >
+              <CreatePlayer
+                onCreate={handleCreateNewPlayer}
+                onCancel={() => setShowCreatePlayerModal(false)}
+                isCancelDisabled={!hasSaves}
+              />
+            </motion.div>
+          )}
         </ScreenModal.Body>
       </ScreenModal>
     </div>

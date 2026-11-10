@@ -1,5 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useGameSound } from "../../hooks/useGameSound";
+import InputError from "./InputError/InputError";
+import "./game-input.scss";
+import classNames from "classnames";
 
 const silentKeys = {
   Enter: true,
@@ -15,14 +18,27 @@ const silentKeys = {
   Control: true,
 };
 
-export default function GameInput({ ...props }) {
+export default React.forwardRef(function GameInput({ ...props }, ref) {
   const { cueSoundFx, fx } = useGameSound();
+
+  const handleInvalid = (event) => {
+    event.preventDefault();
+    const { target } = event;
+    setError(event.target.validationMessage);
+  };
+
+  const [error, setError] = useState(props?.error);
+
+  const gameInputClasses = classNames("input-container", {
+    error: props.error,
+  });
 
   /**
    * Handle Key Down
    * @param {KeyboardEvent} event
    */
   const handleKeyDown = (event) => {
+    const { target } = event;
     if (props.onKeyDown instanceof Function) {
       props.onKeyDown(event);
     }
@@ -33,13 +49,44 @@ export default function GameInput({ ...props }) {
         case "Backspace":
           sound = fx.error;
         default:
-          cueSoundFx(sound);
+          sound = fx.select;
       }
+
+      cueSoundFx(sound);
     }
+
+    resetValidity(event);
   };
+
+  const resetValidity = (event) => {
+    const { target } = event;
+    target.setCustomValidity("");
+    target.reportValidity();
+    setError(null);
+  };
+
+  const handleBlur = (event) => {
+    resetValidity(event);
+  };
+
+  useEffect(() => {
+    setError(props.error);
+  }, [props.error]);
+
   return (
-    <div className="input-container">
-      <input autoComplete="off" {...props} onKeyDown={handleKeyDown} />
-    </div>
+    <>
+      <div className={gameInputClasses}>
+        <input
+          ref={ref}
+          autoComplete="off"
+          className={error ? "error" : ""}
+          {...props}
+          onKeyDown={handleKeyDown}
+          onInvalid={handleInvalid}
+          onBlur={handleBlur}
+        />
+        <InputError error={error} />
+      </div>
+    </>
   );
-}
+});

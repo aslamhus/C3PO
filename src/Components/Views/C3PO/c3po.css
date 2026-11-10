@@ -28,9 +28,4 @@
   background: white;
   border-color: black; */
 }
-span.battery {
-  color: purple;
-  border: 2px solid purple;
-  border-width: 0;
-  border-bottom-width: 2px;
-}
+

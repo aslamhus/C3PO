@@ -23,3 +23,22 @@
 .tatooine-foreground {
   z-index: 2;
 }
+.tatooine-bg-container{
+  transition:filter 2s ease-out;
+}
+.tatooine-bg-container.energy-level-full {
+  filter:grayscale(0%);
+}
+.tatooine-bg-container.energy-level-high {
+  filter:grayscale(0%);
+}
+.tatooine-bg-container.energy-level-mid {
+  filter:grayscale(1%);
+}
+
+.tatooine-bg-container.energy-level-low {
+  filter:grayscale(55%);
+}
+.tatooine-bg-container.energy-level-danger {
+  filter:grayscale(80%);
+}

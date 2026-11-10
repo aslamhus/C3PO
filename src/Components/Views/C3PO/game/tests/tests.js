@@ -26,7 +26,7 @@ export const testC3POAnimations = async ({ state, actions, control }) => {
   await c3po.walk(-40, { steps: 9, duration: 3 * speed });
 
   await c3po.proposeIdea();
-  await c3po.stop();
+  // await c3po.stop();
   await c3po.rest();
   c3po.think();
   return;

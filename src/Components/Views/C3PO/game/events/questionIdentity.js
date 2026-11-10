@@ -12,7 +12,7 @@ export const questionIdentity = async (
   const response = await askQuestion({
     question: (
       <>
-        is that you, <span style={{ color: "red" }}>{player?.name}</span>?
+        is that you, <span className="player">{player?.name}</span>?
       </>
     ),
     responses: [

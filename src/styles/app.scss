@@ -17,6 +17,7 @@ body {
   font-family: var(--view-screen-font);
   background: rgb(32, 32, 32);
   overflow: hidden;
+  color: vars.$primary-100;
 }
 #render {
   position: relative;
@@ -26,6 +27,7 @@ body {
 }
 .click-to-start {
   background: white;
+  color: black;
   display: flex;
   justify-content: center;
   align-items: center;

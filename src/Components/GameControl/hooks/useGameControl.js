@@ -3,6 +3,20 @@ import { GameControlContext } from "../Context/context";
 import { GAME_CONTROL_ACTIONS } from "../Context/Reducer";
 import { characterToBinaryDict } from "../../ControlKeypad/binaryDict";
 
+export const CONTROL_STRIP_TYPE = {
+  PRIMARY: "PRIMARY",
+  SECONDARY: "SECONDARY",
+  TERTIARY: "TERTIARY",
+};
+
+const CONTROL_STRIP_ACTION = {
+  [CONTROL_STRIP_TYPE.PRIMARY]:
+    GAME_CONTROL_ACTIONS.setPrimaryControlStripComponent,
+  [CONTROL_STRIP_TYPE.SECONDARY]:
+    GAME_CONTROL_ACTIONS.setSecondaryControlStripComponent,
+  [CONTROL_STRIP_TYPE.TERTIARY]:
+    GAME_CONTROL_ACTIONS.setTertiaryControlStripComponent,
+};
 export const useGameControl = () => {
   const [state, dispatch] = useContext(GameControlContext);
 
@@ -31,7 +45,9 @@ export const useGameControl = () => {
    *
    * Sets the gameStart state to false and resets the game state
    */
-  const endGame = () => dispatch({ type: GAME_CONTROL_ACTIONS.endGame });
+  const endGame = () => {
+    dispatch({ type: GAME_CONTROL_ACTIONS.endGame });
+  };
 
   /**
    * Disable ControlKeypad keys
@@ -78,14 +94,19 @@ export const useGameControl = () => {
    */
   const setControlStripComponent = (
     ReactComponent,
-    type = "primary",
+    type = CONTROL_STRIP_TYPE.PRIMARY,
     options = { overwrite: true },
   ) => {
+    let action = CONTROL_STRIP_TYPE[type] ?? null;
+    if (!action) {
+      throw new Error(
+        "Invalid control strip type. Expected " +
+          Object.keys(CONTROL_STRIP_TYPE).join(", "),
+      );
+    }
+
     dispatch({
-      type:
-        type == "primary"
-          ? GAME_CONTROL_ACTIONS.setPrimaryControlStripComponent
-          : GAME_CONTROL_ACTIONS.setSecondaryControlStripComponent,
+      type: CONTROL_STRIP_ACTION[action],
       payload: ReactComponent,
       options,
     });

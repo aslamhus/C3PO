@@ -1,6 +1,18 @@
 import gsap from "gsap";
 import { speed } from "@config";
 import { getBoundsRelativeToParent } from "../../GameStage/utils";
+import C3POActionTimeline from "./C3POActionTimeline";
+import { createSand } from "./elements/sand/sand";
+import { createRestTimeline } from "./animations/rest";
+import { createThinkTimeline } from "./animations/think";
+import { createWaveTimeline } from "./animations/wave";
+import { createProposeIdeaTimeline } from "./animations/propose-idea";
+import { createCelebrateTimeline } from "./animations/celebrate";
+import { createRemoveSandTimeline } from "./animations/remove-sand";
+import { createFretTimeline } from "./animations/fret";
+import { createBreatheTimeline } from "./Body/breathe";
+import { createDazedTimeline } from "./animations/dazed";
+import { createCollapseTimeline } from "./animations/collapse";
 
 class C3POAnimate {
   /**
@@ -11,9 +23,8 @@ class C3POAnimate {
   constructor(bodyRef, constrainEl) {
     this.constrainEl = constrainEl;
     this.body = bodyRef.current;
-    this.timeline = gsap.timeline();
-    this.currentAction = null;
-    this.breatheTimeline = gsap.timeline({ repeat: -1, yoyo: true });
+    this.mainTimeline = new C3POActionTimeline();
+    this.automonicTimeline = new C3POActionTimeline({ repeat: -1, yoyo: true });
     this.bodyParts = {
       body: {
         body: this.body,
@@ -57,46 +68,14 @@ class C3POAnimate {
     return this.timeline;
   }
 
-  /**
-   * Slow pause
-   *
-   * @param {Number} - time to pause
-   */
-  async pause(duration = 0.25) {
-    return new Promise((resolve) => {
-      gsap
-        .to(this.timeline, { timeScale: 0.25, ease: true, duration })
-        .then(() => {
-          this.timeline.pause();
-          this.timeline.timeScale(1);
-          resolve(true);
-        });
-    });
-  }
-
-  /**
-   * Set current action (like talk or breathe)
-   * @param {GSAPTimeline} tl
-   */
-  setCurrentAction(tl) {
-    if (this.currentAction) {
-      // this.currentAction.kill();
+  stopSpeaking() {
+    const speakTimeline = this.mainTimeline.getAction("speak");
+    if (speakTimeline) {
+      speakTimeline.revert();
+      this.mainTimeline.removeAction(speakTimeline);
     }
-    this.currentAction = tl;
   }
 
-  /**
-   * immediate stop
-   */
-  stop() {
-    this.timeline.pause();
-    this.currentAction?.pause();
-    return this.timeline;
-  }
-
-  revertCurrentAction() {
-    this.currentAction.revert();
-  }
   /**
    * C3PO returns to original position
    * and clear timeline.
@@ -107,8 +86,11 @@ class C3POAnimate {
   reset(options = { duration: 1 * speed, ease: "slow" }) {
     const { duration, ease } = options;
     return new Promise((resolve) => {
-      this.timeline.clear();
+      this.automonicTimeline.clear();
+      this.mainTimeline.clear();
       const allBodyParts = this.getAllBodyParts();
+
+      gsap.set(this.bodyParts.leftShoulder.mainArm, { x: 0, y: 0 });
       gsap
         .to(allBodyParts, {
           rotate: "0deg",
@@ -126,6 +108,33 @@ class C3POAnimate {
     });
   }
 
+  dazed() {
+    const tl = createDazedTimeline(this.bodyParts);
+    this.mainTimeline.addAction(tl, "dazed");
+  }
+
+  collapse() {
+    const tl = createCollapseTimeline(this.bodyParts);
+    this.mainTimeline.addAction(tl, "collapse");
+  }
+
+  look(direction, speed = 0.25) {
+    const {
+      head: { leftEyeBall, rightEyeBall },
+    } = this.bodyParts;
+    switch (direction) {
+      case "right":
+        gsap.to(leftEyeBall, { x: "2px", y: 0, duration: 1 * speed });
+        gsap.to(rightEyeBall, { x: "2px", y: 0, duration: 1 * speed });
+        break;
+
+      case "straight":
+        gsap.to(leftEyeBall, { x: "0", y: 0, duration: 1 * speed });
+        gsap.to(rightEyeBall, { x: "0", y: 0, duration: 1 * speed });
+        break;
+    }
+  }
+
   /**
    *
    * @returns {Array} - array of all body parts
@@ -139,62 +148,18 @@ class C3POAnimate {
 
   async rest(duration = 0.5 * speed) {
     return new Promise((resolve) => {
-      this.stop();
-      const { leftShoulder, rightShoulder, head } = this.bodyParts;
-      const restTimeline = gsap.timeline({
-        paused: true,
-        onComplete: () => {
-          resolve(true);
-        },
-      });
-      restTimeline.to(
-        leftShoulder.joint,
-        { scaleY: -1, duration, rotate: "-20deg" },
-        0,
-      );
-      restTimeline.to(leftShoulder.arm, { scale: 1, duration, rotate: "0" }, 0);
-      restTimeline.to(
-        leftShoulder.forearm,
-        { scale: 0.9, duration, rotate: "-60deg" },
-        0,
-      );
+      this.mainTimeline.clear();
+      const restTimeline = createRe(this.bodyParts);
 
-      restTimeline.to(leftShoulder.hand, { rotation: 0, duration }, 0);
-      restTimeline.to(
-        rightShoulder.joint,
-        { scaleY: 1, duration, rotate: "5deg" },
-        0,
-      );
-      restTimeline.to(
-        rightShoulder.arm,
-        { scale: 1, x: 0, y: 0, duration, rotate: "70deg" },
-        0,
-      );
-      restTimeline.to(
-        rightShoulder.mainArm,
-        { scale: 1, x: 0, y: 0, rotation: 0, duration },
-        0,
-      );
-      restTimeline.to(
-        rightShoulder.arm,
-        { scale: 1, rotate: "20deg", duration: duration },
-        0,
-      );
-      restTimeline.to(
-        rightShoulder.forearm,
-        { scale: 1, rotate: "0", duration: duration },
-        0,
-      );
-      restTimeline.to(
-        rightShoulder.hand,
-        { scale: 1, rotate: "0", duration: duration },
-        0,
-      );
-      restTimeline.to(head.leftEyeBall, { y: "0", x: "0", duration }, 0);
-      restTimeline.to(head.rightEyeBall, { y: "0", x: "0%", duration }, 0);
-      restTimeline.play();
+      this.mainTimeline.addAction(restTimeline, "rest");
+      this.mainTimeline.play();
     });
   }
+
+  // addActionToTimeline(childTl, label, ){
+
+  //   this.timeline.add(childTl, label)
+  // }
 
   /**
    * C3PO Waves
@@ -203,242 +168,46 @@ class C3POAnimate {
    * @returns {GSAPTimeline}
    */
   wave(options = { delay: 0 }) {
-    const duration = 2;
-    this.timeline.pause();
-    /** left shoulder */
-    const { leftShoulder, rightShoulder } = this.bodyParts;
-    const leftArmWave = gsap.timeline({ repeat: -1, yoyo: true });
-    leftArmWave.to(
-      leftShoulder.joint,
-      { scaleY: 1, rotate: "-5deg", duration: 0.5, yoyoEase: true },
-      0,
-    );
-    leftArmWave.to(
-      leftShoulder.arm,
-      { rotate: "-5deg", duration: 0.5, yoyoEase: true },
-      0,
-    );
-    leftArmWave.to(
-      leftShoulder.forearm,
-      { rotate: "-30deg", duration: 0.5, yoyoEase: true },
-      0,
-    );
-    leftArmWave.to(
-      leftShoulder.hand,
-      { rotate: "-15deg", duration: 0.25, yoyoEase: true },
-      0,
-    );
-    /** right shoulder */
-    const rightArmTimeline = gsap.timeline({ delay: 0 });
-    const rightArmDuration = 0.5;
-    rightArmTimeline.to(
-      rightShoulder.joint,
-      { rotate: "-5deg", duration: rightArmDuration },
-      0,
-    );
-    rightArmTimeline.to(
-      rightShoulder.arm,
-      { rotate: "-5deg", duration: rightArmDuration },
-      0,
-    );
-    rightArmTimeline.to(
-      rightShoulder.forearm,
-      { rotate: "25deg", duration: rightArmDuration },
-      0,
-    );
-    rightArmTimeline.to(
-      rightShoulder.hand,
-      { rotate: "5deg", duration: rightArmDuration },
-      0,
-    );
-    rightArmTimeline.addLabel("endRightArmMove", ">+=1");
-    // slowly deflate back to original position
-    const deflateDuration = 3;
-    rightArmTimeline.to(
-      rightShoulder.joint,
-      { rotate: "0deg", duration: deflateDuration },
-      "endRightArmMove",
-    );
-    rightArmTimeline.to(
-      rightShoulder.arm,
-      { rotate: "0deg", duration: deflateDuration },
-      "endRightArmMove",
-    );
-    rightArmTimeline.to(
-      rightShoulder.forearm,
-      { rotate: "0deg", duration: deflateDuration },
-      "endRightArmMove",
-    );
-    rightArmTimeline.to(
-      rightShoulder.hand,
-      { rotate: "0deg", duration: deflateDuration },
-      "endRightArmMove",
-    );
-    // add individual movements to overall timeline
-    this.timeline.add(leftArmWave, 0, { ...options });
-    this.timeline.add(rightArmTimeline, 0);
-    this.timeline.addLabel("end", ">");
-    this.timeline.play();
+    const waveTimeline = createWaveTimeline();
+    this.mainTimeline.addAction(waveTimeline, "wave");
     return this.timeline;
-  }
-
-  think(duration = 1 * speed) {
-    // note that think never resolves, because the headscrtch animation is an infinite loop.
-    return new Promise((resolve) => {
-      const { leftShoulder, rightShoulder } = this.bodyParts;
-      this.stop();
-
-      const thinkTimeline = gsap.timeline();
-      thinkTimeline.to(
-        leftShoulder.joint,
-        { scaleY: -1, rotate: "5deg", duration: 0.1 },
-        0,
-      );
-      thinkTimeline.to(
-        leftShoulder.arm,
-        { rotate: "-20deg", scale: 0.9, duration },
-        0,
-      );
-      thinkTimeline.to(
-        leftShoulder.mainArm,
-        { scale: 1, x: "0px", y: "20px", duration },
-        0,
-      );
-      thinkTimeline.to(
-        leftShoulder.forearm,
-        { scale: 0.9, scale: 1, rotate: "20deg", duration },
-        0,
-      );
-      thinkTimeline.addLabel("leftShouldEnd", ">");
-      thinkTimeline.to(rightShoulder.joint, { rotate: "-30deg" }, 0);
-      /** RIGHT FOREARM CHANGE */
-      thinkTimeline.to(
-        rightShoulder.forearm,
-        { left: "42%", bottom: "-8%", x: "-10px", y: "-5px" },
-        0,
-      );
-      thinkTimeline.to(rightShoulder.mainArm, { rotate: "21deg" }, 0);
-
-      thinkTimeline.to(
-        rightShoulder.arm,
-        { rotate: "-50deg", x: "20px", scale: 1.2 },
-        0,
-      );
-      thinkTimeline.to(
-        rightShoulder.mainArm,
-        { rotate: "30deg", y: "-10px", x: "-15px" },
-        0,
-      );
-      thinkTimeline.to(rightShoulder.forearm, { rotate: "50deg" }, 0);
-      thinkTimeline.to(
-        rightShoulder.hand,
-        { scale: 0.8, x: "5px", y: "5px" },
-        0,
-      );
-      thinkTimeline.addLabel("raiseArm", ">");
-      /** head scratch */
-      const headScratchTimeline = gsap.timeline({ yoyo: true, repeat: -1 }, 0);
-      headScratchTimeline.to(
-        rightShoulder.forearm,
-        { rotation: "+=1", duration: 0.5 },
-        0,
-      );
-      headScratchTimeline.to(
-        rightShoulder.hand,
-        { rotation: "+=2", duration: 0.5 },
-        0,
-      );
-      headScratchTimeline.to(
-        rightShoulder.forearm,
-        { rotation: "-=1", duration: 0.5 },
-        0.5,
-      );
-      headScratchTimeline.to(
-        rightShoulder.hand,
-        { rotation: "-=2", duration: 0.5 },
-        0.5,
-      );
-      headScratchTimeline.to(rightShoulder.hand, { opacity: 1, duration: 2 });
-      thinkTimeline.add(headScratchTimeline, "raiseArm");
-      this.timeline.add(thinkTimeline);
-      this.timeline.play();
-    });
   }
 
   proposeIdea(duration = 1 * speed) {
     return new Promise((resolve) => {
-      const { leftShoulder, rightShoulder } = this.bodyParts;
-      const thinkTimeline = gsap.timeline({
-        onComplete: () => {
-          resolve(true);
-        },
-      });
-      // reset values
-      thinkTimeline.set(rightShoulder.joint, { scaleY: 1 });
-      //timelines
-      thinkTimeline.to(
-        leftShoulder.joint,
-        { scaleY: -1, rotate: "10deg", duration: 0.1 },
-        0,
-      );
-      thinkTimeline.to(
-        leftShoulder.arm,
-        { rotate: "-20deg", scale: 0.9, duration },
-        0,
-      );
-      thinkTimeline.to(
-        leftShoulder.forearm,
-        { scaleX: 1, scale: 0.9, rotate: "20deg", duration },
-        0,
-      );
-      thinkTimeline.addLabel("leftShouldEnd", ">");
-      thinkTimeline.to(rightShoulder.joint, { rotate: "-20deg" }, 0);
-      thinkTimeline.to(
-        rightShoulder.arm,
-        { rotate: "3deg", x: "0px", scale: 1.2 },
-        0,
-      );
-      thinkTimeline.to(
-        rightShoulder.forearm,
-        { rotate: "70deg", x: "-10px", y: "-10px" },
-        0,
-      );
-      thinkTimeline.to(rightShoulder.hand, { scale: 0.8, x: "5px" }, 0);
-      thinkTimeline.addLabel("raiseArm", ">");
-      /** head scratch */
-
-      thinkTimeline.play();
+      const proposeTl = createProposeIdeaTimeline(this.bodyParts);
+      this.mainTimeline.addAction(proposeTl, "proposeIdea");
     });
   }
 
-  headScratch() {
-    // first check if c3po is proposing an idea
-    const { leftShoulder, rightShoulder } = this.bodyParts;
-    const headScratchTimeline = gsap.timeline({ yoyo: true, repeat: -1 }, 0);
-    headScratchTimeline.to(
-      rightShoulder.forearm,
-      { rotation: "+=1", duration: 0.5 },
-      0,
-    );
-    headScratchTimeline.to(
-      rightShoulder.hand,
-      { rotation: "+=2", duration: 0.5 },
-      0,
-    );
-    headScratchTimeline.to(
-      rightShoulder.forearm,
-      { rotation: "-=1", duration: 0.5 },
-      0.5,
-    );
-    headScratchTimeline.to(
-      rightShoulder.hand,
-      { rotation: "-=2", duration: 0.5 },
-      0.5,
-    );
-    headScratchTimeline.to(rightShoulder.hand, { opacity: 1, duration: 2 });
-    headScratchTimeline.play();
-    return headScratchTimeline;
-  }
+  // headScratch() {
+  //   // first check if c3po is proposing an idea
+  //   const { leftShoulder, rightShoulder } = this.bodyParts;
+  //   const headScratchTimeline = gsap.timeline({ yoyo: true, repeat: -1 }, 0);
+  //   headScratchTimeline.to(
+  //     rightShoulder.forearm,
+  //     { rotation: "+=1", duration: 0.5 },
+  //     0,
+  //   );
+  //   headScratchTimeline.to(
+  //     rightShoulder.hand,
+  //     { rotation: "+=2", duration: 0.5 },
+  //     0,
+  //   );
+  //   headScratchTimeline.to(
+  //     rightShoulder.forearm,
+  //     { rotation: "-=1", duration: 0.5 },
+  //     0.5,
+  //   );
+  //   headScratchTimeline.to(
+  //     rightShoulder.hand,
+  //     { rotation: "-=2", duration: 0.5 },
+  //     0.5,
+  //   );
+  //   headScratchTimeline.to(rightShoulder.hand, { opacity: 1, duration: 2 });
+  //   headScratchTimeline.play();
+  //   return headScratchTimeline;
+  // }
 
   /**
    *
@@ -449,12 +218,9 @@ class C3POAnimate {
   async walk(xPosition, options = { steps: 7, duration: 2 * speed }) {
     const bodyBounds = this.getBounds(this.body);
     const distance = xPosition - bodyBounds.x - window.scrollX;
-    // console.log(
-    //   `xPos ${xPosition} - bodyBounds.x ${bodyBounds.x}  - window.scrollX ${window.scrollX}= ${distance}`
-    // );
+
     const totalDuration = options.duration || 2;
     const steps = options.steps || 7;
-
     // build timeline
     const walkTimeline = gsap.timeline();
     // walkTimeline.set(this.body, { x: bodyBounds.x });
@@ -474,70 +240,12 @@ class C3POAnimate {
   }
 
   breathe() {
-    const breathDuration = 4;
-    const hipsShiftDuration = 4;
-    const {
-      head: { head },
-
-      hips: { hips, leftLeg, rightLeg },
-    } = this.bodyParts;
-    /** head shake */
-    const headShake = gsap.timeline({ repeat: -1, yoyo: true, repeatDelay: 5 });
-    headShake.to(head, {
-      rotate: "-=1deg",
-      duration: breathDuration / 5,
-      delay: 0.2,
-    });
-    headShake.to(head, { rotate: "+=2deg", duration: breathDuration / 5 });
-    headShake.to(head, { rotate: "-=1deg", duration: breathDuration / 5 });
-    headShake.to(head, { rotate: "+=1deg", duration: breathDuration / 5 });
-    /** hips and legs */
-    // const hipsShift = gsap.timeline({ repeat: -1, yoyo: true, repeatDelay: 7 });
-
-    // // hipsShift.to(hips, { rotate: '-=0.5', duration: 1 }, 'legShift', 0);
-    // hipsShift.to(rightLeg, { rotation: "-=1deg", y: "+=2", duration: 1 }, 0);
-    // hipsShift.to(leftLeg, { rotation: "-=1deg", duration: 0.7 });
-    // hipsShift.addLabel("legShift", ">");
-
-    this.breatheTimeline.add(headShake, 0);
-    // this.breatheTimeline.add(hipsShift, 0);
-    // this.breatheTimeline.add(this.getTorsoBreathe(), 0);
-    this.breatheTimeline.play();
+    const breatheTl = createBreatheTimeline(this.bodyParts);
+    this.automonicTimeline.addAction(breatheTl, "breathe");
+    this.automonicTimeline.play();
   }
 
-  getTorsoBreathe() {
-    const {
-      head: { head },
-      torso: { torso, stomach },
-    } = this.bodyParts;
-    const torsoBreathe = gsap.timeline({
-      repeat: -1,
-      repeatDelay: 4,
-      ease: true,
-    });
-    // breathe in
-    torsoBreathe.to(
-      torso,
-      { scale: "+=0.005", y: "-=0.5", duration: 0.5, delay: 0.5 },
-      0,
-    );
-    torsoBreathe.to(head, { y: "-=0.5", duration: 0.5, delay: 0.5 }, 0);
-    torsoBreathe.addLabel("breatheIn", ">");
-    // breathe out
-    torsoBreathe.to(
-      torso,
-      { scale: "-=0.005", y: "+=0.5", duration: 1.25, delay: 0.2 },
-      "breatheIn",
-    );
-    torsoBreathe.to(
-      head,
-      { y: "+=0.5", duration: 1.25, delay: 0.5 },
-      "breatheIn",
-    );
-    return torsoBreathe;
-  }
-
-  speak(repeat = -1) {
+  speak() {
     return new Promise((resolve) => {
       const {
         body: { body },
@@ -547,230 +255,75 @@ class C3POAnimate {
         leftShoulder,
         rightShoulder,
       } = this.bodyParts;
-      const tl = gsap.timeline({
-        repeat: repeat || -1,
+      const speakTimeline = gsap.timeline({
+        repeat: -1,
       });
-      tl.to(
+      speakTimeline.to(
         head,
         {
           scaleY: 1.025,
           duration: 0.2,
           yoyo: true,
-          //  ease: "power1.inOut"
         },
         0,
       );
-      tl.to(head, { scaleX: 0.975, duration: 0.2, yoyo: true }, 0.1);
-      tl.play();
-      this.setCurrentAction(tl);
+      speakTimeline.to(head, { scaleX: 0.975, duration: 0.2, yoyo: true }, 0.1);
+      speakTimeline.play();
+      this.mainTimeline.play();
+      this.mainTimeline.addAction(speakTimeline, "speak");
     });
   }
 
   celebrate(repeat) {
     return new Promise((resolve) => {
-      const {
-        body: { body },
-        head: { head },
-        hips: { hips, leftLeg, rightLeg },
-        torso: { torso, chest, stomach },
-        leftShoulder,
-        rightShoulder,
-      } = this.bodyParts;
-      this.stop();
-      const tl = gsap.timeline({
-        yoyo: true,
-        repeat: repeat || -1,
-        onComplete: () => resolve(),
-      });
-      // set initial position
-      gsap.set(body, { y: "0", duration: prepareDuration }, 0);
-      gsap.set(
-        leftLeg,
-        { rotate: "-5deg", y: "0", duration: prepareDuration },
-        0,
-      );
-      gsap.set(
-        rightLeg,
-        { rotate: "5deg", y: "0", duration: prepareDuration },
-        0,
-      );
-      gsap.set(
-        leftShoulder.joint,
-        { scaleY: 1, rotate: "-20deg", duration: prepareDuration },
-        0,
-      );
-      gsap.set(
-        leftShoulder.mainArm,
-        { rotate: "5deg", duration: prepareDuration },
-        0,
-      );
-      gsap.set(
-        leftShoulder.forearm,
-        { rotate: "-10deg", duration: prepareDuration },
-        0,
-      );
-      gsap.set(
-        rightShoulder.joint,
-        { rotate: "10deg", duration: prepareDuration },
-        0,
-      );
-      gsap.set(
-        rightShoulder.arm,
-        { rotate: "-20deg", duration: prepareDuration },
-        0,
-      );
-      gsap.set(
-        rightShoulder.forearm,
-        { rotate: "50deg", duration: prepareDuration },
-        0,
-      );
+      this.mainTimeline.clear();
+      if (this.currentActionName == this.celebrate.name) resolve(true);
 
-      // prepare (down)
-      const prepareDuration = 0.3;
-      tl.to(body, { y: "5", duration: prepareDuration }, 0);
-      tl.to(leftLeg, { rotate: "-5deg", y: "0", duration: prepareDuration }, 0);
-      tl.to(rightLeg, { rotate: "5deg", y: "0", duration: prepareDuration }, 0);
-      tl.to(
-        leftShoulder.joint,
-        { scaleY: 1, rotate: "-20deg", duration: prepareDuration },
-        0,
-      );
-      tl.to(
-        leftShoulder.mainArm,
-        { rotate: "5deg", duration: prepareDuration },
-        0,
-      );
-      tl.to(
-        leftShoulder.forearm,
-        { rotate: "-10deg", duration: prepareDuration },
-        0,
-      );
-      tl.to(
-        rightShoulder.joint,
-        { rotate: "10deg", duration: prepareDuration },
-        0,
-      );
-      tl.to(
-        rightShoulder.arm,
-        { rotate: "-20deg", duration: prepareDuration },
-        0,
-      );
-      tl.to(
-        rightShoulder.forearm,
-        { rotate: "50deg", duration: prepareDuration },
-        0,
-      );
-      tl.addLabel("prepare");
-      // raise arms
-      const raiseDuration = 0.3;
-      tl.to(body, { y: "-15", duration: prepareDuration }, "prepare");
-      tl.to(
-        leftLeg,
-        { rotate: "5deg", y: "+=10", duration: prepareDuration },
-        "prepare",
-      );
-      tl.to(
-        rightLeg,
-        { rotate: "-5deg", y: "+=10", duration: prepareDuration },
-        "prepare",
-      );
-      tl.to(
-        leftShoulder.joint,
-        { rotate: "0", duration: prepareDuration },
-        "prepare",
-      );
-      tl.to(
-        leftShoulder.mainArm,
-        { rotate: "5deg", duration: prepareDuration },
-        "prepare",
-      );
-      tl.to(
-        leftShoulder.forearm,
-        { rotate: "-60deg", duration: prepareDuration },
-        "prepare",
-      );
-      tl.to(
-        rightShoulder.joint,
-        { scaleY: 1, rotate: "10deg", duration: prepareDuration },
-        "prepare",
-      );
-      tl.to(
-        rightShoulder.arm,
-        { rotate: "-40deg", duration: prepareDuration },
-        "prepare",
-      );
-      tl.to(
-        rightShoulder.forearm,
-        { rotate: "100deg", duration: prepareDuration },
-        "prepare",
-      );
+      this.mainTimeline.clear();
 
-      // tl.to(leftShoulder.mainArm, { , duration: prepareDuration }, 0);
+      this.look("straight");
+      const celebrateTl = createCelebrateTimeline(this.bodyParts, repeat);
+      this.mainTimeline.addAction(celebrateTl, "celebrate");
       tl.play();
-      this.setCurrentAction(tl);
+    });
+  }
+
+  think(duration = 1 * speed) {
+    // note that think never resolves, because the headscrtch animation is an infinite loop.
+    return new Promise((resolve) => {
+      this.mainTimeline.clear();
+      const thinkTimeline = createThinkTimeline(this.bodyParts);
+      thinkTimeline.set(
+        this.bodyParts.leftShoulder.joint,
+        { scaleY: -1, duration: 0 },
+        0,
+      );
+      this.mainTimeline.addAction(thinkTimeline, "think");
+    });
+  }
+
+  removeSand(duration = 1 * speed) {
+    // note that think never resolves, because the headscrtch animation is an infinite loop.
+    return new Promise((resolve) => {
+      const sand = createSand();
+      head.appendChild(sand);
+      this.mainTimeline.clear();
+      const removeSandTl = createRemoveSandTimeline(this.bodyParts);
+      const onComplete = () => {
+        sand.remove();
+        resolve(true);
+      };
+      removeSandTl.eventCallback("onComplete", onComplete);
+      removeSandTl.eventCallback("onInterrupt", onComplete);
+      this.mainTimeline.addAction(removeSandTl, "removeSand");
     });
   }
 
   fret() {
-    const {
-      body: { body },
-      head: { head, leftEyeBall, rightEyeBall },
-      hips: { hips, leftLeg, rightLeg },
-      torso: { torso, chest, stomach },
-      leftShoulder,
-      rightShoulder,
-    } = this.bodyParts;
-    this.stop();
-    const tl = gsap.timeline();
-    // set initial position
-    // prepare (down)
-    this.rest(0);
-    const prepareDuration = 0.3;
-    tl.to(body, { y: "0", duration: prepareDuration }, 0);
-    tl.to(leftEyeBall, { y: "10%", x: "10%", duration: prepareDuration }, 0);
-    tl.to(rightEyeBall, { y: "10%", x: "10%", duration: prepareDuration }, 0);
-    // tl.to(torso, { scaleY: 0.9, duration: prepareDuration }, 0);
-    tl.to(leftLeg, { rotate: "0", y: "0", duration: prepareDuration }, 0);
-    tl.to(rightLeg, { rotate: "0", y: "0", duration: prepareDuration }, 0);
-    tl.to(
-      leftShoulder.joint,
-      { scaleY: -1, rotate: "-20deg", duration: prepareDuration },
-      0,
-    );
-    tl.to(
-      leftShoulder.arm,
-      {
-        x: "5px",
-        y: "-10px",
-        duration: prepareDuration,
-      },
-      0,
-    );
-    tl.to(
-      leftShoulder.forearm,
-      { rotate: "-70deg", duration: prepareDuration },
-      0,
-    );
-    tl.to(
-      rightShoulder.joint,
-      { scaleY: -1, rotate: "18deg", duration: prepareDuration },
-      0,
-    );
-    tl.to(
-      rightShoulder.arm,
-      { rotate: "-28deg", duration: prepareDuration, x: "-6px", y: "-5px" },
-      0,
-    );
-    tl.to(
-      rightShoulder.forearm,
-      { rotate: "80deg", duration: prepareDuration, x: "-1px", y: "2px" },
-      0,
-    );
-
-    // tl.to(leftShoulder.mainArm, { rotate: '0', duration: prepareDuration }, 0);
-    // tl.to(rightShoulder.joint, { rotate: '0', duration: prepareDuration }, 0);
-    tl.addLabel("prepare");
-    tl.play();
+    this.mainTimeline.pause();
+    this.mainTimeline.clear();
+    const fretTl = createFretTimeline(this.bodyParts);
+    this.mainTimeline.addAction(fretTl, "fret");
   }
 
   animate(bodyPart, options) {
@@ -779,7 +332,8 @@ class C3POAnimate {
         throw new Error("bodyPart must be instance of HTMLElement");
       }
       const { onComplete, ...animateOptions } = options;
-      gsap.to(bodyPart, {
+      const tl = gsap.timeline();
+      tl.to(bodyPart, {
         ...animateOptions,
         onComplete: () => {
           if (onComplete instanceof Function) {
@@ -788,6 +342,8 @@ class C3POAnimate {
           resolve("complete");
         },
       });
+      tl.play();
+      // this.mainTimeline.addAction(tl, crypto.randomUUID());
     });
   }
 

@@ -9,15 +9,21 @@ import { useGameSound } from "../../hooks/useGameSound";
 import SpaceBackground from "./Components/SpaceBackground";
 import "./game-start-screen.css";
 import useGamePlayer from "../../GamePlayer/hooks/useGamePlayer";
+import Player from "../../GamePlayer/Player";
 
 export default function GameStartScreen({ onPressGameStart }) {
-  const { player, setPlayerName } = useGamePlayer();
+  const { player, setPlayer } = useGamePlayer();
   const { cueSoundFx, cueMusic, music } = useGameSound();
   const [showSelectPlayerModal, setShowSelectPlayerModal] = useState(false);
 
   const ref = useRef();
+
+  /**
+   * @param {Player} player
+   */
   const handleSelectPlayer = (player) => {
-    setPlayerName(player?.name);
+    setPlayer(player);
+
     if (onPressGameStart instanceof Function) {
       onPressGameStart(player);
     }
@@ -67,9 +73,10 @@ export default function GameStartScreen({ onPressGameStart }) {
         <h1>Star Wars</h1>
         <h2>Binary Decoder</h2>
         <SelectPlayer
-          onSelect={handleSelectPlayer}
+          onSelectPlayer={handleSelectPlayer}
           show={showSelectPlayerModal}
           onClose={() => setShowSelectPlayerModal(false)}
+          currentPlayer={player}
         />
         <ConfirmButton onClick={handleGameStart}>Start</ConfirmButton>
       </div>

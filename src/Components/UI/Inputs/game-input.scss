@@ -1,0 +1,35 @@
+.input-container {
+  position: relative;
+  &.error {
+    padding-bottom: 20px;
+  }
+}
+
+.input-error {
+  position: absolute;
+  background: red;
+  padding: 0.25rem;
+  text-align: center;
+  font-size: smaller;
+  width: 100%;
+  color: white;
+  bottom: 100%;
+  border: 1px solid red;
+  --triangle-size: 10px;
+  transform: translateY(calc(var(--triangle-size) * -1));
+  margin: auto;
+  border-radius: 20px;
+  &::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 100%;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: var(--triangle-size) var(--triangle-size) 0
+      var(--triangle-size);
+    border-color: red transparent transparent transparent;
+  }
+}

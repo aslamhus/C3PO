@@ -8,22 +8,25 @@ import TipProvider from "./Components/UI/Modals/TipModal/context/TipProvider.js"
 import GameOptionsContextProvider from "./Components/GameOptions/Context/GameOptionsContextProvider.js";
 import GameSoundProvider from "./Components/hooks/useGameSound/GameSoundProvider.js";
 import GamePlayerContextProvider from "./Components/GamePlayer/Context/GamePlayerContextProvider.js";
+import GameSaveContextProvider from "./Components/GameSave/Context/GameSaveContextProvider.js";
 const renderDiv = document.getElementById("render");
 const root = createRoot(renderDiv);
 root.render(
-  <GameSoundProvider>
+  <GameSaveContextProvider>
     <GamePlayerContextProvider>
-      <GameControlContextProvider>
-        <GameStageProvider>
-          <GameOptionsContextProvider>
-            <AskQuestionProvider>
-              <TipProvider>
-                <App />
-              </TipProvider>
-            </AskQuestionProvider>
-          </GameOptionsContextProvider>
-        </GameStageProvider>
-      </GameControlContextProvider>
+      <GameSoundProvider>
+        <GameControlContextProvider>
+          <GameStageProvider>
+            <GameOptionsContextProvider>
+              <AskQuestionProvider>
+                <TipProvider>
+                  <App />
+                </TipProvider>
+              </AskQuestionProvider>
+            </GameOptionsContextProvider>
+          </GameStageProvider>
+        </GameControlContextProvider>
+      </GameSoundProvider>
     </GamePlayerContextProvider>
-  </GameSoundProvider>,
+  </GameSaveContextProvider>,
 );

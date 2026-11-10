@@ -46,16 +46,21 @@ export const main = async (state, actions, control, sound, stage, player) => {
     getGameStage,
     showC3PO,
   } = actions;
-  // showBinary();
   const toggleKeypad = () =>
     control.toggleKeypad(true, { onPressChar: guessChar });
 
-  // return;
   cueMusic(music.jawaTheme);
+
+  showC3PO();
+  setTimeout(() => c3po.collapse(), 1000);
+  return;
+  // await c3po.proposeIdea();
+  // c3po.removeSand();
+
   // testC3POAnimations({ state, actions, control });
   // return;
   await gameEvents.exitStageLeft(c3po);
-  showC3PO();
+
   let skipQuestionIdentity = true,
     skipInstruction = true;
   // TODO: add skip function
@@ -92,7 +97,7 @@ export const main = async (state, actions, control, sound, stage, player) => {
       toggleKeypad,
       player,
     });
-    c3po.stop();
+    // c3po.stop();
     c3po.rest();
   } else {
     // skip game instruction and move c3po to position

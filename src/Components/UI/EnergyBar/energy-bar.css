@@ -61,38 +61,33 @@ which moves left or right and gets the background colour
 }
 
 /* energy levels */
-/* Full */
-.energy-bar.energy-level-full {
-  border-color: rgb(13, 106, 13);
+.energy-level-full {
+  --primary-energy-color: green;
+  --secondary-energy-color: rgb(13, 106, 13);
 }
-.energy-bar.energy-level-full div {
-  background: green;
+.energy-level-high {
+  --primary-energy-color: rgb(6, 196, 72);
+  --secondary-energy-color: rgb(15, 135, 15);
 }
-/* High */
-.energy-bar.energy-level-high {
-  border-color: rgb(15, 135, 15);
+.energy-level-mid {
+  --primary-energy-color: yellow;
+  --secondary-energy-color: rgb(170, 167, 115);
 }
-.energy-bar.energy-level-high div {
-  background: rgb(6, 196, 72);
+.energy-level-low {
+  --primary-energy-color: orange;
+  --secondary-energy-color: rgb(140, 104, 54);
 }
-/* Mid */
-.energy-bar.energy-level-mid {
-  border-color: rgb(170, 167, 115);
+.energy-level-danger {
+  --primary-energy-color: rgba(228, 65, 19, 0.774);
+  --secondary-energy-color: rgba(228, 65, 19, 0.774);
 }
-.energy-bar.energy-level-mid div {
-  background: yellow;
+
+/* Shared rules that consume the variables */
+.energy-bar {
+  border-color: var(--secondary-energy-color);
 }
-/* Low */
-.energy-bar.energy-level-low {
-  border-color: rgb(140, 104, 54);
-  animation: danger-glow 1s ease-in-out infinite alternate;
-}
-.energy-bar.energy-level-low div {
-  background: orange;
-}
-/* Danger */
-.energy-bar.energy-level-danger {
-  border-color: rgba(228, 65, 19, 0.774);
+.energy-bar div {
+  background: var(--primary-energy-color);
 }
 .energy-bar.energy-level-danger div {
   background: rgb(189, 0, 0);

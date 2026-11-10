@@ -1,3 +1,4 @@
+@use "./vars";
 @import url("https://fonts.googleapis.com/css2?family=Bangers&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=VT323&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;800&display=swap");
@@ -24,4 +25,13 @@ h3,
 h4,
 h5 {
   margin: 1rem 0;
+}
+
+em {
+  color: white;
+  font-style: normal;
+  font-weight: bold;
+}
+.danger {
+  color: vars.$danger-100;
 }

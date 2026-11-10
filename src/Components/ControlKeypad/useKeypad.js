@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import MenuButton from "../UI/Buttons/MenuButton/MenuButton";
 import gsap from "gsap";
+import { CONTROL_STRIP_TYPE } from "../GameControl/hooks/useGameControl";
 
 /**
  * Note on useKeypad imperative sneakiness.
@@ -36,15 +37,26 @@ export const useKeypad = (props) => {
    */
   const renderControlStripComponent = (charGroup) => {
     setControlStripComponent(
-      <>
-        {/* <MenuButton
-          // className={charGroup == 'uppercase' || charGroup == 'lowercase' ? 'active' : ''}
-          onClick={toggleLetterCase}
-        >
-          {charGroup == 'lowercase' ? 'AZ' : 'az'}
-        </MenuButton> */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+          gap: "0.5rem",
+        }}
+      >
         <MenuButton
-          className={charGroup == "numbers" ? "active" : ""}
+          // className={charGroup == 'uppercase' || charGroup == 'lowercase' ? 'active' : ''}
+          // onClick={toggleLetterCase}
+          active={charGroup == "uppercase"}
+          onClick={() => setCharGroup("uppercase")}
+        >
+          {/* {charGroup == 'lowercase' ? 'AZ' : 'az'} */}
+          A-Z
+        </MenuButton>
+        <MenuButton
+          active={charGroup == "numbers"}
           onClick={() => setCharGroup("numbers")}
         >
           123
@@ -55,7 +67,8 @@ export const useKeypad = (props) => {
         >
           #+=
         </MenuButton>
-      </>,
+      </div>,
+      CONTROL_STRIP_TYPE.SECONDARY,
     );
   };
   const renderMenuButtons = () => renderControlStripComponent(charGroup);

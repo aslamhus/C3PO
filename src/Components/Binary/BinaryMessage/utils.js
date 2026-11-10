@@ -6,13 +6,13 @@ export const getBinaryCodeFromImageURL = (url) => {
   return url.match(regex)[1];
 };
 
-export const getByteDataFromMessage = (message) => {
+export const getByteDataFromMessage = (message, decoded = []) => {
   let data = [];
   for (let i = 0; i < message.length; i++) {
     const char = message[i];
     data.push({
       char,
-      decoded: false,
+      decoded: decoded[i] ?? false,
       binary: charToBinary[char],
       guess: null,
       animationDelay: 0,

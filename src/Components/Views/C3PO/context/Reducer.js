@@ -7,6 +7,7 @@ export const C3POStates = {
 export const C3PO_ACTIONS = {
   load: "load",
   speak: "speak",
+
   updateC3poState: "updateC3poState",
   toggleSpeechBubble: "toggleSpeechBubble",
   showBinary: "showBinary",
@@ -32,9 +33,9 @@ export const initialState = {
   isBinaryVisible: false,
   showTapToContinue: false,
   guesses: {},
-  message: "May the force be with you.",
+  message: "May the force be with you!",
   // energy: 0.85,
-  energy: 1,
+  energy: 0.5,
 };
 
 export const reducer = (state = initialState, action) => {

@@ -16,7 +16,7 @@ const renderChildren = (children) => {
   };
 
   React.Children.forEach(children, (child) => {
-    if (elements.hasOwnProperty(child.type.name)) {
+    if (elements.hasOwnProperty(child?.type?.name)) {
       elements[child.type.name].push(child);
     }
   });
@@ -29,172 +29,230 @@ const renderChildren = (children) => {
   );
 };
 
-export default function ScreenModal({
-  show: _controlledShow,
-  className,
-  onClose,
-  onShow,
-  children,
-  overlay = true,
-  closeOnOverlayClick = true,
-  width,
-  height,
-  animate = true,
-  portal, // add it to any container (defaults to gamestage)
-}) {
-  const [show, setShow] = useState(_controlledShow ?? false);
-  const ref = useRef();
-
-  const getOverlay = () => ref.current;
-  const getWrapper = () => ref.current?.firstElementChild;
-  const screenModalClassName = classNames(
-    "screen-modal screen-modal-dialog",
-    className,
+/**
+ * Screen Modal
+ *
+ * @typedef {object} ScreenModalProps
+ * @property {string} show
+ * @property {string} className
+ * @property {Function} onShow
+ * @property {Function} onClose
+ * @property {boolean} overlay
+ * @property {boolean} closeOnOverlayClick
+ * @property {boolean} animate
+ * @property {boolean} closeAllMenusOnOverlayClick
+ * @property {number} width
+ * @property {number} height
+ * @property {HTMLElement} portal
+ *
+ *
+ *
+ */
+const ScreenModal = React.forwardRef(
+  /**
+   * @param {ScreenModalProps} props
+   * @param {React.RefObject} ref
+   * @returns {JSX.Element}
+   */
+  function ScreenModal(
     {
-      "screen-modal-show": show,
-      "screen-modal-overlay": overlay,
+      show: _controlledShow,
+      className,
+      onClose,
+      onShow,
+      children,
+      overlay = true,
+      closeOnOverlayClick = true,
+      closeAllMenusOnOverlayClick = false,
+      width,
+      height,
+      animate = true,
+      portal, // add it to any container (defaults to gamestage)
     },
-  );
+    forwardRef,
+  ) {
+    const [show, setShow] = useState(_controlledShow ?? false);
+    const [mounted, setMounted] = useState(false);
+    const ref = useRef();
 
-  const handleShow = (event) => {
-    animateIn();
-    gameStage.blur();
-    if (onShow instanceof Function) {
-      onShow();
-    }
-  };
-
-  const handleClose = () => {
-    animateOut();
-    unblurGameStage();
-    if (onClose instanceof Function) {
-      onClose();
-    }
-  };
-
-  const handleClickOverlay = (event) => {
-    event.preventDefault();
-    if (!event.target.classList.contains("screen-modal-dialog")) return;
-    if (overlay && closeOnOverlayClick) {
-      setShow(false);
-    }
-  };
-
-  const unblurGameStage = () => {
-    // only unblur game stage if all the modals with an overlay are hidden
-    const modals = document.body.querySelectorAll(
-      ".screen-modal[data-has-overlay='true'][data-show='true']",
+    const getOverlay = () => ref.current;
+    const getWrapper = () => ref.current?.firstElementChild;
+    const getScreenModalContainer = () =>
+      ref.current?.firstElementChild.firstElementChild;
+    const screenModalClassName = classNames(
+      "screen-modal screen-modal-dialog",
+      className,
+      {
+        "screen-modal-show": show,
+        "screen-modal-overlay": overlay,
+      },
     );
-    if (!modals?.length) {
-      gameStage.unBlur();
-    }
-  };
 
-  const gameStage = useGameStage();
-
-  const animateIn = () => {
-    gsap.to(getOverlay(), {
-      opacity: 1,
-      // display: "flex",
-      pointerEvents: "all",
-    });
-    gsap.to(getWrapper(), {
-      height: height ?? "auto",
-      // display: "block",
-      pointerEvents: "all",
-      opacity: 1,
-      duration: 0.5,
-    });
-  };
-
-  const animateOut = () => {
-    gsap.to(getOverlay(), {
-      opacity: 0,
-
-      pointerEvents: "none",
-    });
-    gsap.to(getWrapper(), {
-      opacity: 1,
-      duration: 0.2,
-      // display: "none"
-      height: "0",
-      pointerEvents: "none",
-    });
-  };
-
-  const resetAnimation = () => {
-    gsap.set(getOverlay(), {
-      opacity: 0,
-      // display: "none"
-      pointerEvents: "none",
-    });
-
-    gsap.set(getWrapper(), {
-      height: 0,
-      // display: "none"
-      pointerEvents: "none",
-    });
-  };
-
-  useEffect(() => {
-    if (!animate) return;
-    if (show) {
-      handleShow();
-    } else {
-      handleClose();
-    }
-  }, [show]);
-
-  useEffect(() => {
-    setShow(_controlledShow);
-  }, [_controlledShow]);
-
-  useEffect(() => {
-    if (!gameStage.state.loaded) return;
-    if (ref.current && animate) {
-      resetAnimation();
-      if (show) {
-        animateIn();
+    const handleShow = (event) => {
+      animateIn();
+      gameStage.blur();
+      if (onShow instanceof Function) {
+        onShow();
       }
-    }
-  }, [ref, gameStage.state.loaded]);
-
-  useEffect(() => {
-    return () => {
-      unblurGameStage();
     };
-  }, []);
 
-  if (!gameStage.state.loaded) return null;
+    const handleClose = () => {
+      animateOut();
+      unblurGameStage();
+      if (onClose instanceof Function) {
+        onClose();
+      }
+    };
 
-  return (
-    <>
-      {createPortal(
-        <div
-          className={screenModalClassName}
-          ref={ref}
-          onClick={handleClickOverlay}
-          data-has-overlay={overlay}
-          data-show={show}
-        >
-          {/* Animate the height of the screen modal wrapper, not the modal container
+    const handleClickOverlay = (event) => {
+      const { target } = event;
+      if (!target.classList.contains("screen-modal-overlay")) return;
+      event.preventDefault();
+
+      if (!closeAllMenusOnOverlayClick) {
+        event.stopPropagation();
+      }
+      if (!event.target.classList.contains("screen-modal-dialog")) return;
+      if (overlay && closeOnOverlayClick) {
+        setShow(false);
+      }
+    };
+
+    const unblurGameStage = () => {
+      // only unblur game stage if all the modals with an overlay are hidden
+      const modals = document.body.querySelectorAll(
+        ".screen-modal[data-has-overlay='true'][data-show='true']",
+      );
+      if (!modals?.length) {
+        gameStage.unBlur();
+      }
+    };
+
+    const gameStage = useGameStage();
+
+    const animateIn = () => {
+      gsap.set(getWrapper(), { overflowY: "hidden" });
+      gsap.to(getOverlay(), {
+        opacity: 1,
+        // display: "flex",
+        pointerEvents: "all",
+      });
+      gsap.to(getWrapper(), {
+        height: height ?? "auto",
+        // display: "block",
+        pointerEvents: "all",
+        opacity: 1,
+        duration: 0.5,
+        onComplete: () => {
+          gsap.set(getWrapper(), {
+            overflowY: "scroll",
+          });
+        },
+      });
+    };
+
+    const animateOut = () => {
+      gsap.set(getWrapper(), { overflowY: "hidden" });
+      gsap.to(getOverlay(), {
+        opacity: 0,
+
+        pointerEvents: "none",
+      });
+      gsap.to(getWrapper(), {
+        opacity: 1,
+        duration: 0.2,
+        // display: "none"
+
+        height: "0",
+        pointerEvents: "none",
+      });
+    };
+
+    const resetAnimation = () => {
+      gsap.set(getOverlay(), {
+        opacity: 0,
+        // display: "none"
+
+        pointerEvents: "none",
+      });
+
+      gsap.set(getWrapper(), {
+        height: 0,
+        // display: "none"
+        pointerEvents: "none",
+      });
+      gsap.set(getWrapper(), { overflowY: "hidden" });
+    };
+
+    useEffect(() => {
+      if (!mounted) return;
+      if (!animate) return;
+      if (show) {
+        handleShow();
+      } else {
+        handleClose();
+      }
+    }, [show]);
+
+    useEffect(() => {
+      setShow(_controlledShow);
+    }, [_controlledShow]);
+
+    useEffect(() => {
+      if (!gameStage.state.loaded) return;
+      if (ref.current && animate) {
+        resetAnimation();
+        if (show) {
+          animateIn();
+        }
+      }
+    }, [ref, gameStage.state.loaded]);
+
+    useEffect(() => {
+      setMounted(true);
+      return () => {
+        unblurGameStage();
+      };
+    }, []);
+
+    if (!gameStage.state.loaded) return null;
+
+    return (
+      <>
+        {createPortal(
+          <div
+            className={screenModalClassName}
+            ref={ref}
+            onClick={handleClickOverlay}
+            data-has-overlay={overlay}
+            data-show={show}
+          >
+            {/* Animate the height of the screen modal wrapper, not the modal container
           this allows us to add padding to the container. If padding is given to the height
           animated wrapper, it will still be visible even with height 0 */}
-          <div
-            className="screen-modal-wrapper"
-            style={{ width: width ?? "auto", height: height ?? "auto" }}
-          >
-            <div className="screen-modal-container" style={{ height: "100%" }}>
-              {renderChildren(children)}
+            <div
+              className="screen-modal-wrapper"
+              style={{ width: width ?? "auto", height: height ?? "auto" }}
+            >
+              <div
+                className="screen-modal-container"
+                style={{ height: "100%" }}
+                ref={forwardRef}
+              >
+                {renderChildren(children)}
+              </div>
             </div>
-          </div>
-        </div>,
-        portal ?? document.querySelector(".app"),
-      )}
-    </>
-  );
-}
+          </div>,
+
+          portal ?? document.querySelector(".app"),
+        )}
+      </>
+    );
+  },
+);
 
 ScreenModal.Header = ScreenModalHeader;
 ScreenModal.Body = ScreenModalBody;
 ScreenModal.Footer = ScreenModalFooter;
+
+export default ScreenModal;

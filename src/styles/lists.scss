@@ -1,0 +1,29 @@
+@use "_vars";
+
+ol,
+li,
+.list-group {
+  background: transparent !important;
+  --bs-list-group-bg: #{vars.$primary-600};
+  --bs-list-group-border-width: 1px;
+  --bs-list-group-border-color: #{vars.$primary-400};
+  --bs-list-group-color: #{vars.$primary-100};
+  --bs-list-group-action-color: #{vars.$primary-100};
+  --bs-list-group-active-bg: #{vars.$primary-400};
+  --bs-list-group-active-border-color: #{vars.$primary-100};
+  --bs-list-group-active-color: #{vars.$primary-100};
+  --bs-list-group-action-hover-bg: #{vars.$primary-400};
+  --bs-list-group-action-hover-color: #{vars.$primary-100};
+  &.active {
+    background: vars.$primary-400;
+  }
+}
+li,
+.list-group-item {
+  &:hover {
+    cursor: pointer;
+    box-shadow: vars.$hover-box-shadow;
+    color: vars.$hover-color;
+    border-color: vars.$hover-border-color;
+  }
+}

@@ -11,7 +11,14 @@ class C3POActionTimeline {
    * @param {GSAPTimelineVars} timelineOptions
    */
   constructor(timelineOptions) {
-    this.timeline = gsap.timeline(timelineOptions);
+    this.timeline = gsap.timeline({
+      autoRemoveChildren: true,
+      paused: true,
+      onComplete: () => {
+        console.log("MAIN TIMELINE COMPLETE");
+      },
+      ...(timelineOptions ?? {}),
+    });
     this.actions = {};
   }
 
@@ -20,11 +27,11 @@ class C3POActionTimeline {
   }
 
   clear() {
-    Object.entries(this.actions).forEach(([key, action]) => {
-      action.revert();
-      this.removeAction(key);
+    console.info("clear");
+    Object.entries(this.actions).forEach(([label, tl]) => {
+      tl.revert();
+      this.removeAction(label);
     });
-    console.info("clearing timeline", { actions: this.actions });
 
     return this.timeline.clear();
   }
@@ -51,27 +58,32 @@ class C3POActionTimeline {
    * @param {string} label
    */
   addAction(childTl, label) {
+    console.info("add action", label);
     if (this.actions[label]) {
       if (this.actions[label].paused()) {
         throw new Error("previous action still playing: " + label);
       } else {
-        this.removeAction(this.actions[label], label);
+        // this.removeAction(this.actions[label], label);
       }
     }
     this.actions[label] = childTl;
+    // make sure to play main timeline before adding child action
+    // otherwise child action may automaticlaly complete.
+
     this.timeline.add(childTl, label);
-    // because gsap only allows one event callback, we must collect any previously added callbacks
-    const onComplete = childTl.eventCallback("onComplete");
-    childTl.eventCallback("onComplete", () => {
-      this.removeAction(childTl, label);
-      if (onComplete) {
-        onComplete();
-      }
-      // console.log(`Action complete: ${label}`, this.actions);
-    });
     if (this.timeline.paused) {
       this.timeline.play();
     }
+    // because gsap only allows one event callback, we must collect any previously added callbacks
+
+    let onComplete = childTl.eventCallback("onComplete");
+    childTl.eventCallback("onComplete", () => {
+      console.log("remove action label", label);
+      this.removeAction(childTl, label);
+      if (onComplete instanceof Function) {
+        onComplete();
+      }
+    });
   }
 
   /**
@@ -79,8 +91,13 @@ class C3POActionTimeline {
    * @param {string} label
    */
   removeAction(childTl, label) {
-    delete this.actions[label];
-    this.timeline.remove(childTl);
+    // console.log("remove action", label);
+    // if (!label) {
+    //   throw new Error("Failed to remove action, invalid label: " + label);
+    // }
+    // delete this.actions[label];
+    // Promise.reject(this.actions[label]);
+    // this.timeline.remove(childTl);
   }
 
   /**

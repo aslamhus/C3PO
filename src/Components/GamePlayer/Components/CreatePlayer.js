@@ -91,6 +91,7 @@ export default function CreatePlayer({ onCreate, onCancel, isCancelDisabled }) {
         }}
       >
         <GameInput
+          autoFocus={true}
           type="text"
           name="name"
           placeholder=""

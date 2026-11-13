@@ -1,5 +1,10 @@
 import gsap from "gsap";
-export const createWaveTimeline = (bodyParts) => {
+import * as types from "../types";
+/**
+ * @param {types.BodyParts} bodyParts
+ * @returns
+ */
+export const createWaveTimeline = (bodyParts, options = { delay: 0 }) => {
   /** left shoulder */
 
   const { leftShoulder, rightShoulder } = bodyParts;

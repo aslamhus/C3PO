@@ -69,7 +69,7 @@ export default function GameStartScreen({ onPressGameStart }) {
         className="space-overlay distant-stars"
         style={{ backgroundImage: `url(${spaceOverlay2})` }}
       ></div>
-      <div className="game-title">
+      <div className="game-start-screen-title">
         <h1>Star Wars</h1>
         <h2>Binary Decoder</h2>
         <SelectPlayer
@@ -79,6 +79,9 @@ export default function GameStartScreen({ onPressGameStart }) {
           currentPlayer={player}
         />
         <ConfirmButton onClick={handleGameStart}>Start</ConfirmButton>
+      </div>
+      <div className="game-start-screen-footer">
+        -- Press SPACEBAR for options --
       </div>
     </motion.div>
   );

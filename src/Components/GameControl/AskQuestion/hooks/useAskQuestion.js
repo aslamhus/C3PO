@@ -1,5 +1,6 @@
-import { useContext } from 'react';
-import { AskQuestionContext } from '../Context/context';
+import { useContext } from "react";
+import { AskQuestionContext } from "../Context/context";
+import { ASK_QUESTION_ACTIONS } from "../Context/Reducer";
 
 let resolveQuestion;
 
@@ -14,12 +15,15 @@ export const useAskQuestion = () => {
   const ask = ({
     question,
     responses = [
-      { title: 'yes', value: true },
-      { title: 'no', value: false },
+      { title: "yes", value: true },
+      { title: "no", value: false },
     ],
     promptDelay = 0,
   }) => {
-    dispatch({ show: true, question, responses, promptDelay });
+    dispatch({
+      type: ASK_QUESTION_ACTIONS.ask,
+      payload: { question, responses, promptDelay },
+    });
     return new Promise((resolve, reject) => {
       resolveQuestion = resolve;
     });
@@ -30,8 +34,18 @@ export const useAskQuestion = () => {
       target: { value },
     } = event;
     resolveQuestion(value);
-    dispatch({ show: false });
+    setShow(false);
   };
 
-  return { ask, questionState, handleResponse };
+  const setShow = (value) => {
+    dispatch({ type: ASK_QUESTION_ACTIONS.setShow, payload: value });
+  };
+
+  return {
+    ask,
+    questionState,
+    handleResponse,
+    showQuestion: () => setShow(true),
+    hideQuestion: () => setShow(false),
+  };
 };

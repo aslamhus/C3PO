@@ -1,17 +1,17 @@
 import gsap from "gsap";
-export const createRestTimeline = (bodyParts) => {
+export const createRestTimeline = (bodyParts, options = { duration }) => {
+  const { duration } = options;
   const { leftShoulder, rightShoulder, head } = bodyParts;
   const restTimeline = gsap.timeline({
     paused: true,
-    onComplete: () => {
-      resolve(true);
-    },
   });
   restTimeline.to(
     leftShoulder.joint,
     { scaleY: -1, duration, rotate: "-20deg" },
     0,
   );
+  restTimeline.set(leftShoulder.arm, { x: 0, y: 0, rotate: 0 });
+
   restTimeline.set(leftShoulder.mainArm, { x: 0, y: 0, rotate: 0 });
   restTimeline.set(leftShoulder.arm, { scale: 1, duration, rotate: "0" }, 0);
   restTimeline.to(
@@ -54,5 +54,5 @@ export const createRestTimeline = (bodyParts) => {
   restTimeline.to(head.leftEyeBall, { y: "0", x: "0", duration }, 0);
   restTimeline.to(head.rightEyeBall, { y: "0", x: "0%", duration }, 0);
   restTimeline.play();
-  return;
+  return restTimeline;
 };

@@ -26,7 +26,7 @@ export const useGameControl = () => {
   const toggleControls = (bool) =>
     dispatch({ type: GAME_CONTROL_ACTIONS.toggleControls, payload: bool });
 
-  const toggleKeypad = (bool, options = { onPressChar }) => {
+  const toggleKeypad = (bool, options = { onPressChar: null }) => {
     dispatch({
       type: GAME_CONTROL_ACTIONS.toggleKeypad,
       payload: [bool, options],
@@ -63,6 +63,14 @@ export const useGameControl = () => {
    */
   const enableKeys = (keys) => {
     dispatch({ type: GAME_CONTROL_ACTIONS.setEnabledKeys, payload: keys });
+  };
+
+  /**
+   * Reset keypad to initial state
+   * Enables all keys, re-enables keypad
+   */
+  const resetKeypad = () => {
+    dispatch({ type: GAME_CONTROL_ACTIONS.resetKeypad });
   };
 
   /**
@@ -141,5 +149,6 @@ export const useGameControl = () => {
     disableKeypad,
     setCustomViewScreenComponents,
     addCustomViewScreenComponent,
+    resetKeypad,
   };
 };

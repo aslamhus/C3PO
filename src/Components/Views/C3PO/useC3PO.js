@@ -19,7 +19,7 @@ import classNames from "classnames";
 import { getEnergyLevel } from "../../UI/EnergyBar/energy-levels";
 
 const C3POFeeling = {
-  ["near-death"]: (energy) => energy <= 0.1,
+  ["near-death"]: (energy) => energy <= 0.1 && energy > 0,
   dazed: (energy) => energy <= 0.25 && energy > 0.1,
   faint: (energy) => energy > 0.25 && energy < 0.5,
   normal: (energy) => energy >= 0.5 && energy < 0.7,
@@ -29,6 +29,7 @@ const C3POFeeling = {
 
 export const useC3PO = ({ stage }) => {
   const [state, dispatch] = useContext(C3POContext);
+  const lastPhraseRef = useRef();
 
   const { player } = useGamePlayer();
   const { ask } = useAskQuestion();
@@ -48,23 +49,22 @@ export const useC3PO = ({ stage }) => {
     faint: C3POFeeling.faint(state.energy),
     dazed: C3POFeeling.dazed(state.energy),
     ["near-death"]: C3POFeeling["near-death"](state.energy),
+    ["game-over"]: state.energy <= 0,
   });
 
   const askQuestion = async ({ question, responses }) => {
     // set the game stage constraints for the control pad
     stage.setConstraints({ x: [0, "50%"], y: [0, "100%"] });
-
-    await speak(question, { tapToContinue: false });
+    await speak(question, { tapToContinue: true });
     if (!control.state.controls) {
       control.toggleControls(true);
     }
     return ask({ question, responses });
   };
   // game sound
-  const { cueSoundFx, cueMusic, music, fx } = useGameSound();
+  const { cueSoundFx, cueMusic, music, fx, trackManagerRef, pauseMusic } =
+    useGameSound();
   const isBinaryVisibleRef = useRef(false);
-
-  const { showTip, hideTip } = useTipModal();
 
   const loadC3PO = (refs) => {
     dispatch({
@@ -182,8 +182,8 @@ export const useC3PO = ({ stage }) => {
       ];
     }
     c3po.celebrate(3);
-    let randIndex = Math.floor(Math.random() * phrases.length);
-    speak(<>{phrases[randIndex] ?? "Hmmm..."}</>, { tapToContinue: false });
+    let phrase = getPhrase(phrases);
+    speak(<>{phrase ?? "Hmmm..."}</>, { tapToContinue: false });
     // let plural = countCharsFound > 1 ? "s" : "";
     // speak(
     //   <>
@@ -194,12 +194,28 @@ export const useC3PO = ({ stage }) => {
     // );
   };
 
+  /**
+   * Get C3PO phrase without repeating the last phrase
+   * @param {*} phrases
+   * @returns
+   */
+  const getPhrase = (phrases) => {
+    let randIndex = Math.floor(Math.random() * phrases.length);
+    let phrase = phrases[randIndex];
+    while (phrase == lastPhraseRef.current) {
+      randIndex = Math.floor(Math.random() * phrases.length);
+      phrase = phrases[randIndex];
+    }
+    lastPhraseRef.current = phrase;
+    return phrase;
+  };
+
   const handleIncorrectGuess = async (char, c3po, countCharsFound) => {
     // increment bad guesses
     const energyDecrement = 0.1;
     const currentEnergy = state.energy - energyDecrement;
     setEnergy(`-=${energyDecrement}`);
-
+    if (currentEnergy <= 0) return;
     // const oppositeCase = getOppositeCase(char);
     // const hasOppositeCase = hasChar(oppositeCase.char, state.message);
     const numberOfChars = state.message.length - countCharsFound;
@@ -253,8 +269,7 @@ export const useC3PO = ({ stage }) => {
         "I need an oil bath....",
         "Sometimes I just don't understand human behaviour.",
         "Well, that's not right.",
-        "I've looked better",
-        "Oh my circuits...",
+        "Oh, my circuits...",
       ];
     }
     if (
@@ -275,9 +290,9 @@ export const useC3PO = ({ stage }) => {
       ];
     }
 
-    let randIndex = Math.floor(Math.random() * phrases.length);
+    let phrase = getPhrase(phrases);
 
-    speak(<>{phrases[randIndex] ?? "Hmmm..."}</>, { tapToContinue: false });
+    speak(<>{phrase ?? "Hmmm..."}</>, { tapToContinue: false });
     // await speak(
     //   <>
     //     No <span className="letter-not-found">{char}</span> could be found...
@@ -306,12 +321,24 @@ export const useC3PO = ({ stage }) => {
   /**
    * End game and return to start screen
    */
-  const handleGameOver = () => {
-    control.endGame();
+  const handleGameOver = async () => {
+    const { current: c3po } = state.c3poAnimateRef;
+    console.log("GAME OVER");
+    control.disableKeypad(true);
+    // pauseMusic();
+    cueMusic(music.tatooineEbonHawk);
+    await c3po.collapse(cueSoundFx(fx.powerDown));
+    setTimeout(() => {
+      dispatch({ type: C3PO_ACTIONS.setGameOver, payload: true });
+    }, 100);
+  };
+
+  const handleRestartGame = () => {
+    dispatch({ type: C3PO_ACTIONS.restartGame });
   };
 
   useEffect(() => {
-    if (state.energy) {
+    if (state.energy != null && state.energy != undefined) {
       control.setControlStripComponent(
         <EnergyBar now={state.energy} />,
         CONTROL_STRIP_TYPE.TERTIARY,
@@ -322,6 +349,7 @@ export const useC3PO = ({ stage }) => {
     }
     if (state.energy <= 0) {
       // game over
+
       handleGameOver();
     }
   }, [state.energy]);
@@ -386,9 +414,9 @@ export const useC3PO = ({ stage }) => {
       showC3PO,
       speak,
       askQuestion,
-      showTip,
-      hideTip,
       setEnergy,
+      handleRestartGame,
+      handleGameOver,
     },
     sound: {
       cueSoundFx,

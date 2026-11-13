@@ -1,6 +1,6 @@
-.game-start-screen,
+
 .space-overlay,
-.game-title {
+#space-ctx{
   width: 100%;
   height: 100%;
   position: absolute;
@@ -9,11 +9,18 @@
 }
 
 .game-start-screen {
-  position: absolute;
-  background: black;
+  display:flex;
+  width:100%;
+  height:100%;
+  flex-direction:column;
+  justify-content: center;
+  align-items: center;
+ background: black;
   min-height: 100%;
   z-index: 1049;
+
 }
+
 .space-overlay {
   opacity: 0;
   mix-blend-mode: hard-light;
@@ -23,24 +30,33 @@
   opacity: 0;
   z-index: 1;
 }
-.game-start-screen .game-title {
+.game-start-screen .game-start-screen-title {
   z-index: 3;
+  flex-grow:1;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   color: white;
 }
-.game-start-screen .game-title h1 {
+.game-start-screen .game-start-screen-footer {
+  position:absolute;
+  bottom:0;
+  padding-bottom:2rem;
+  justify-self:flex-end;
+  
+}
+.game-start-screen .game-start-screen-title h1 {
   font-size: 20vh;
   color: gold;
 }
-.game-start-screen .game-title h1,
-.game-start-screen .game-title h2 {
+.game-start-screen .game-start-screen-title h1,
+.game-start-screen .game-start-screen-title h2 {
   font-family: var(--star-wars-font);
 }
+
 @media only screen and (max-aspect-ratio: 1920/1080) {
-  .game-start-screen .game-title h1 {
+  .game-start-screen .game-start-screen-title h1 {
     font-size: 10vw;
   }
 }

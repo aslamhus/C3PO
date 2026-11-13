@@ -2,16 +2,18 @@
 
 ## General
 
+- add skip option
+- add second piece of music or loop music to level 1.0
+- add level 2.0!
+- maybe remove spaces?
+- remove decoded keys on restart
+- add scoring
 - Add tooltip that shows where the battery is
 - Add help messages
-- Add colour to C3PO as battery increases
 - make R2D2 disappear behind the sand dune and occasionally pop up
 - Add ending
-- Add gameover when battery is low
-- Add sand animation when C3PO taps his head
-- add loading screen to load all assets (esp. backgrounds before fadeing in game)
-- add c3po mouth movements when speaking
 - You should be able to drag the control screen to hide it
+- add better binary animation
 
 ## Hints
 
@@ -28,5 +30,3 @@
 ## Levels
 
 ## Bugs
-
-- On game over, music needs to stop, and gameover music needs to play

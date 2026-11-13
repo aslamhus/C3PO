@@ -1,6 +1,9 @@
 import gsap from "gsap";
 
-export const createCelebrateTimeline = (bodyParts, repeat) => {
+export const createCelebrateTimeline = (
+  bodyParts,
+  options = { yoyo: true, repeat: -1 },
+) => {
   const {
     body: { body },
     head: { head },
@@ -9,14 +12,7 @@ export const createCelebrateTimeline = (bodyParts, repeat) => {
     leftShoulder,
     rightShoulder,
   } = bodyParts;
-  const tl = gsap.timeline({
-    yoyo: true,
-    repeat: repeat || -1,
-    onComplete: () => {
-      this.rest();
-      resolve();
-    },
-  });
+  const tl = gsap.timeline(options);
 
   const prepareDuration = 0.3;
   // set initial position
@@ -96,5 +92,6 @@ export const createCelebrateTimeline = (bodyParts, repeat) => {
     { rotate: "100deg", duration: prepareDuration },
     "prepare",
   );
+  tl.play();
   return tl;
 };

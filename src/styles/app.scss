@@ -8,6 +8,9 @@
   --primary-800: #{vars.$primary-800};
   --secondary-400: #{vars.$secondary-400};
 }
+html {
+  font-size: 12px;
+}
 html,
 body {
   height: 100%;
@@ -62,6 +65,12 @@ body {
   .app {
     width: 100%;
     height: auto;
+  }
+}
+
+@media only screen and (orientation: landscape) and (min-width: 1080px) {
+  html {
+    font-size: 18px;
   }
 }
 

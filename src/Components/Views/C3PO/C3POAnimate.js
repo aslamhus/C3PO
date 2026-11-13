@@ -24,7 +24,11 @@ class C3POAnimate {
     this.constrainEl = constrainEl;
     this.body = bodyRef.current;
     this.mainTimeline = new C3POActionTimeline();
+
     this.automonicTimeline = new C3POActionTimeline({ repeat: -1, yoyo: true });
+    this.x = 0;
+
+    this.y = 0;
     this.bodyParts = {
       body: {
         body: this.body,
@@ -61,6 +65,13 @@ class C3POAnimate {
         rightLeg: this.body.querySelector(".right-leg"),
       },
     };
+    this.mainTimeline.timeline.eventCallback("onUpdate", () => {
+      const x = gsap.getProperty(this.body, "x");
+      // console.log("x", x);
+      // if (x <= parseInt(0)) {
+      //   debugger;
+      // }
+    });
   }
 
   play() {
@@ -72,7 +83,7 @@ class C3POAnimate {
     const speakTimeline = this.mainTimeline.getAction("speak");
     if (speakTimeline) {
       speakTimeline.revert();
-      this.mainTimeline.removeAction(speakTimeline);
+      this.mainTimeline.removeAction("speak", speakTimeline);
     }
   }
 
@@ -89,11 +100,12 @@ class C3POAnimate {
       this.automonicTimeline.clear();
       this.mainTimeline.clear();
       const allBodyParts = this.getAllBodyParts();
-
-      gsap.set(this.bodyParts.leftShoulder.mainArm, { x: 0, y: 0 });
+      console.log("reset");
+      // gsap.set(this.bodyParts.leftShoulder.mainArm, { x: 0, y: 0 });
       gsap
         .to(allBodyParts, {
           rotate: "0deg",
+          filter: "",
           scaleX: 1,
           scaleY: 1,
           delay: 0,
@@ -103,6 +115,9 @@ class C3POAnimate {
           ease,
         })
         .then(() => {
+          // if (this.x != null && this.x != undefined) {
+          //   gsap.set(this.body, { x: this.x });
+          // }
           resolve(true);
         });
     });
@@ -113,9 +128,17 @@ class C3POAnimate {
     this.mainTimeline.addAction(tl, "dazed");
   }
 
-  collapse() {
-    const tl = createCollapseTimeline(this.bodyParts);
+  /**
+   *
+   * @param {Function} playSound
+   * @returns
+   */
+  collapse(playSound) {
+    this.mainTimeline.clear();
+    this.automonicTimeline.clear();
+    const tl = createCollapseTimeline(this.bodyParts, playSound);
     this.mainTimeline.addAction(tl, "collapse");
+    return tl;
   }
 
   look(direction, speed = 0.25) {
@@ -147,13 +170,13 @@ class C3POAnimate {
   }
 
   async rest(duration = 0.5 * speed) {
-    return new Promise((resolve) => {
-      this.mainTimeline.clear();
-      const restTimeline = createRe(this.bodyParts);
-
-      this.mainTimeline.addAction(restTimeline, "rest");
-      this.mainTimeline.play();
+    this.mainTimeline.clear();
+    const restTimeline = createRestTimeline(this.bodyParts, {
+      duration,
     });
+    this.mainTimeline.addAction(restTimeline, "rest");
+    this.mainTimeline.play();
+    return restTimeline;
   }
 
   // addActionToTimeline(childTl, label, ){
@@ -168,16 +191,17 @@ class C3POAnimate {
    * @returns {GSAPTimeline}
    */
   wave(options = { delay: 0 }) {
-    const waveTimeline = createWaveTimeline();
+    const waveTimeline = createWaveTimeline(this.bodyParts, options);
     this.mainTimeline.addAction(waveTimeline, "wave");
     return this.timeline;
   }
 
   proposeIdea(duration = 1 * speed) {
-    return new Promise((resolve) => {
-      const proposeTl = createProposeIdeaTimeline(this.bodyParts);
-      this.mainTimeline.addAction(proposeTl, "proposeIdea");
+    const proposeTl = createProposeIdeaTimeline(this.bodyParts, {
+      duration,
     });
+    this.mainTimeline.addAction(proposeTl, "proposeIdea");
+    return proposeTl;
   }
 
   // headScratch() {
@@ -210,17 +234,15 @@ class C3POAnimate {
   // }
 
   /**
-   *
-   * Walk to center
+   * Walk from current with delta
    *
    * @param {String|Number} xPosition - walk to position on game stage. Can
    */
   async walk(xPosition, options = { steps: 7, duration: 2 * speed }) {
     const bodyBounds = this.getBounds(this.body);
     const distance = xPosition - bodyBounds.x - window.scrollX;
-
     const totalDuration = options.duration || 2;
-    const steps = options.steps || 7;
+    const steps = options.steps ?? 7;
     // build timeline
     const walkTimeline = gsap.timeline();
     // walkTimeline.set(this.body, { x: bodyBounds.x });
@@ -233,10 +255,24 @@ class C3POAnimate {
         y: isEven ? "-20" : "+10",
         duration,
         ease: true,
+        onUpdate: () => {
+          this.x = gsap.getProperty(this.body, "x");
+        },
       });
     }
     // walkTimeline.to(this.body, { x: xPosition, rotate: '0deg' });
     return walkTimeline.play();
+  }
+
+  /**
+   * Walk to a position
+   *
+   * @param {*} x
+   * @param {*} options
+   * @returns
+   */
+  async walkTo(x, options = { steps: 7, duration: 2 * speed }) {
+    return this.walk(x - this.x ?? 0, options);
   }
 
   breathe() {
@@ -278,37 +314,42 @@ class C3POAnimate {
     return new Promise((resolve) => {
       this.mainTimeline.clear();
       if (this.currentActionName == this.celebrate.name) resolve(true);
-
       this.mainTimeline.clear();
-
       this.look("straight");
-      const celebrateTl = createCelebrateTimeline(this.bodyParts, repeat);
+      const celebrateTl = createCelebrateTimeline(this.bodyParts, {
+        yoyo: true,
+        repeat: repeat || -1,
+        onComplete: () => {
+          this.rest();
+          resolve();
+        },
+      });
       this.mainTimeline.addAction(celebrateTl, "celebrate");
-      tl.play();
     });
   }
 
   think(duration = 1 * speed) {
     // note that think never resolves, because the headscrtch animation is an infinite loop.
-    return new Promise((resolve) => {
-      this.mainTimeline.clear();
-      const thinkTimeline = createThinkTimeline(this.bodyParts);
-      thinkTimeline.set(
-        this.bodyParts.leftShoulder.joint,
-        { scaleY: -1, duration: 0 },
-        0,
-      );
-      this.mainTimeline.addAction(thinkTimeline, "think");
-    });
+    this.mainTimeline.clear();
+    const thinkTimeline = createThinkTimeline(this.bodyParts, { duration });
+    thinkTimeline.set(
+      this.bodyParts.leftShoulder.joint,
+      { scaleY: -1, duration: 0 },
+      0,
+    );
+    this.mainTimeline.addAction(thinkTimeline, "think");
+    return thinkTimeline;
   }
 
   removeSand(duration = 1 * speed) {
     // note that think never resolves, because the headscrtch animation is an infinite loop.
     return new Promise((resolve) => {
       const sand = createSand();
-      head.appendChild(sand);
+      this.bodyParts.head.head.appendChild(sand);
       this.mainTimeline.clear();
-      const removeSandTl = createRemoveSandTimeline(this.bodyParts);
+      const removeSandTl = createRemoveSandTimeline(this.bodyParts, {
+        duration,
+      });
       const onComplete = () => {
         sand.remove();
         resolve(true);
@@ -322,29 +363,32 @@ class C3POAnimate {
   fret() {
     this.mainTimeline.pause();
     this.mainTimeline.clear();
+
+    this.rest(0);
     const fretTl = createFretTimeline(this.bodyParts);
     this.mainTimeline.addAction(fretTl, "fret");
   }
 
   animate(bodyPart, options) {
-    return new Promise((resolve) => {
-      if (!(bodyPart instanceof HTMLElement)) {
-        throw new Error("bodyPart must be instance of HTMLElement");
-      }
-      const { onComplete, ...animateOptions } = options;
-      const tl = gsap.timeline();
-      tl.to(bodyPart, {
-        ...animateOptions,
-        onComplete: () => {
-          if (onComplete instanceof Function) {
-            onComplete();
-          }
-          resolve("complete");
-        },
-      });
-      tl.play();
-      // this.mainTimeline.addAction(tl, crypto.randomUUID());
+    if (!(bodyPart instanceof HTMLElement)) {
+      throw new Error("bodyPart must be instance of HTMLElement");
+    }
+    const { onComplete, duration, ...animateOptions } = options;
+    const tl = gsap.timeline();
+    tl.to(bodyPart, {
+      ...animateOptions,
+
+      duration: duration ?? 0,
+      onComplete: () => {
+        console.log("animate action complete");
+      },
     });
+    this.mainTimeline.addAction(
+      tl,
+      "animate_" + crypto.randomUUID().slice(0, 5),
+    );
+    console.log("timeline", this.mainTimeline.timeline);
+    return tl;
   }
 
   getBounds(bodyPart) {

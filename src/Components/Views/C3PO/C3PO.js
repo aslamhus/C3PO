@@ -15,6 +15,9 @@ import R2D2 from "./R2D2/R2D2";
 import useGameOptions from "../../GameOptions/hooks/useGameOptions";
 import useGamePlayer from "../../GamePlayer/hooks/useGamePlayer";
 import { CONTROL_STRIP_TYPE } from "../../GameControl/hooks/useGameControl";
+import ScreenModal from "../../UI/Modals/ScreenModal/ScreenModal";
+import GameButton from "../../UI/Buttons/GameButton";
+import { useTipModal } from "../../UI/Modals/TipModal/useTipModal";
 
 const C3PO = React.forwardRef((props, ref) => {
   const stage = useGameStage();
@@ -41,11 +44,14 @@ const C3PO = React.forwardRef((props, ref) => {
     energy,
     isSpeaking,
     isTypingComplete,
+    gameOver,
   } = state;
+
+  const { showTip, hideTip } = useTipModal();
 
   // handle game start by passing game state, actions, game control, and sound control to main game loop
   const startC3POGame = () =>
-    main(state, actions, control, sound, stage, player);
+    main({ state, actions, control, sound, stage, player, showTip, hideTip });
 
   const [showTatooineFromSpace, setShowTatooineFromSpace] = useState(false);
   const [showTatooineDesert, setShowTatooineDesert] = useState(false);
@@ -102,6 +108,27 @@ const C3PO = React.forwardRef((props, ref) => {
             isSpeaking={isSpeaking}
           ></Body>
         </div>
+      )}
+      {gameOver && (
+        <ScreenModal className="screen-modal-game-over" show={gameOver}>
+          <ScreenModal.Header>
+            <h1> Game Over</h1>
+          </ScreenModal.Header>
+          <ScreenModal.Body>
+            <div style={{ textAlign: "center" }}>
+              <h3>Play again?</h3>
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <GameButton onClick={() => control.endGame()}>No</GameButton>
+                <GameButton
+                  onClick={() => actions.handleRestartGame()}
+                  autoFocus={true}
+                >
+                  Yes
+                </GameButton>
+              </div>
+            </div>
+          </ScreenModal.Body>
+        </ScreenModal>
       )}
     </>
   );

@@ -12,7 +12,6 @@ export const createFretTimeline = (bodyParts) => {
   const tl = gsap.timeline();
   // set initial position
   // prepare (down)
-  this.rest(0);
   tl.set(leftShoulder.mainArm, { x: "-5px", y: "10px" });
   tl.set(leftShoulder.arm, {
     x: "5px",

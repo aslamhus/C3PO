@@ -7,7 +7,6 @@ export const C3POStates = {
 export const C3PO_ACTIONS = {
   load: "load",
   speak: "speak",
-
   updateC3poState: "updateC3poState",
   toggleSpeechBubble: "toggleSpeechBubble",
   showBinary: "showBinary",
@@ -18,6 +17,7 @@ export const C3PO_ACTIONS = {
   setEnergy: "setEnergy",
   setGameOver: "setGameOver",
   setGameComplete: "setGameComplete",
+  restartGame: "restartGame",
 };
 
 export const initialState = {
@@ -35,7 +35,7 @@ export const initialState = {
   guesses: {},
   message: "May the force be with you!",
   // energy: 0.85,
-  energy: 0.5,
+  energy: 0.1,
 };
 
 export const reducer = (state = initialState, action) => {
@@ -99,15 +99,26 @@ export const reducer = (state = initialState, action) => {
         energy = parseFloat(state.energy) - parseFloat(value);
       }
       // limit energy to 0 and 1
+
       if (energy > 1) {
         energy = 1;
       } else if (energy < 0.01) {
         energy = 0;
       }
+
       return {
         ...state,
         energy,
       };
+
+    case C3PO_ACTIONS.setGameOver:
+      return {
+        ...state,
+        gameOver: action.payload,
+      };
+
+    case C3PO_ACTIONS.restartGame:
+      return initialState;
 
     default:
       throw new Error(`unrecognised dispatch type ${action.type}`);

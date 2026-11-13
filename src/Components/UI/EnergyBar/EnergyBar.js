@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
-import gsap from 'gsap';
-import { getEnergyLevel, levels } from './energy-levels';
-import './energy-bar.css';
+import React, { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import { getEnergyLevel, levels } from "./energy-levels";
+import "./energy-bar.css";
 
 export default function EnergyBar({ now = 1 }) {
   const energyBarRef = useRef();
@@ -30,7 +30,9 @@ export default function EnergyBar({ now = 1 }) {
     // }
   };
 
-  const animateEnergyGlow = (options = { duration: 1, color: 'rgb(84, 6, 84)' }) => {
+  const animateEnergyGlow = (
+    options = { duration: 1, color: "rgb(84, 6, 84)" },
+  ) => {
     energyGlowTimeline.current.clear();
     const energyOutline = energyBarRef.current.parentElement;
     energyGlowTimeline.current.to(energyOutline, {
@@ -50,20 +52,20 @@ export default function EnergyBar({ now = 1 }) {
     switch (getEnergyLevel(energy)) {
       case levels.full:
       case levels.high:
-        return 'green';
+        return "green";
       case levels.mid:
-        return 'yellow';
+        return "yellow";
       case levels.low:
-        return 'orange';
+        return "orange";
       case levels.danger:
-        return 'red';
+        return "red";
       default:
-        return '';
+        return "";
     }
   };
 
   useEffect(() => {
-    if (energy) {
+    if (energy != null && energy != undefined) {
       handleAnimations();
     }
   }, [energy]);
@@ -96,13 +98,13 @@ const EnergyPercent = ({ energy }) => {
     switch (getEnergyLevel(energy)) {
       case levels.full:
       case levels.high:
-        return 'green';
+        return "green";
       case levels.mid:
-        return 'yellow';
+        return "yellow";
       case levels.low:
-        return 'orange';
+        return "orange";
       case levels.danger:
-        return 'red';
+        return "red";
     }
   };
 

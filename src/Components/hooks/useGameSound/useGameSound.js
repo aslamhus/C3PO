@@ -2,6 +2,10 @@
 import jawaTheme from "@sounds/the-little-people-work.mp3";
 import starWarsThemeSong from "@sounds/star-wars-main-theme.mp3";
 import binarySunet from "@sounds/binary-sunset.mp3";
+
+import tatooineEbonHawk from "@sounds/tatooine-ebon-hawk.mp3";
+import tatooineDuneSea from "@sounds/tatooine-dune-sea.mp3";
+
 // fx
 import select from "@sounds/fx/select.mp3";
 import confirm from "@sounds/fx/confirm.mp3";
@@ -11,6 +15,10 @@ import working2 from "@sounds/fx/working2.mp3";
 import error from "@sounds/fx/error.mp3";
 import success from "@sounds/fx/success.mp3";
 import binaryDecoder from "@sounds/fx/binary-decoder.mp3";
+import powerDown from "@sounds/fx/power-down.mp3";
+
+import powerUp from "@sounds/fx/power-up.mp3";
+import heal from "@sounds/fx/heal.mp3";
 
 export const fx = {
   select,
@@ -21,16 +29,21 @@ export const fx = {
   error,
   success,
   binaryDecoder,
+  heal,
+  powerDown,
 };
 
 export const music = {
   jawaTheme,
   starWarsThemeSong,
   binarySunet,
+  tatooineEbonHawk,
+  tatooineDuneSea,
 };
 
 const trackGainModulatio = {
-  [fx.binaryDecoder]: 0.65,
+  [fx.binaryDecoder]: 0.4,
+  [music.jawaTheme]: 1.2,
 };
 
 export const TRACK_TYPES = {
@@ -100,8 +113,19 @@ export const useGameSound = () => {
     // check if context is suspended
     const ctx = audioContextRef.current;
     if (ctx.state === "suspended") {
-      ctx.resume();
+      return ctx.resume();
     }
+  };
+
+  const pause = () => {
+    const ctx = audioContextRef.current;
+    if (ctx.state === "running") {
+      return ctx.suspend();
+    }
+  };
+
+  const pauseMusic = () => {
+    const musicTracks = trackManagerRef.current.pauseBackgroundMusic();
   };
 
   const setMusicGain = (value) => {
@@ -127,5 +151,9 @@ export const useGameSound = () => {
     fxGain,
     music,
     fx,
+    resume,
+    pause,
+    trackManagerRef,
+    pauseMusic,
   };
 };

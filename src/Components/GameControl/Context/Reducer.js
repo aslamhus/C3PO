@@ -14,6 +14,7 @@ export const GAME_CONTROL_ACTIONS = {
   setDisabledKeys: "setDisabledKeys",
   setEnabledKeys: "setEnabledKeys",
   disableKeypad: "disableKeypad",
+  resetKeypad: "resetKeypad",
 };
 
 export const initialState = {
@@ -115,6 +116,13 @@ export const reducer = (state = initialState, action) => {
       return {
         ...state,
         disabledKeys: { ...state.disabledKeys, ...newDisabledKeys },
+      };
+
+    case GAME_CONTROL_ACTIONS.resetKeypad:
+      return {
+        ...state,
+        keypadDisabled: false,
+        disabledKeys: {},
       };
 
     case "disableKeypad":

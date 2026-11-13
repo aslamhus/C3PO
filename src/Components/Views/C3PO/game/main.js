@@ -1,5 +1,6 @@
+import React from "react";
 import gameEvents from "./events";
-import { wait } from "@utils/global-game-actions";
+import { wait, createSkippable } from "@utils/global-game-actions";
 import { tips } from "../../../../tips";
 import {
   testBinaryKeyboard,
@@ -29,83 +30,114 @@ import {
  * @param {Object} control - the game control object
  * @param {Object} sound - the game sound object
  */
-export const main = async (state, actions, control, sound, stage, player) => {
+export const main = async ({
+  state,
+  actions,
+  control,
+  sound,
+  stage,
+  player,
+  showTip,
+  hideTip,
+}) => {
   // testBinaryKeyboard({ state, actions, control });
   // return;
   // testSpeechBubbleAndKeypadToggle({ state, actions, control, stage });
   // return;
   const { cueSoundFx, cueMusic, music, fx } = sound;
   const { current: c3po } = state.c3poAnimateRef;
+
   const {
     speak,
     askQuestion,
     dismissSpeechBubble,
-    showTip,
     showBinary,
     guessChar,
     getGameStage,
     showC3PO,
+    handleGameOver,
   } = actions;
-  const toggleKeypad = () =>
-    control.toggleKeypad(true, { onPressChar: guessChar });
 
+  control.toggleKeypad(false);
+  control.resetKeypad();
+  await dismissSpeechBubble();
   cueMusic(music.jawaTheme);
-
+  c3po.reset();
   showC3PO();
-  setTimeout(() => c3po.collapse(), 1000);
-  return;
+  const showKeypad = () => {
+    control.toggleKeypad(true, { onPressChar: guessChar });
+  };
+
+  // setTimeout(() => c3po.collapse(), 1000);
+  // return;
   // await c3po.proposeIdea();
   // c3po.removeSand();
+  // return;
 
   // testC3POAnimations({ state, actions, control });
   // return;
   await gameEvents.exitStageLeft(c3po);
-
-  let skipQuestionIdentity = true,
-    skipInstruction = true;
   // TODO: add skip function
-  // showTip(<div onClick={null}>Skip</div>);
+  let skippable = createSkippable();
 
-  if (!skipQuestionIdentity) {
-    await gameEvents.peekAbooEntrance(c3po, speak);
-    const identityConfirmed = await gameEvents.questionIdentity(
-      c3po,
-      control.toggleControls,
-      speak,
-      askQuestion,
-      dismissSpeechBubble,
-      player,
+  // showTip(<div onClick={() => skippable.skip()}>Skip</div>);
+  try {
+    await skippable(
+      gameEvents.peekAbooEntrance(c3po, speak, skippable),
+      "peakAboo",
     );
-    if (!identityConfirmed) {
-      await gameEvents.exitStageLeft(c3po, 2);
-      return control.endGame();
-    }
-    await speak("Thank goodness!");
-    await dismissSpeechBubble();
-  }
 
-  if (!skipInstruction) {
+    let identityConfirmed = await skippable(
+      gameEvents.questionIdentity(
+        c3po,
+        control.toggleControls,
+        speak,
+        askQuestion,
+        dismissSpeechBubble,
+        player,
+        skippable,
+      ),
+    );
+
+    if (!identityConfirmed) {
+      await c3po.think();
+      // await gameEvents.exitStageLeft(c3po, 2);
+
+      // control.endGame();
+      return;
+    }
+    await skippable(speak("Thank goodness!"));
+    await skippable(dismissSpeechBubble());
+
     // begin game instruction
-    await wait(1);
-    await gameEvents.startGameInstruction({
-      c3po,
-      getGameStage: getGameStage(),
-      speak,
-      askQuestion,
-      dismissSpeechBubble,
-      showBinary,
-      toggleKeypad,
-      player,
-    });
-    // c3po.stop();
-    c3po.rest();
-  } else {
-    // skip game instruction and move c3po to position
+    await skippable(
+      gameEvents.startGameInstruction({
+        c3po,
+        getGameStage: getGameStage(),
+        speak,
+        askQuestion,
+        dismissSpeechBubble,
+        showBinary,
+        showKeypad,
+        player,
+        skippable,
+        handleGameOver,
+      }),
+    );
+  } catch (error) {
+    if (error.name !== "AbortError" && error?.message != "Skipped") {
+      throw error;
+    }
+    console.log("SKIPPED GAME INSTRUCTION", error);
     showBinary();
-    toggleKeypad();
+    showKeypad();
+    dismissSpeechBubble();
     control.toggleControls(true);
-    await c3po.animate(c3po.body, { rotate: 0, duration: 0 });
-    await c3po.walk(-40, { steps: 9, duration: 0 });
+    c3po.reset();
+    c3po.animate(c3po.body, { rotate: 0, duration: 0 });
+    c3po.walkTo(40, { steps: 0, duration: 0 });
   }
+  // skip game instruction and move c3po to position
+
   // showKeypad();
 };

@@ -1,5 +1,14 @@
 import gsap from "gsap";
-export const createThinkTimeline = (bodyParts) => {
+import * as types from "../types";
+
+/**
+ * Create think timeline
+ *
+ * @param {types.BodyParts} bodyParts
+ * @returns
+ */
+export const createThinkTimeline = (bodyParts, options) => {
+  const { duration } = options;
   const { leftShoulder, rightShoulder } = bodyParts;
   const thinkTimeline = gsap.timeline();
   thinkTimeline.set(leftShoulder.joint, { x: 0, y: 0, rotate: "0deg" });

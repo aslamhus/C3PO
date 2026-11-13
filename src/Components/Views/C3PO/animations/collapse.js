@@ -5,7 +5,7 @@ import * as types from "../types";
  * @param {types.BodyParts} bodyParts
  * @returns
  */
-export const createCollapseTimeline = (bodyParts) => {
+export const createCollapseTimeline = (bodyParts, playSound) => {
   const {
     body: { body },
     head: { head, leftEye, leftEyeBall, rightEye, rightEyeBall },
@@ -14,15 +14,15 @@ export const createCollapseTimeline = (bodyParts) => {
     leftShoulder,
     rightShoulder,
   } = bodyParts;
-  const tl = gsap.timeline({});
-  tl.set(head.head, { transformOrigin: "50% 100%" });
-  tl.to(head.head, {
+  const tl = gsap.timeline();
+  tl.set(head, { transformOrigin: "50% 100%" });
+  tl.to(head, {
     rotate: "5deg",
     y: "1px",
     duration: 0.2,
     ease: "bounce.out",
   });
-  tl.add(eyeFlicker(leftEye), 0.4);
+  tl.add(eyeFlicker(leftEye, playSound), 0.4);
   tl.add(eyeFlicker(rightEye), 0.4);
   // hips bends
   tl.add(hipsBend(bodyParts), 0.4);
@@ -41,7 +41,7 @@ export const createCollapseTimeline = (bodyParts) => {
   return tl;
 };
 
-const eyeFlicker = (eye) => {
+const eyeFlicker = (eye, playSound) => {
   const tl = gsap.timeline({});
   tl.set(eye, { filter: "grayscale(0%) brightness(100%)" });
   tl.to(eye, {
@@ -54,6 +54,14 @@ const eyeFlicker = (eye) => {
     filter: "grayscale(100%) brightness(50%)",
     duration: 1,
     delay: 1,
+    onStart: () => {
+      if (playSound instanceof Function) {
+        console.log("power down sound");
+        setTimeout(() => {
+          playSound();
+        }, 500);
+      }
+    },
     // ease: "power1.out",
   });
   return tl;
@@ -71,12 +79,13 @@ const hipsBend = (bodyParts) => {
     { x: 5, y: 20, rotate: "7deg", duration: 0.2 },
     0.1,
   );
-  tl.to(bodyParts.hips.hips, { y: 2, rotate: "5deg", duration: 0.2 }, 0.1);
-  tl.to(
-    bodyParts.head.head,
-    { y: 8, x: 5, rotate: "2deg", duration: 0.2 },
-    0.1,
-  );
+  tl.to(bodyParts.hips.hips, { y: "2px", rotate: "5deg", duration: 0.2 }, 0.1);
+  console.log("collapse", bodyParts);
+  // tl.to(
+  //   bodyParts.head.head,
+  //   { y: "8px", x: "5px", rotate: "2deg", duration: 0.2 },
+  //   0.1,
+  // );
   return tl;
 };
 

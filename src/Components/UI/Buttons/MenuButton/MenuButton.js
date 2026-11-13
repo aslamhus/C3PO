@@ -8,7 +8,6 @@ const MenuButton = React.forwardRef((props, ref) => {
   return (
     <GameButton
       {...props}
-      size="md"
       className={`menu-button ${className ? ` ${className}` : ""}`}
       sound={fx.click}
       ref={ref}

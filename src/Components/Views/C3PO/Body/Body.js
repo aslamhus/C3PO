@@ -11,7 +11,6 @@ const showBoundingBox = false;
 const Body = React.forwardRef((props, ref) => {
   const { children, style, isSpeaking, className, ...otherProps } = props;
   const bodyClassName = classNames("body-container", className);
-  console.log(props.className);
   return (
     <div className={bodyClassName} style={style} {...otherProps}>
       {children}
@@ -19,28 +18,28 @@ const Body = React.forwardRef((props, ref) => {
         ref={ref}
         className={classNames("body", { "is-speaking": isSpeaking })}
       >
-        <div className="head">
-          <BodyPart
-            className="head"
-            src={bodyParts.head}
-            color={bodyPartImagesColor.head}
-          />
-          <BodyPart
-            className={"left-eye"}
-            src={bodyParts.leftEye}
-            color={bodyPartImagesColor.leftEye}
-          >
-            <BodyPart className="left-eyeball" src={bodyParts.leftEyeBall} />
-          </BodyPart>
-          <BodyPart
-            className="right-eye"
-            src={bodyParts.rightEye}
-            color={bodyPartImagesColor.rightEye}
-          >
-            <BodyPart className="right-eyeball" src={bodyParts.rightEyeBall} />
-          </BodyPart>
-        </div>
         <div className="torso">
+          <div className="head">
+            <BodyPart
+              className="head"
+              src={bodyParts.head}
+              color={bodyPartImagesColor.head}
+            />
+            <BodyPart
+              className={"left-eye"}
+              src={bodyParts.leftEye}
+              color={bodyPartImagesColor.leftEye}
+            >
+              <BodyPart className="left-eyeball" src={bodyParts.leftEyeBall} />
+            </BodyPart>
+            <BodyPart
+              className="right-eye"
+              src={bodyParts.leftEye}
+              color={bodyPartImagesColor.leftEye}
+            >
+              <BodyPart className="right-eyeball" src={bodyParts.leftEyeBall} />
+            </BodyPart>
+          </div>
           <BodyPart
             className="torso"
             src={bodyParts.torso}

@@ -77,6 +77,7 @@ export default React.forwardRef(function GameInput({ ...props }, ref) {
     <>
       <div className={gameInputClasses}>
         <input
+          autoFocus={props?.autoFocus ?? false}
           ref={ref}
           autoComplete="off"
           className={error ? "error" : ""}

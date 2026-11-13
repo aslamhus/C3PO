@@ -1,12 +1,9 @@
 import gsap from "gsap";
 
-export const createProposeIdeaTimeline = (bodyParts) => {
+export const createProposeIdeaTimeline = (bodyParts, options) => {
+  const { duration } = options;
   const { leftShoulder, rightShoulder } = bodyParts;
-  const proposeTl = gsap.timeline({
-    onComplete: () => {
-      resolve(true);
-    },
-  });
+  const proposeTl = gsap.timeline({});
   // reset values
   proposeTl.set(rightShoulder.joint, { scaleY: 1 });
   //timelines

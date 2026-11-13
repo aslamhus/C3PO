@@ -1,7 +1,8 @@
 import gsap from "gsap";
 import { createThinkTimeline } from "./think";
 
-export const createRemoveSandTimeline = (bodyParts) => {
+export const createRemoveSandTimeline = (bodyParts, options) => {
+  const { duration } = options;
   const {
     body: { body },
     head: { head, leftEyeBall, rightEyeBall },
@@ -10,9 +11,9 @@ export const createRemoveSandTimeline = (bodyParts) => {
     leftShoulder,
     rightShoulder,
   } = bodyParts;
-  const thinkTimeline = createThinkTimeline(duration);
-  thinkTimeline.addLabel("raiseLeftArm", 0);
-  thinkTimeline.set(leftShoulder.joint, { scaleY: 1 }, "raiseLeftArm");
+  const tl = createThinkTimeline(bodyParts, { duration });
+  tl.addLabel("raiseLeftArm", 0);
+  tl.set(leftShoulder.joint, { scaleY: 1 }, "raiseLeftArm");
   const apoplexyTL = gsap.timeline({ repeat: -1, yoyo: true });
   apoplexyTL.set(leftShoulder.forearm, { rotate: "20deg" }, 0);
   apoplexyTL.to(
@@ -44,8 +45,9 @@ export const createRemoveSandTimeline = (bodyParts) => {
     { x: "1px", y: "0.5px", duration: 0.1, yoyo: true },
     0.55,
   );
-  thinkTimeline.add(headShake, 0.2);
-  thinkTimeline.add(apoplexyTL, 0);
+  tl.add(headShake, 0.2);
+  tl.add(apoplexyTL, 0);
 
-  thinkTimeline.play();
+  tl.play();
+  return tl;
 };

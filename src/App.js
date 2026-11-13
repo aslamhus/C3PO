@@ -10,6 +10,7 @@ import "./styles/links.scss";
 import "./styles/inputs.scss";
 import "./styles/lists.scss";
 import "./styles/dropdowns.scss";
+import "./styles/modals.scss";
 import "./styles/app.scss";
 
 export default function App() {

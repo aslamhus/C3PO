@@ -1,6 +1,6 @@
-import React from 'react';
-import { TipContext } from './context/context';
-import { TIP_ACTIONS } from './Reducer';
+import React from "react";
+import { TipContext } from "./context/context";
+import { TIP_ACTIONS } from "./Reducer";
 
 export const useTipModal = () => {
   const [state, dispatch] = React.useContext(TipContext);
@@ -13,7 +13,19 @@ export const useTipModal = () => {
     dispatch({ type: TIP_ACTIONS.show, payload: { component, ...options } });
   };
 
-  const hideTip = () => dispatch({ type: TIP_ACTIONS.hide });
+  /**
+   * @param {Event} event
+   */
+  const hideTip = (event) => {
+    const { target } = event;
+    if (
+      target.classList.contains("tip-modal") ||
+      target.closest(".tip-modal")
+    ) {
+      console.log("hide tip", target);
+      dispatch({ type: TIP_ACTIONS.hide });
+    }
+  };
 
   return {
     state,

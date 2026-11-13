@@ -16,6 +16,9 @@ button {
   color: vars.$button-color;
   border-radius: 20px;
 }
+button:focus {
+  outline: 1px solid vars.$highlight-yellow !important;
+}
 button:hover {
   opacity: 1;
 
@@ -65,9 +68,26 @@ button:active {
 }
 
 // sizing
+.game-button {
+  font-size: 1em;
+}
+.game-button-xs {
+  font-size: 0.7rem;
+}
 .game-button-sm {
   border-width: 2px;
+  font-size: 0.8rem;
 }
 .game-button-md {
   border-width: 2px;
+  font-size: 1rem;
 }
+.game-button-lg {
+  font-size: 1.5rem;
+}
+// const FONT_SIZES = {
+//   xs: "0.75em",
+//   sm: "1em",
+//   md: "1.25em",
+//   lg: "1.5em",
+// };

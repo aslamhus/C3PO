@@ -32,7 +32,6 @@ class SaveManager {
   save(saveFile, overwrite = false) {
     // check for previous save
     let index = this.findSaveDataIndexForPlayer(saveFile.player);
-    console.log("index", index);
     if (index > -1) {
       if (!overwrite) {
         throw new Error(`Player '${saveFile.player.getName()}' already exists`);

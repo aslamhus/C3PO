@@ -4,25 +4,19 @@
   -webkit-box-sizing: border-box;
 }
 .binary-message {
-  /* --binary-message-width: 25%; */
   position: relative;
   z-index: 5;
-  /* width: var(--binary-message-width); */
   width: 95%;
-  height: 50%;
-  top: 2.5%;
-  /* max-height: 60%; */
-  flex-shrink: 0;
-  /* left: calc(50% - var(--binary-message-width)); */
-  /* bottom: 5%; */
-  /* transform: translateY(-100%); */
+  flex-basis:calc(40% - 2.5%);
+  flex-grow:1;
+
   background: var(--primary-800);
   border-radius: 20px;
   padding: 0.75rem 0.75rem;
-  padding-right: 0.25rem;
-  /* height: auto; */
+  margin-top:2.5%;
   user-select: none;
   -webkit-user-select: none;
+  overflow:hidden;
 }
 
 .binary-message-scroll-container {
@@ -46,12 +40,18 @@
   height: auto;
   box-sizing: border-box;
   color: var(--primary-200);
-  font-size: calc(50vw / 40);
+
+  font-size:1.1rem;
  
-  margin: 0 0.75%;
+  margin: 0 0.3rem;
+}
+.binary-message .decoded {
+  .word-found, .letter-found {
+  font-size:1.2rem;
+}
 }
 .binary-message .byte p {
-  font-size: calc(50vw / 25);
+  /* font-size: calc(50vw / 25); */
 }
 .binary-message .byte.decoded {
   /* border: 2px solid green; */
@@ -89,9 +89,7 @@ left:0;
   animation: wordFound 0.3s ease;
 
 }
-.binary-message .decoded p.word-found {
-  
-}
+
 
 .binary-message .byte::after {
   content: '';
@@ -123,11 +121,11 @@ left:0;
 }
 /* Speech bubble letter found */
 .letter-found,
-.letter-not-found {
+.letter-not-found,
+.word-found {
   position: relative;
   font-weight: bold;
-  font-size: 1.45em;
-  padding: 1% 5% !important;
+  padding: 0.25rem 0.25rem !important;
   /* background: var(--primary-600); */
   color: var(--primary-100);
   margin: 0.25rem;

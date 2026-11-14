@@ -13,6 +13,7 @@ export const startGameInstruction = async ({
   skippable,
   handleGameOver,
 }) => {
+  console.log(c3po.mainTimeline.timeline);
   await skippable(
     c3po.animate(c3po.body, { rotate: 0, duration: 0.5 * speed }),
   );
@@ -72,18 +73,16 @@ export const startGameInstruction = async ({
       skippable,
     });
   }
-  await dismay({
-    c3po,
-    speak,
-  });
+  await dismay({ c3po, speak });
   return handleGameOver();
 };
 
 const dismay = async ({ c3po, speak }) => {
-  speak("Sometimes, I just don't understand human behaviour...");
-  await wait(0.5);
-  await c3po.collapse();
-  control.endGame();
+  c3po.reset();
+  await c3po.rest(0.5);
+  speak("We're doomed...", { tapToContinue: false });
+  await wait(3);
+  return;
 };
 
 const explainGame = async ({
@@ -128,6 +127,7 @@ const explainGame = async ({
       { tapToContinue: true },
     ),
   );
+  // remove sand now
 
   await skippable(c3po.fret());
   // await wait(1 * speed);

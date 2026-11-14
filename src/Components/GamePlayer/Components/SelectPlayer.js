@@ -6,6 +6,9 @@ import useSave from "../../GameSave/hooks/useSave";
 import ChoosePlayer from "./ChoosePlayer";
 import GameButton from "../../UI/Buttons/GameButton";
 import { AnimatePresence, motion } from "framer-motion";
+import useControlPad from "../../ControlPad/hooks/useControlPad";
+import FocusListManager from "../../ControlPad/FocusListManager";
+import FocusAttributeManager from "../../ControlPad/FocusAttributeManager";
 
 export default function SelectPlayer({
   currentPlayer,
@@ -13,8 +16,50 @@ export default function SelectPlayer({
   show,
   onClose,
 }) {
-  const { cueSoundFx, cueMusic } = useGameSound();
   const [portal, setPortal] = useState(null);
+
+  const selectPlayerRef = useRef(null);
+
+  const { setCurrentFocus, currentFocusRef, getFocusContext } = useControlPad(
+    "SelectPlayer",
+    {
+      up() {
+        const prev = focusManagerRef.current.getPrevious();
+        console.log("prev", prev);
+        setCurrentFocus(prev);
+      },
+      down() {
+        const next = focusManagerRef.current.getNext();
+        console.log("next", next);
+        setCurrentFocus(next);
+      },
+      right() {
+        const currentEl = focusManagerRef.current.activeEl;
+        if (currentEl && currentEl.classList.contains("save-file")) {
+          // get dropdown
+          const dropdownToggle = currentEl.querySelector(".dropdown-toggle");
+          console.log("set current focus, dropdown", dropdownToggle);
+          setCurrentFocus(dropdownToggle);
+        }
+      },
+      left() {
+        const currentEl = focusManagerRef.current.activeEl;
+        if (currentEl && currentEl.classList.contains(".dropdown-toggle")) {
+          setCurrentFocus(currentEl.closest(".save-file"));
+        }
+      },
+      confirm() {
+        console.log("click", currentFocusRef.current);
+        currentFocusRef.current.click();
+      },
+      cancel() {},
+    },
+    show && selectPlayerRef.current,
+  );
+
+  const focusManagerRef = useRef(
+    new FocusAttributeManager(selectPlayerRef, getFocusContext()),
+  );
 
   const ref = (el) => {
     if (!el) return;
@@ -25,6 +70,9 @@ export default function SelectPlayer({
     useSave();
   const [showCreatePlayerModal, setShowCreatePlayerModal] = useState(false);
 
+  const handleClickNewPlayer = (event) => {
+    setShowCreatePlayerModal(true);
+  };
   const handleCreateNewPlayer = (player) => {
     createPlayer(player);
     onSelectPlayer(player);
@@ -57,6 +105,7 @@ export default function SelectPlayer({
         <ScreenModal.Body>
           {hasSaves && !showCreatePlayerModal && (
             <div
+              ref={selectPlayerRef}
               style={{
                 display: "flex",
                 justifyContent: "center",
@@ -64,13 +113,20 @@ export default function SelectPlayer({
                 alignItems: "stretch",
               }}
             >
+              {/* Choose player gets data focus index starting at 0 */}
               <ChoosePlayer
                 saveFiles={saveFiles}
                 onDeletePlayer={removeSaveFile}
                 onSelectPlayer={handleSelectPlayer}
                 currentPlayer={currentPlayer}
+                focusContext={getFocusContext()}
               />
-              <GameButton onClick={() => setShowCreatePlayerModal(true)}>
+              {/* Game button gets focus index  */}
+              <GameButton
+                data-focus={saveFiles.length}
+                data-focus-context={getFocusContext()}
+                onClick={handleClickNewPlayer}
+              >
                 New Player
               </GameButton>
             </div>

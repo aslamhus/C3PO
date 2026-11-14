@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useEffect, useReducer, useRef } from "react";
 import { GameControlContext } from "./context";
 import { initialState, reducer } from "./Reducer";
 

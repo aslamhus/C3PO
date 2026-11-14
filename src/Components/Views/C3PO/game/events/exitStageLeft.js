@@ -4,5 +4,8 @@ export const exitStageLeft = async (c3po, duration = 0) => {
     y: "0",
     rotate: "0deg",
     duration,
+    onComplete: () => {
+      console.info("exit stage left complete");
+    },
   });
 };

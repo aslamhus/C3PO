@@ -13,10 +13,8 @@ class C3POActionTimeline {
   constructor(timelineOptions) {
     this.timeline = gsap.timeline({
       autoRemoveChildren: true,
-      paused: true,
-      onComplete: () => {
-        console.log("MAIN TIMELINE COMPLETE");
-      },
+      // paused: true,
+
       ...(timelineOptions ?? {}),
     });
     this.actions = {};
@@ -27,9 +25,8 @@ class C3POActionTimeline {
   }
 
   clear() {
-    console.info("clear");
     Object.entries(this.actions).forEach(([label, tl]) => {
-      tl.revert();
+      tl.pause();
       this.removeAction(label);
     });
 
@@ -58,28 +55,27 @@ class C3POActionTimeline {
    * @param {string} label
    */
   addAction(childTl, label) {
-    console.info("add action", label);
     if (this.actions[label]) {
       if (this.actions[label].paused()) {
         throw new Error("previous action still playing: " + label);
       } else {
-        // this.removeAction(this.actions[label], label);
+        this.removeAction(label);
       }
     }
     this.actions[label] = childTl;
     // make sure to play main timeline before adding child action
     // otherwise child action may automaticlaly complete.
-
-    this.timeline.add(childTl, label);
-    if (this.timeline.paused) {
+    if (this.timeline.paused || this.timeline.isActive()) {
       this.timeline.play();
     }
+    // childTl.progress(0);
+    this.timeline.add(childTl, label);
+
     // because gsap only allows one event callback, we must collect any previously added callbacks
 
     let onComplete = childTl.eventCallback("onComplete");
     childTl.eventCallback("onComplete", () => {
-      console.log("remove action label", label);
-      this.removeAction(childTl, label);
+      this.removeAction(label);
       if (onComplete instanceof Function) {
         onComplete();
       }
@@ -87,17 +83,16 @@ class C3POActionTimeline {
   }
 
   /**
-   * @param {GSAPTimeline} childTl - the childtimeline to remove
    * @param {string} label
    */
-  removeAction(childTl, label) {
-    // console.log("remove action", label);
-    // if (!label) {
-    //   throw new Error("Failed to remove action, invalid label: " + label);
-    // }
-    // delete this.actions[label];
-    // Promise.reject(this.actions[label]);
-    // this.timeline.remove(childTl);
+  removeAction(label) {
+    if (!label) {
+      return;
+    }
+    const childTl = this.actions[label];
+    this.timeline.remove(childTl);
+    if (childTl) childTl.kill();
+    delete this.actions[label];
   }
 
   /**

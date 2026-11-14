@@ -14,6 +14,7 @@ function GameButton({
   size,
   active = false,
   autoFocus = false,
+  ...props
 }) {
   const { cueSoundFx } = useGameSound();
 
@@ -44,6 +45,7 @@ function GameButton({
       id={id}
       value={value}
       disabled={disabled}
+      {...props}
     >
       {children}
     </button>

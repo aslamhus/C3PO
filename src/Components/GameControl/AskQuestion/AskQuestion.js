@@ -6,8 +6,6 @@ import SelectButton from "../../UI/Buttons/SelectButton";
 
 export default function AskQuestion({}) {
   const timeout = useRef();
-  // const [_show, setShow] = useState(false);
-  // const [state, dispatch] = useContext(AskQuestionContext)
 
   const { questionState, showQuestion, hideQuestion, handleResponse } =
     useAskQuestion();
@@ -23,11 +21,6 @@ export default function AskQuestion({}) {
     }
   }, [show, responses]);
 
-  useEffect(() => {
-    // console.log("question state", questionState);
-  }, [questionState]);
-
-  // if (!show) return;
   return (
     <div className="ask-question" style={{ display: show ? "" : "none" }}>
       {responses &&
@@ -35,6 +28,8 @@ export default function AskQuestion({}) {
           return (
             <SelectButton
               key={`${response.title}-${index}`}
+              // autoFocus={response?.autoFoucs ?? index === 0}
+              tabIndex={index}
               onClick={handleResponse}
               value={response.value}
             >

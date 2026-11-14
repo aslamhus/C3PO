@@ -37,12 +37,12 @@ export const createRemoveSandTimeline = (bodyParts, options) => {
   headShake.to(head, { rotate: "1deg", duration: 0.25 });
   headShake.to(
     leftEyeBall,
-    { x: "1px", y: "0.5px", duration: 0.1, yoyo: true },
+    { x: "3px", y: "0", duration: 0.1, yoyo: true },
     0.55,
   );
   headShake.to(
     rightEyeBall,
-    { x: "1px", y: "0.5px", duration: 0.1, yoyo: true },
+    { x: "3px", y: "0", duration: 0.1, yoyo: true },
     0.55,
   );
   tl.add(headShake, 0.2);

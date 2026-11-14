@@ -57,30 +57,25 @@ export const main = async ({
     showC3PO,
     handleGameOver,
   } = actions;
-
+  // reset all previous state
   control.toggleKeypad(false);
+  control.toggleControls(false);
   control.resetKeypad();
   await dismissSpeechBubble();
   cueMusic(music.jawaTheme);
   c3po.reset();
   showC3PO();
+
+  // define show keypad with guess char as callback when pressing a key
   const showKeypad = () => {
     control.toggleKeypad(true, { onPressChar: guessChar });
   };
 
-  // setTimeout(() => c3po.collapse(), 1000);
-  // return;
-  // await c3po.proposeIdea();
-  // c3po.removeSand();
-  // return;
-
-  // testC3POAnimations({ state, actions, control });
-  // return;
-  await gameEvents.exitStageLeft(c3po);
-  // TODO: add skip function
   let skippable = createSkippable();
+  // begin
+  await gameEvents.exitStageLeft(c3po, 0);
 
-  // showTip(<div onClick={() => skippable.skip()}>Skip</div>);
+  showTip(<div onClick={() => skippable.skip()}>Skip</div>);
   try {
     await skippable(
       gameEvents.peekAbooEntrance(c3po, speak, skippable),
@@ -100,10 +95,10 @@ export const main = async ({
     );
 
     if (!identityConfirmed) {
-      await c3po.think();
-      // await gameEvents.exitStageLeft(c3po, 2);
+      // c3po.think();
+      await gameEvents.exitStageLeft(c3po, 3);
 
-      // control.endGame();
+      control.endGame();
       return;
     }
     await skippable(speak("Thank goodness!"));
@@ -128,7 +123,6 @@ export const main = async ({
     if (error.name !== "AbortError" && error?.message != "Skipped") {
       throw error;
     }
-    console.log("SKIPPED GAME INSTRUCTION", error);
     showBinary();
     showKeypad();
     dismissSpeechBubble();

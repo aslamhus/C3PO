@@ -134,12 +134,10 @@ const ScreenModal = React.forwardRef(
       gsap.set(getWrapper(), { overflowY: "hidden" });
       gsap.to(getOverlay(), {
         opacity: 1,
-        // display: "flex",
         pointerEvents: "all",
       });
       gsap.to(getWrapper(), {
         height: height ?? "auto",
-        // display: "block",
         pointerEvents: "all",
         opacity: 1,
         duration: 0.5,
@@ -161,8 +159,6 @@ const ScreenModal = React.forwardRef(
       gsap.to(getWrapper(), {
         opacity: 1,
         duration: 0.2,
-        // display: "none"
-
         height: "0",
         pointerEvents: "none",
       });
@@ -171,23 +167,20 @@ const ScreenModal = React.forwardRef(
     const resetAnimation = () => {
       gsap.set(getOverlay(), {
         opacity: 0,
-        // display: "none"
-
         pointerEvents: "none",
       });
 
       gsap.set(getWrapper(), {
         height: 0,
-        // display: "none"
         pointerEvents: "none",
       });
       gsap.set(getWrapper(), { overflowY: "hidden" });
     };
 
     useEffect(() => {
-      if (!mounted) return;
-      if (!animate) return;
+      // if (!mounted) return;
       if (show) {
+        console.log("show");
         handleShow();
       } else {
         handleClose();
@@ -200,16 +193,15 @@ const ScreenModal = React.forwardRef(
 
     useEffect(() => {
       if (!gameStage.state.loaded) return;
-      if (ref.current && animate) {
+      if (ref.current) {
         resetAnimation();
         if (show) {
           animateIn();
         }
       }
-    }, [ref, gameStage.state.loaded]);
+    }, [ref.current, gameStage.state.loaded]);
 
     useEffect(() => {
-      setMounted(true);
       return () => {
         unblurGameStage();
       };
@@ -219,33 +211,34 @@ const ScreenModal = React.forwardRef(
 
     return (
       <>
-        {createPortal(
-          <div
-            className={screenModalClassName}
-            ref={ref}
-            onClick={handleClickOverlay}
-            data-has-overlay={overlay}
-            data-show={show}
-          >
-            {/* Animate the height of the screen modal wrapper, not the modal container
+        {show &&
+          createPortal(
+            <div
+              className={screenModalClassName}
+              ref={ref}
+              onClick={handleClickOverlay}
+              data-has-overlay={overlay}
+              data-show={show}
+            >
+              {/* Animate the height of the screen modal wrapper, not the modal container
           this allows us to add padding to the container. If padding is given to the height
           animated wrapper, it will still be visible even with height 0 */}
-            <div
-              className="screen-modal-wrapper"
-              style={{ width: width ?? "auto", height: height ?? "auto" }}
-            >
               <div
-                className="screen-modal-container"
-                style={{ height: "100%" }}
-                ref={forwardRef}
+                className="screen-modal-wrapper"
+                style={{ width: width ?? "auto", height: height ?? "auto" }}
               >
-                {renderChildren(children)}
+                <div
+                  className="screen-modal-container"
+                  style={{ height: "100%" }}
+                  ref={forwardRef}
+                >
+                  {renderChildren(children)}
+                </div>
               </div>
-            </div>
-          </div>,
+            </div>,
 
-          portal ?? document.querySelector(".app"),
-        )}
+            portal ?? document.querySelector(".app"),
+          )}
       </>
     );
   },

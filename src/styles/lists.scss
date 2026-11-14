@@ -20,7 +20,8 @@ li,
 }
 li,
 .list-group-item {
-  &:hover {
+  &:hover,
+  &:focus {
     cursor: pointer;
     box-shadow: vars.$hover-box-shadow;
     color: vars.$hover-color;

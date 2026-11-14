@@ -78,10 +78,12 @@ export default function GameStartScreen({ onPressGameStart }) {
           onClose={() => setShowSelectPlayerModal(false)}
           currentPlayer={player}
         />
-        <ConfirmButton onClick={handleGameStart}>Start</ConfirmButton>
+        <ConfirmButton autoFocus={true} onClick={handleGameStart}>
+          Start
+        </ConfirmButton>
       </div>
       <div className="game-start-screen-footer">
-        -- Press SPACEBAR for options --
+        -- Press <em>SPACEBAR</em> for options --
       </div>
     </motion.div>
   );

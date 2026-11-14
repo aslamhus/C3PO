@@ -17,7 +17,8 @@ button {
   border-radius: 20px;
 }
 button:focus {
-  outline: 1px solid vars.$highlight-yellow !important;
+  outline: 2px solid vars.$highlight-yellow !important;
+  color: vars.$highlight-yellow;
 }
 button:hover {
   opacity: 1;

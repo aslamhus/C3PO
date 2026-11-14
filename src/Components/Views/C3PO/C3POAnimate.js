@@ -23,7 +23,18 @@ class C3POAnimate {
   constructor(bodyRef, constrainEl) {
     this.constrainEl = constrainEl;
     this.body = bodyRef.current;
-    this.mainTimeline = new C3POActionTimeline();
+    this.mainTimeline = new C3POActionTimeline({
+      onComplete: () => {
+        console.log("MAIN TIMELINE COMPLETE", this.mainTimeline.timeline);
+      },
+      onUpdate: () => {
+        const x = gsap.getProperty(this.body, "x");
+        // console.log("x", x);
+        // if (x <= parseInt(0)) {
+        //   debugger;
+        // }
+      },
+    });
 
     this.automonicTimeline = new C3POActionTimeline({ repeat: -1, yoyo: true });
     this.x = 0;
@@ -65,13 +76,6 @@ class C3POAnimate {
         rightLeg: this.body.querySelector(".right-leg"),
       },
     };
-    this.mainTimeline.timeline.eventCallback("onUpdate", () => {
-      const x = gsap.getProperty(this.body, "x");
-      // console.log("x", x);
-      // if (x <= parseInt(0)) {
-      //   debugger;
-      // }
-    });
   }
 
   play() {
@@ -83,7 +87,7 @@ class C3POAnimate {
     const speakTimeline = this.mainTimeline.getAction("speak");
     if (speakTimeline) {
       speakTimeline.revert();
-      this.mainTimeline.removeAction("speak", speakTimeline);
+      this.mainTimeline.removeAction("speak");
     }
   }
 
@@ -100,7 +104,7 @@ class C3POAnimate {
       this.automonicTimeline.clear();
       this.mainTimeline.clear();
       const allBodyParts = this.getAllBodyParts();
-      console.log("reset");
+      console.info("reset");
       // gsap.set(this.bodyParts.leftShoulder.mainArm, { x: 0, y: 0 });
       gsap
         .to(allBodyParts, {
@@ -141,21 +145,29 @@ class C3POAnimate {
     return tl;
   }
 
-  look(direction, speed = 0.25) {
+  look(direction, duration) {
     const {
       head: { leftEyeBall, rightEyeBall },
     } = this.bodyParts;
+    duration = (duration ?? 1) * speed;
+    const tl = gsap.timeline();
     switch (direction) {
       case "right":
-        gsap.to(leftEyeBall, { x: "2px", y: 0, duration: 1 * speed });
-        gsap.to(rightEyeBall, { x: "2px", y: 0, duration: 1 * speed });
+        tl.to(leftEyeBall, { x: "2px", y: 0, duration }, 0);
+        tl.to(rightEyeBall, { x: "2px", y: 0, duration }, 0);
+        break;
+
+      case "left":
+        tl.to(leftEyeBall, { x: "-2px", y: 0, duration }, 0);
+        tl.to(rightEyeBall, { x: "-2px", y: 0, duration }, 0);
         break;
 
       case "straight":
-        gsap.to(leftEyeBall, { x: "0", y: 0, duration: 1 * speed });
-        gsap.to(rightEyeBall, { x: "0", y: 0, duration: 1 * speed });
+        tl.to(leftEyeBall, { x: "0", y: 0, duration }, 0);
+        tl.to(rightEyeBall, { x: "0", y: 0, duration }, 0);
         break;
     }
+    return tl;
   }
 
   /**
@@ -343,21 +355,20 @@ class C3POAnimate {
 
   removeSand(duration = 1 * speed) {
     // note that think never resolves, because the headscrtch animation is an infinite loop.
-    return new Promise((resolve) => {
-      const sand = createSand();
-      this.bodyParts.head.head.appendChild(sand);
-      this.mainTimeline.clear();
-      const removeSandTl = createRemoveSandTimeline(this.bodyParts, {
-        duration,
-      });
-      const onComplete = () => {
-        sand.remove();
-        resolve(true);
-      };
-      removeSandTl.eventCallback("onComplete", onComplete);
-      removeSandTl.eventCallback("onInterrupt", onComplete);
-      this.mainTimeline.addAction(removeSandTl, "removeSand");
+    const sand = createSand();
+    this.bodyParts.head.head.appendChild(sand);
+    this.mainTimeline.clear();
+    const onComplete = () => {
+      sand.remove();
+    };
+    const removeSandTl = createRemoveSandTimeline(this.bodyParts, {
+      duration,
     });
+    removeSandTl.eventCallback("onComplete", onComplete);
+    removeSandTl.eventCallback("onInterrupt", onComplete);
+    this.mainTimeline.addAction(removeSandTl, "removeSand");
+    removeSandTl.play();
+    return removeSandTl;
   }
 
   fret() {
@@ -367,6 +378,7 @@ class C3POAnimate {
     this.rest(0);
     const fretTl = createFretTimeline(this.bodyParts);
     this.mainTimeline.addAction(fretTl, "fret");
+    return fretTl;
   }
 
   animate(bodyPart, options) {
@@ -377,17 +389,16 @@ class C3POAnimate {
     const tl = gsap.timeline();
     tl.to(bodyPart, {
       ...animateOptions,
-
+      onComplete,
       duration: duration ?? 0,
-      onComplete: () => {
-        console.log("animate action complete");
-      },
     });
-    this.mainTimeline.addAction(
-      tl,
-      "animate_" + crypto.randomUUID().slice(0, 5),
-    );
-    console.log("timeline", this.mainTimeline.timeline);
+    if (duration > 0) {
+      this.mainTimeline.addAction(
+        tl,
+        "animate_" + crypto.randomUUID().slice(0, 5),
+      );
+    }
+    tl.play();
     return tl;
   }
 

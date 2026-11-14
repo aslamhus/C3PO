@@ -1,6 +1,6 @@
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Dropdown from "react-bootstrap/Dropdown";
 import SplitButton from "react-bootstrap/SplitButton";
 import ListGroup from "react-bootstrap/ListGroup";
@@ -9,13 +9,18 @@ import GameButton from "../../UI/Buttons/GameButton";
 import ConfirmModal from "../../UI/Modals/ConfirmModal/ConfirmModal";
 import ConfirmContextProvider from "../../UI/Modals/ConfirmModal/context/ConfirmContextProvider";
 import useConfirm from "../../UI/Modals/ConfirmModal/useConfirm";
+import useControlPad from "../../ControlPad/hooks/useControlPad";
 import { motion, AnimatePresence } from "framer-motion";
 import classNames from "classnames";
+import FocusListManager from "../../ControlPad/FocusListManager";
+import FocusAttributeManager from "../../ControlPad/FocusAttributeManager";
+
 export default function ChoosePlayer({
   saveFiles,
   onDeletePlayer,
   onSelectPlayer,
   currentPlayer,
+  focusContext,
 }) {
   return (
     <>
@@ -33,6 +38,7 @@ export default function ChoosePlayer({
               return (
                 <SaveFileListItem
                   key={`file-${index}`}
+                  focusContext={focusContext}
                   saveFile={saveFile}
                   onDeletePlayer={onDeletePlayer}
                   onSelectPlayer={onSelectPlayer}
@@ -55,9 +61,10 @@ const SaveFileListItem = ({
   index,
   onSelectPlayer,
   isCurrentPlayer,
+  autoFocus,
+  focusContext,
 }) => {
   const [active, setActive] = useState(false);
-
   const name = saveFile.player.getName();
 
   const handleMouseDown = (event) => {
@@ -94,12 +101,16 @@ const SaveFileListItem = ({
         >
           <ListGroup.Item
             as="div"
+            data-focus={index}
+            data-focus-context={focusContext}
             className={saveFileListItemClassnames}
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
             onClick={handleClick}
             style={{ display: "flex", alignItems: "center" }}
-            active={isCurrentPlayer}
+            tabIndex={-1}
+
+            // active={isCurrentPlayer}
           >
             <strong style={{ flexGrow: 1 }}>{name}</strong>
             <div style={{ flexBasis: "30%", fontSize: "smaller" }}>
@@ -132,10 +143,41 @@ const DropdownMenu = ({
 
   const [showDropdown, setShowDropdown] = useState(false);
 
+  const dropdownRef = useRef(null);
+  // const focusListRef = useRef(new FocusListManager());
+
+  // const setFocusList = () => {
+  //   const items = dropdownRef.current.querySelectorAll(".dropdown-item");
+  //   focusListRef.current.setList(items);
+  // };
+
+  const { setCurrentFocus, currentFocusRef, getFocusContext } = useControlPad(
+    "DropdownMenu",
+    {
+      up() {
+        setCurrentFocus(focusManagerRef.current.getPrevious());
+      },
+      down() {
+        setCurrentFocus(focusManagerRef.current.getNext());
+      },
+      confirm() {
+        currentFocusRef.current.click();
+      },
+      cancel() {
+        console.log("cancel dropdown");
+        setShowDropdown(false);
+      },
+    },
+    showDropdown,
+  );
+
+  const focusManagerRef = useRef(
+    new FocusAttributeManager(dropdownRef, getFocusContext()),
+  );
+
   const handleToggle = (show, { originalEvent, source }) => {
     originalEvent.stopPropagation();
     originalEvent.preventDefault();
-
     setShowDropdown(show);
     onDropdownToggle(show, { originalEvent, source });
   };
@@ -154,27 +196,50 @@ const DropdownMenu = ({
       onDeletePlayer(saveFile, index);
     }
   };
+
+  const handleSeeHistory = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+  };
+
+  // useEffect(() => {
+  //   if (!dropdownRef.current || !showDropdown) return;
+  //   setFocusList();
+  // }, [dropdownRef.current, showDropdown]);
+
+  useEffect(() => {}, []);
   return (
     <>
       <Dropdown
         title={"options"}
-        autoClose={true}
+        autoClose={"outside"}
         show={showDropdown}
         onToggle={handleToggle}
         onMouseDown={(event) => event.stopPropagation()}
         onMouseUp={(event) => event.stopPropagation()}
+        ref={dropdownRef}
       >
         <Dropdown.Toggle
           variant="secondary"
           style={{ margin: 0 }}
           id="dropdown-custom"
-          // onClick={handleClickDropdownToggle}
         />
         <Dropdown.Menu>
-          <Dropdown.Item className="danger" onClick={handleClickDelete}>
+          <Dropdown.Item
+            data-focus={2}
+            data-focus-context={getFocusContext()}
+            className="danger"
+            onClick={handleClickDelete}
+          >
             Delete
           </Dropdown.Item>
-          <Dropdown.Item>See History</Dropdown.Item>
+          <Dropdown.Item
+            data-focus={1}
+            data-focus-context={getFocusContext()}
+            onClick={handleSeeHistory}
+          >
+            See History
+          </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
     </>

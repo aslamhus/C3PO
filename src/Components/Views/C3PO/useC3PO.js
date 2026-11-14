@@ -55,10 +55,8 @@ export const useC3PO = ({ stage }) => {
   const askQuestion = async ({ question, responses }) => {
     // set the game stage constraints for the control pad
     stage.setConstraints({ x: [0, "50%"], y: [0, "100%"] });
-    await speak(question, { tapToContinue: true });
-    if (!control.state.controls) {
-      control.toggleControls(true);
-    }
+    await speak(question, { tapToContinue: false });
+    control.toggleControls(true);
     return ask({ question, responses });
   };
   // game sound

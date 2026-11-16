@@ -1,7 +1,7 @@
 import gsap from "gsap";
 import { createThinkTimeline } from "./think";
 
-export const createRemoveSandTimeline = (bodyParts, options) => {
+export const createRemoveSandTimeline = (bodyParts, options, sandEffect) => {
   const { duration } = options;
   const {
     body: { body },
@@ -14,7 +14,26 @@ export const createRemoveSandTimeline = (bodyParts, options) => {
   const tl = createThinkTimeline(bodyParts, { duration });
   tl.addLabel("raiseLeftArm", 0);
   tl.set(leftShoulder.joint, { scaleY: 1 }, "raiseLeftArm");
-  const apoplexyTL = gsap.timeline({ repeat: -1, yoyo: true });
+  // match the sand timeline to the headshake timeline so that
+  // the sand dislodges from 3po's ear every headshake
+  const sandTimeline = gsap.timeline({
+    delay: 0.65,
+    duration: 1,
+    repeat: -1,
+
+    onStart: () => {
+      sandEffect.reset();
+      sandEffect.play();
+    },
+    onRepeat() {
+      sandEffect.reset();
+      sandEffect.play();
+    },
+  });
+  const apoplexyTL = gsap.timeline({
+    repeat: -1,
+    yoyo: true,
+  });
   apoplexyTL.set(leftShoulder.forearm, { rotate: "20deg" }, 0);
   apoplexyTL.to(
     leftShoulder.joint,
@@ -32,6 +51,7 @@ export const createRemoveSandTimeline = (bodyParts, options) => {
     { rotate: "-20deg", duration: 0.25, yoyoEase: true },
     0,
   );
+
   const headShake = gsap.timeline({ repeat: -1 });
   headShake.to(head, { rotate: "5deg", delay: 0.65, duration: 0.1 });
   headShake.to(head, { rotate: "1deg", duration: 0.25 });
@@ -47,7 +67,9 @@ export const createRemoveSandTimeline = (bodyParts, options) => {
   );
   tl.add(headShake, 0.2);
   tl.add(apoplexyTL, 0);
+  tl.add(sandTimeline, 0.2);
 
   tl.play();
+
   return tl;
 };

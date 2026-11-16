@@ -13,6 +13,7 @@ import { createFretTimeline } from "./animations/fret";
 import { createBreatheTimeline } from "./Body/breathe";
 import { createDazedTimeline } from "./animations/dazed";
 import { createCollapseTimeline } from "./animations/collapse";
+import { v4 as uuidv4 } from "uuid";
 
 class C3POAnimate {
   /**
@@ -20,9 +21,10 @@ class C3POAnimate {
    * @param {React.RefObject<HTMLElement>} bodyRef - body ref
    * @param {HTMLElement} constrainEl - the element to reference as C3PO's coordinate system.
    */
-  constructor(bodyRef, constrainEl) {
+  constructor(bodyRef, constrainEl, isMobile) {
     this.constrainEl = constrainEl;
     this.body = bodyRef.current;
+    this.isMobile = isMobile;
     this.mainTimeline = new C3POActionTimeline({
       onComplete: () => {
         console.log("MAIN TIMELINE COMPLETE", this.mainTimeline.timeline);
@@ -355,15 +357,25 @@ class C3POAnimate {
 
   removeSand(duration = 1 * speed) {
     // note that think never resolves, because the headscrtch animation is an infinite loop.
-    const sand = createSand();
-    this.bodyParts.head.head.appendChild(sand);
+    const options = this.isMobile
+      ? {
+          minRadius: 0.1,
+          maxRadius: 0.8,
+        }
+      : {};
+    const sandEffect = createSand(options);
+    this.bodyParts.head.head.appendChild(sandEffect.canvas);
     this.mainTimeline.clear();
     const onComplete = () => {
-      sand.remove();
+      sandEffect.remove();
     };
-    const removeSandTl = createRemoveSandTimeline(this.bodyParts, {
-      duration,
-    });
+    const removeSandTl = createRemoveSandTimeline(
+      this.bodyParts,
+      {
+        duration,
+      },
+      sandEffect,
+    );
     removeSandTl.eventCallback("onComplete", onComplete);
     removeSandTl.eventCallback("onInterrupt", onComplete);
     this.mainTimeline.addAction(removeSandTl, "removeSand");
@@ -393,10 +405,7 @@ class C3POAnimate {
       duration: duration ?? 0,
     });
     if (duration > 0) {
-      this.mainTimeline.addAction(
-        tl,
-        "animate_" + crypto.randomUUID().slice(0, 5),
-      );
+      this.mainTimeline.addAction(tl, "animate_" + uuidv4().slice(0, 5));
     }
     tl.play();
     return tl;

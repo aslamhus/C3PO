@@ -9,6 +9,7 @@ export const GAME_STAGE_ACTIONS = {
   setConstraints: "setConstraints",
   load: "load",
   blur: "blur",
+  setIsMobile: "setIsMobile",
 };
 
 export const initialState = {
@@ -51,6 +52,12 @@ export const reducer = (state, action) => {
       return {
         ...state,
         blur: action.payload,
+      };
+
+    case "setIsMobile":
+      return {
+        ...state,
+        isMobile: action.payload,
       };
 
     default:

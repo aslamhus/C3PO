@@ -6,8 +6,6 @@ import "./movements.css";
 import bodyPartImagesColor from "./body-part-images-color.js";
 import classNames from "classnames";
 
-const showBoundingBox = false;
-
 const Body = React.forwardRef((props, ref) => {
   const { children, style, isSpeaking, className, ...otherProps } = props;
   const bodyClassName = classNames("body-container", className);

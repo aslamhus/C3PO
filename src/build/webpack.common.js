@@ -1,12 +1,21 @@
 import path from "path";
 import * as url from "url";
+
+import HtmlWebpackPlugin from "html-webpack-plugin";
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 export default {
   name: "c3po",
+  entry: "./src/index.js",
   output: {
     path: path.resolve(__dirname, "../../dist"),
   },
+  plugins: [
+    new HtmlWebpackPlugin({
+      filename: "index.html",
+      template: "./src/index.html",
+    }),
+  ],
   module: {
     rules: [
       {

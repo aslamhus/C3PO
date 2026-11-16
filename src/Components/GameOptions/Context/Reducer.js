@@ -1,7 +1,7 @@
 import React from "react";
 
 export const GAME_OPTIONS_ACTIONS = {
-  showOptionsMenu: "setPlayeshowOptionsMenurName",
+  setShowOptionsMenu: "setShowOptionsMenu",
 };
 
 export const initialState = {
@@ -13,7 +13,7 @@ export const initialState = {
 export const reducer = (state = initialState, action) => {
   const { options, payload, type } = action;
   switch (type) {
-    case GAME_OPTIONS_ACTIONS.showOptionsMenu:
+    case GAME_OPTIONS_ACTIONS.setShowOptionsMenu:
       return {
         ...state,
         showOptionsMenu: action.payload,

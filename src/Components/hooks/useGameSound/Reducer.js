@@ -1,11 +1,13 @@
 export const initialState = {
   musicGain: 1, // 0 - 2
   fxGain: 1,
+  isMuted: false,
 };
 
 export const GAME_SOUND_ACTIONS = {
   setMusicGain: "setMusicGain",
   setFXGain: "setFXGain",
+  setMute: "setMute",
 };
 
 export const reducer = (state, action) => {
@@ -19,6 +21,12 @@ export const reducer = (state, action) => {
       return {
         ...state,
         fxGain: action.payload,
+      };
+
+    case GAME_SOUND_ACTIONS.setMute:
+      return {
+        ...state,
+        isMuted: action.payload,
       };
     default:
       return {

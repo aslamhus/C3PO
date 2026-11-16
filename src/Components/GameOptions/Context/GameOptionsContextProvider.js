@@ -8,13 +8,14 @@ export default function GameOptionsContextProvider({ children }) {
 
   const showOptionsMenuRef = useRef();
 
-  const toggleOptionsMenuOnSpaceBar = (event) => {
+  const toggleOptionsMenuWithSpaceBar = (event) => {
     const { key } = event;
     if (document.activeElement.nodeName === "INPUT") return;
     if (key == " ") {
       const value = !showOptionsMenuRef.current;
+
       dispatch({
-        type: GAME_OPTIONS_ACTIONS.showOptionsMenu,
+        type: GAME_OPTIONS_ACTIONS.setShowOptionsMenu,
         payload: value,
       });
       showOptionsMenuRef.current = value;
@@ -30,7 +31,7 @@ export default function GameOptionsContextProvider({ children }) {
   };
 
   const handleKeyPress = (event) => {
-    toggleOptionsMenuOnSpaceBar(event);
+    toggleOptionsMenuWithSpaceBar(event);
     toggleFullScreenOnFKey(event);
   };
   useEffect(() => {

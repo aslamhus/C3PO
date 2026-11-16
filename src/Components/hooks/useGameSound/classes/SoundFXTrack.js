@@ -1,8 +1,14 @@
 import Track from "./Track";
 
 class SoundFXTrack extends Track {
-  constructor(src, ctx, gain) {
-    super(src, ctx, gain);
+  /**
+   * @param {*} src - the audio src
+   * @param {*} ctx - the audio context
+   * @param {*} gain - the gain value
+   * @param {*} nodeDestination - the node connection destination (i.e. audioContext.destination or another node, like master gain)
+   */
+  constructor(src, ctx, gain, nodeDestination) {
+    super(src, ctx, gain, nodeDestination);
     this.audioBuffer = null;
   }
 
@@ -22,8 +28,6 @@ class SoundFXTrack extends Track {
 
   /**
    *Create audio buffer source node from audio buffer
-   * @param {AudioBuffer} audioBuffer
-   * @param {AudioContext} ctx
    * @returns {AudioBufferSourceNode}
    */
   createAudioBufferSourceNode() {
@@ -34,7 +38,7 @@ class SoundFXTrack extends Track {
     }
     const source = this.ctx.createBufferSource();
     source.buffer = this.audioBuffer;
-    source.connect(this.gainNode).connect(this.ctx.destination);
+    source.connect(this.gainNode).connect(this.destination);
     return source;
   }
 

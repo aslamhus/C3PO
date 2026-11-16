@@ -2,6 +2,7 @@
 
 ## General
 
+- fix eye rotation
 - add skip option
 - add second piece of music or loop music to level 1.0
 - add level 2.0!
@@ -14,6 +15,12 @@
 - Add ending
 - You should be able to drag the control screen to hide it
 - add better binary animation
+- increase volume for jawa theme song
+
+# Performances
+
+- Load all assets before starting c3po game
+- load all assets before click start
 
 ## Hints
 

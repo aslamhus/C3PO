@@ -2,7 +2,7 @@
 
 .tip-modal {
   position: absolute;
-  z-index: 999999999;
+  z-index: 9;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -13,9 +13,9 @@
   justify-content: center;
 }
 .tip-modal .tip-body {
-  background: vars.$primary-800;
-  border: 1px solid vars.$primary-100;
-  padding: 1rem;
-  border-radius: 20px;
-  color: vars.$primary-100;
+  // background: vars.$primary-800;
+  // border: 1px solid vars.$primary-100;
+  // padding: 1rem;
+  // border-radius: 20px;
+  // color: vars.$primary-100;
 }

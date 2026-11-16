@@ -1,35 +1,23 @@
 import React from "react";
 import classNames from "classnames";
-import GameButton from "../../../UI/Buttons/GameButton";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-import {
-  faVolumeMute,
-  faVolumeOff,
-  faVolumeXmark,
-} from "@fortawesome/free-solid-svg-icons";
 import ScreenModal from "../../../UI/Modals/ScreenModal/ScreenModal";
 import useGameOptions from "../../hooks/useGameOptions";
 import SoundOptions from "../SoundOptions";
-import "./options-menu.scss";
 import useSave from "../../../GameSave/hooks/useSave";
 import useGamePlayer from "../../../GamePlayer/hooks/useGamePlayer";
+import "./options-menu.scss";
 
 export default function OptionsMenu() {
   const optionsMenuClassnames = classNames("options-menu");
-
   const { savePlayer } = useSave();
-
   const { player } = useGamePlayer();
-
   const saveOptionsOnClose = () => {
-    console.info("saving options");
     savePlayer(player);
+    setShowOptionsMenu(false);
   };
-
   const {
     state: { showOptionsMenu },
-    toggleFullScreen,
+    setShowOptionsMenu,
   } = useGameOptions();
 
   return (

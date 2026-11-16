@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-
 import Clock from "./Clock/Clock";
 import Radar from "./Radar";
 import ControlStripGroup from "./ControlStripGroup";
@@ -12,7 +11,7 @@ import "./game-control.css";
 import { CONTROL_STRIP_TYPE } from "./hooks/useGameControl";
 
 /**
- * GameControl
+ * GameControl (THE HUD)
  *
  * @component
  */

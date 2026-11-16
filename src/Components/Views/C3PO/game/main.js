@@ -66,6 +66,11 @@ export const main = async ({
   c3po.reset();
   showC3PO();
 
+  c3po.think();
+  await wait(100);
+  await c3po.fret();
+  return;
+
   // define show keypad with guess char as callback when pressing a key
   const showKeypad = () => {
     control.toggleKeypad(true, { onPressChar: guessChar });
@@ -75,7 +80,20 @@ export const main = async ({
   // begin
   await gameEvents.exitStageLeft(c3po, 0);
 
-  showTip(<div onClick={() => skippable.skip()}>Skip</div>);
+  showTip(
+    <button
+      className="hud-button"
+      onClick={() => {
+        skippable.skip();
+        hideTip();
+      }}
+    >
+      Skip
+    </button>,
+    {
+      hideTimeout: 5000,
+    },
+  );
   try {
     await skippable(
       gameEvents.peekAbooEntrance(c3po, speak, skippable),
@@ -96,7 +114,7 @@ export const main = async ({
 
     if (!identityConfirmed) {
       // c3po.think();
-      await gameEvents.exitStageLeft(c3po, 3);
+      await gameEvents.exitStageLeft(c3po, 2);
 
       control.endGame();
       return;

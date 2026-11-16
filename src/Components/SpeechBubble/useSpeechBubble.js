@@ -99,6 +99,7 @@ export const useSpeechBubble = ({
     const leftPercent = (leftPx / gameStageBounds.width) * 100;
     const bottomPx = bottom + height / 2 + offset.y * -1;
     const bottomPercent = (bottomPx / gameStageBounds.height) * 100;
+
     setPositions({
       left: `${leftPercent}%`,
       bottom: `${bottomPercent}%`,
@@ -108,6 +109,10 @@ export const useSpeechBubble = ({
       height: "unset",
     });
   };
+
+  useEffect(() => {
+    console.log("speech bubble positions", positions, anchor, bubbleRef);
+  }, [positions]);
 
   const handleGameStageUpdated = () => {
     applyConstraints();

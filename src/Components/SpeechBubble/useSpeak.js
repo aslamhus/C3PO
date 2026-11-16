@@ -3,7 +3,6 @@ import React, { useContext, useRef, useEffect, useState } from "react";
 import { SpeechBubbleContext } from "./context/context";
 import { actions } from "./context/Reducer";
 import { useTypeText } from "./TypeText/useTypeText";
-import { tap } from "lodash";
 import C3POAnimate from "../Views/C3PO/C3POAnimate";
 
 /**

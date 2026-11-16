@@ -2,8 +2,14 @@ import Track from "./Track";
 import { TRACK_TYPES } from "../useGameSound";
 
 class MusicTrack extends Track {
-  constructor(src, ctx, gain) {
-    super(src, ctx, gain);
+  /**
+   * @param {*} src - the audio src
+   * @param {*} ctx - the audio context
+   * @param {*} gain - the gain value
+   * @param {*} destination - the node connection destination (i.e. audioContext.destination or another node, like master gain)
+   */
+  constructor(src, ctx, gain, destination) {
+    super(src, ctx, gain, destination);
     this.audioElement = new Audio(src);
   }
 
@@ -18,7 +24,7 @@ class MusicTrack extends Track {
     const track = this.ctx.createMediaElementSource(this.audioElement);
 
     // connect it to default audio context destination
-    track.connect(this.gainNode).connect(this.ctx.destination);
+    track.connect(this.gainNode).connect(this.destination);
   }
 
   load() {

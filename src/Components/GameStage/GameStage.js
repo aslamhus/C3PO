@@ -8,7 +8,7 @@ import { AnimatePresence } from "framer-motion";
 import { useGame } from "../hooks/useGame";
 import { GAME_STAGE_VIEWS } from "./Reducer";
 import { GAME_STAGE_EVENTS } from "./events";
-import "./game-stage.css";
+import "./game-stage.scss";
 import classNames from "classnames";
 
 /**
@@ -20,7 +20,7 @@ import classNames from "classnames";
  *
  *@component
  */
-export default function GameStage(props) {
+export default function GameStage({ children, isMobile }) {
   const {
     stage: {
       state: { showLoader, stageView, constraints, blur },
@@ -32,15 +32,11 @@ export default function GameStage(props) {
       beginGame,
     },
   } = useGame();
-
   const ref = useRef();
-
   const gameStageClassName = classNames("game-stage", {
     "game-stage-blur": blur,
   });
-
   const assignPixelFormat = (value) => (isNaN(value) ? value : `${value}px`);
-
   const applyConstraints = () => {
     const { x, y } = constraints;
     // append "px" to value if no format present
@@ -56,7 +52,6 @@ export default function GameStage(props) {
     };
     return constraintValues;
   };
-
   useEffect(() => {
     if (gameStart) {
       setGameStageView(GAME_STAGE_VIEWS.c3po);
@@ -64,11 +59,9 @@ export default function GameStage(props) {
       setGameStageView(GAME_STAGE_VIEWS.startScreen);
     }
   }, [gameStart]);
-
   useEffect(() => {
     loadGameStage(ref);
   }, []);
-
   /**
    * Fire event, 'updateconstraints'
    * This fires after the render.
@@ -82,7 +75,6 @@ export default function GameStage(props) {
       }),
     );
   }, [constraints]);
-
   return (
     <div className={gameStageClassName} ref={ref}>
       <div
@@ -97,6 +89,7 @@ export default function GameStage(props) {
               onPressGameStart={() => {
                 beginGame();
               }}
+              isMobile={isMobile}
             />
           </AnimatePresence>
         )}
@@ -104,14 +97,13 @@ export default function GameStage(props) {
           {stageView == "c3po" && (
             <C3POProvider>
               <SpeechBubbleProvider>
-                <C3PO></C3PO>
+                <C3PO isMobile={isMobile}></C3PO>
               </SpeechBubbleProvider>
             </C3POProvider>
           )}
         </AnimatePresence>
       </div>
-
-      {props.children}
+      {children}
     </div>
   );
 }

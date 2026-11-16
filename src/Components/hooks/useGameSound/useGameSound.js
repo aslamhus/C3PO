@@ -43,7 +43,7 @@ export const music = {
 
 const trackGainModulatio = {
   [fx.binaryDecoder]: 0.4,
-  [music.jawaTheme]: 1.2,
+  [music.jawaTheme]: 1.5,
 };
 
 export const TRACK_TYPES = {
@@ -55,35 +55,42 @@ import { useContext } from "react";
 import MusicTrack from "./classes/MusicTrack";
 import SoundFXTrack from "./classes/SoundFXTrack";
 import { GAME_SOUND_ACTIONS } from "./Reducer";
-import useSave from "../../GameSave/hooks/useSave";
 import useGamePlayer from "../../GamePlayer/hooks/useGamePlayer";
 
 export const useGameSound = () => {
+  /**
+   * @type {Array<Object,Function,React.RefObject,React.RefObject>}
+   */
   const [state, dispatch, audioContextRef, trackManagerRef] =
     useContext(GameSoundContext);
 
-  const { musicGain, fxGain } = state;
+  const { musicGain, fxGain, isMuted } = state;
 
   const { player } = useGamePlayer();
 
   const cueTrack = async (src, type) => {
-    const modulation = trackGainModulatio[src] ?? 1;
+    // balance/module the individual track gain
+    const balance = trackGainModulatio[src] ?? 1;
+    const destination = trackManagerRef.current.getMasterGainNode();
+    console.log("cue track", destination);
     // find or create new music track
     let track = trackManagerRef.current.findTrack(src, type);
     if (!track) {
       switch (type) {
         case TRACK_TYPES.FX:
           track = new SoundFXTrack(
-            src,
-            audioContextRef.current,
-            fxGain * modulation,
+            src, // the audio src
+            audioContextRef.current, // the audio context
+            fxGain * balance, // the gain (with balance)
+            destination, // the node destination (master gain)
           );
           break;
         case TRACK_TYPES.MUSIC:
           track = new MusicTrack(
-            src,
+            src, // ibid...
             audioContextRef.current,
-            musicGain * modulation,
+            musicGain * balance,
+            destination,
           );
           break;
       }
@@ -142,6 +149,12 @@ export const useGameSound = () => {
     dispatch({ type: GAME_SOUND_ACTIONS.setFXGain, payload: value });
   };
 
+  const toggleMute = () => {
+    trackManagerRef.current.setIsMuted(!state.isMuted);
+    player.options.setIsMuted(!state.isMuted);
+    dispatch({ type: GAME_SOUND_ACTIONS.setMute, payload: !state.isMuted });
+  };
+
   return {
     cueSoundFx,
     cueMusic,
@@ -155,5 +168,7 @@ export const useGameSound = () => {
     pause,
     trackManagerRef,
     pauseMusic,
+    toggleMute,
+    isMuted,
   };
 };

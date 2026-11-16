@@ -73,7 +73,7 @@ export default function BinaryMessage({
       delay += delayIncrement;
     });
 
-    cueSoundFx(fx.binaryDecoder);
+    cueSoundFx(fx.working2);
     masterTl.eventCallback("onStart", () =>
       handleGuessAnimationStart(guessWasCorrect, countCharsFound, char, binary),
     );
@@ -132,7 +132,6 @@ export default function BinaryMessage({
     });
     if (foundWord) {
       // force all to rerender
-      // setByteData([...bits.map((b) => ({ ...b, key: crypto.randomUUID() }))]);
       setByteData(bits);
     }
   };

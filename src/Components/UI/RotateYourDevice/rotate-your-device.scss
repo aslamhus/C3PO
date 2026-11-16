@@ -1,0 +1,61 @@
+.rotate-your-device {
+  position: absolute;
+  z-index: 999999;
+  width: 100%;
+  height: 100%;
+  background: black;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  gap: 1rem;
+  #arrow-right {
+    display: none;
+    font-size: 4dvw;
+    position: absolute;
+    top: 40%;
+  }
+  div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    #mobile-phone {
+      position: relative;
+      width: 20dvw;
+      height: auto;
+      aspect-ratio: 3/5;
+      border: 2px solid white;
+      border-radius: 4dvw;
+      animation: rotate-phone 2s infinite;
+      font-size: 20dvw;
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: 2dvw;
+        width: 20%;
+        height: 2%;
+        border-radius: 10%;
+        background: white;
+      }
+    }
+    p {
+      font-size: 5dvw;
+    }
+  }
+}
+
+@keyframes rotate-phone {
+  0% {
+    transform: rotate(0deg);
+  }
+  30% {
+    transform: rotate(90deg);
+  }
+  100% {
+    transform: rotate(90deg);
+  }
+}

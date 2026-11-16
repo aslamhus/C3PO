@@ -4,10 +4,7 @@ import EnergyBar from "../../UI/EnergyBar";
 import ScoreCard from "../../UI/ScoreCard/ScoreCard";
 import { C3POContext } from "./context/context";
 import { C3PO_ACTIONS, C3POStates } from "./context/Reducer";
-import { useTipModal } from "../../UI/Modals/TipModal/useTipModal";
-import { getOppositeCase, hasChar } from "./utils";
 import { useGameSound } from "../../hooks/useGameSound";
-
 import {
   CONTROL_STRIP_TYPE,
   useGameControl,
@@ -30,7 +27,6 @@ const C3POFeeling = {
 export const useC3PO = ({ stage }) => {
   const [state, dispatch] = useContext(C3POContext);
   const lastPhraseRef = useRef();
-
   const { player } = useGamePlayer();
   const { ask } = useAskQuestion();
   const {
@@ -40,18 +36,15 @@ export const useC3PO = ({ stage }) => {
   } = useSpeak(state.c3poAnimateRef);
   // game control
   const control = useGameControl();
-
   const energyLevelClassName = classNames(
     `energy-level-${getEnergyLevel(state.energy)}`,
   );
-
   const bodyClassNames = classNames({
     faint: C3POFeeling.faint(state.energy),
     dazed: C3POFeeling.dazed(state.energy),
     ["near-death"]: C3POFeeling["near-death"](state.energy),
     ["game-over"]: state.energy <= 0,
   });
-
   const askQuestion = async ({ question, responses }) => {
     // set the game stage constraints for the control pad
     stage.setConstraints({ x: [0, "50%"], y: [0, "100%"] });
@@ -63,7 +56,6 @@ export const useC3PO = ({ stage }) => {
   const { cueSoundFx, cueMusic, music, fx, trackManagerRef, pauseMusic } =
     useGameSound();
   const isBinaryVisibleRef = useRef(false);
-
   const loadC3PO = (refs) => {
     dispatch({
       type: C3PO_ACTIONS.load,
@@ -73,10 +65,8 @@ export const useC3PO = ({ stage }) => {
       },
     });
   };
-
   const showC3PO = () =>
     dispatch({ type: C3PO_ACTIONS.updateC3poState, payload: C3POStates.SHOW });
-
   const toggleSpeechBubble = (bool) =>
     dispatch({ type: C3PO_ACTIONS.toggleSpeechBubble, payload: bool });
   /**
@@ -90,9 +80,7 @@ export const useC3PO = ({ stage }) => {
       resolve(true);
     });
   };
-
   const setIsBinaryVisible = (bool) => (isBinaryVisibleRef.current = bool);
-
   /**
    *
    * @param {Number|String} value - can be set to value, or incremented (+=10) or decremented (-=15)
@@ -100,22 +88,18 @@ export const useC3PO = ({ stage }) => {
    */
   const setEnergy = (value) =>
     dispatch({ type: C3PO_ACTIONS.setEnergy, payload: value });
-
   const guessChar = (char, binary) => {
     dispatch({ type: C3PO_ACTIONS.guessChar, payload: [char, binary] });
     // console.log("guessChar", char, binary);
     control.disableKeys([char]);
   };
-
   const handleGuessAnimationStart = () => {
     const { current: c3po } = state.c3poAnimateRef;
-
     control.disableKeypad(true);
     c3po.rest();
     c3po.look("right");
     dismissSpeechBubble();
   };
-
   const handleGuessAnimationComplete = async (
     wasCorrect,
     countCharsFound,
@@ -130,10 +114,8 @@ export const useC3PO = ({ stage }) => {
       handleIncorrectGuess(char, c3po, countCharsFound);
     }
   };
-
   const handleCorrectGuess = (char, c3po, countCharsFound) => {
     // check if message is completely decoded -> game complete
-
     if (char === " ") {
       countCharsFound /= 2;
     }
@@ -175,7 +157,6 @@ export const useC3PO = ({ stage }) => {
         `I wish R2 could see this!`,
         `You're quite clever...for a human being.`,
         "It's quite possible we're going to make it.",
-
         `This is easy!`,
       ];
     }
@@ -191,7 +172,6 @@ export const useC3PO = ({ stage }) => {
     //   { tapToContinue: false },
     // );
   };
-
   /**
    * Get C3PO phrase without repeating the last phrase
    * @param {*} phrases
@@ -207,7 +187,6 @@ export const useC3PO = ({ stage }) => {
     lastPhraseRef.current = phrase;
     return phrase;
   };
-
   const handleIncorrectGuess = async (char, c3po, countCharsFound) => {
     // increment bad guesses
     const energyDecrement = 0.1;
@@ -231,10 +210,8 @@ export const useC3PO = ({ stage }) => {
     const p =
       1 - (1 - correctCharsDistinct.length / possibleKeysToGuess) ** energyLeft;
     // numberOfChars * energyLeft / possibleKeysToGuess
-
     // let survivalChance = Math.floor(Math.random() * 100) + 3000;
     let survivalChance = p.toFixed(5);
-
     // actions
     if (currentEnergy <= 0.25) {
       c3po.dazed();
@@ -242,21 +219,17 @@ export const useC3PO = ({ stage }) => {
       c3po.fret();
     }
     //phrases
-
     let phrases = [
       `Oh dear...`,
       `Oh, wonderful...`,
       `We're doomed.`,
-
       `I've got a bad feeling about this...`,
       `How did it come to this?`,
       `I blame R2.`,
       "Well, don't blame me.",
       `I'm not long for this world...`,
-
       "I seem to be made to suffer. It's my lot in life.",
       "Goodness...",
-
       `Our chances of survival are approximately ${survivalChance}!`,
     ];
     if (C3POFeeling.faint(currentEnergy)) {
@@ -287,9 +260,7 @@ export const useC3PO = ({ stage }) => {
         </>,
       ];
     }
-
     let phrase = getPhrase(phrases);
-
     speak(<>{phrase ?? "Hmmm..."}</>, { tapToContinue: false });
     // await speak(
     //   <>
@@ -301,7 +272,6 @@ export const useC3PO = ({ stage }) => {
     //   hint(oppositeCase, c3po);
     // }
   };
-
   const hint = async (oppositeCase, c3po) => {
     // dismissSpeechBubble();
     await c3po.rest(0);
@@ -315,7 +285,6 @@ export const useC3PO = ({ stage }) => {
       { tapToContinue: false },
     );
   };
-
   /**
    * End game and return to start screen
    */
@@ -330,11 +299,9 @@ export const useC3PO = ({ stage }) => {
       dispatch({ type: C3PO_ACTIONS.setGameOver, payload: true });
     }, 100);
   };
-
   const handleRestartGame = () => {
     dispatch({ type: C3PO_ACTIONS.restartGame });
   };
-
   useEffect(() => {
     if (state.energy != null && state.energy != undefined) {
       control.setControlStripComponent(
@@ -347,17 +314,14 @@ export const useC3PO = ({ stage }) => {
     }
     if (state.energy <= 0) {
       // game over
-
       handleGameOver();
     }
   }, [state.energy]);
-
   useEffect(() => {
     const { current: c3po } = state.c3poAnimateRef || {};
     if (!c3po) return;
     // c3po energy animations
   }, [state.energy]);
-
   useEffect(() => {
     if (state.showBinary || state.guessChar) {
       control.setCustomViewScreenComponents([
@@ -365,27 +329,23 @@ export const useC3PO = ({ stage }) => {
           // show={showBinary}
           show={true}
           // onShow={() => actions.setIsBinaryVisible(true)}
-
           onShow={() => setIsBinaryVisible(true)}
           message={state.message}
           guessChar={state.guessChar}
           // onGuessAnimationStart={actions.handleGuessAnimationStart}
           // onGuessAnimationComplete={actions.handleGuessAnimationComplete}
-
           onGuessAnimationStart={handleGuessAnimationStart}
           onGuessAnimationComplete={handleGuessAnimationComplete}
         ></BinaryMessage>,
       ]);
     }
   }, [state.showBinary, state.guessChar]);
-
   useEffect(() => {
     control.setControlStripComponent(
       <ScoreCard></ScoreCard>,
       CONTROL_STRIP_TYPE.PRIMARY,
     );
   }, []);
-
   return {
     bodyClassNames,
     energyLevelClassName,
@@ -395,7 +355,6 @@ export const useC3PO = ({ stage }) => {
       isTypingComplete,
     },
     control,
-
     actions: {
       cueSoundFx,
       cueMusic,

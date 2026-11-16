@@ -4,26 +4,27 @@ import spaceOverlay2 from "@images/space-overlay2.jpg";
 import ConfirmButton from "../../UI/Buttons/ConfirmButton";
 import { motion } from "framer-motion";
 import SelectPlayer from "../../GamePlayer/Components/SelectPlayer";
-import useGameOptions from "../../GameOptions/hooks/useGameOptions";
 import { useGameSound } from "../../hooks/useGameSound";
 import SpaceBackground from "./Components/SpaceBackground";
 import "./game-start-screen.css";
 import useGamePlayer from "../../GamePlayer/hooks/useGamePlayer";
 import Player from "../../GamePlayer/Player";
+import C3POAssets from "../C3PO/assets";
+import usePreload from "../../hooks/usePreload";
 
-export default function GameStartScreen({ onPressGameStart }) {
+export default function GameStartScreen({ onPressGameStart, isMobile }) {
   const { player, setPlayer } = useGamePlayer();
   const { cueSoundFx, cueMusic, music } = useGameSound();
   const [showSelectPlayerModal, setShowSelectPlayerModal] = useState(false);
-
+  const { preload, resolverRef } = usePreload(C3POAssets);
   const ref = useRef();
 
   /**
    * @param {Player} player
    */
-  const handleSelectPlayer = (player) => {
+  const handleSelectPlayer = async (player) => {
     setPlayer(player);
-
+    await resolverRef.current;
     if (onPressGameStart instanceof Function) {
       onPressGameStart(player);
     }
@@ -51,6 +52,10 @@ export default function GameStartScreen({ onPressGameStart }) {
   useEffect(() => {
     cueMusic(music.binarySunet);
   }, [ref.current]);
+
+  useEffect(() => {
+    preload();
+  }, []);
 
   return (
     <motion.div
@@ -82,9 +87,11 @@ export default function GameStartScreen({ onPressGameStart }) {
           Start
         </ConfirmButton>
       </div>
-      <div className="game-start-screen-footer">
-        -- Press <em>SPACEBAR</em> for options --
-      </div>
+      {!isMobile && (
+        <div className="game-start-screen-footer">
+          -- Press <em>SPACEBAR</em> for options --
+        </div>
+      )}
     </motion.div>
   );
 }

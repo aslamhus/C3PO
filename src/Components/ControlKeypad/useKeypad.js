@@ -62,7 +62,7 @@ export const useKeypad = (props) => {
           123
         </MenuButton>
         <MenuButton
-          className={charGroup == "punctuation" ? "active" : ""}
+          active={charGroup == "punctuation"}
           onClick={() => setCharGroup("punctuation")}
         >
           #+=

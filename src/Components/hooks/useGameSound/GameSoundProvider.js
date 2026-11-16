@@ -10,17 +10,17 @@ export default function GameSoundProvider({ children }) {
   const { player } = useGamePlayer();
 
   const audioContextRef = useRef();
-  const trackManagerRef = useRef(new TrackManager());
+  const trackManagerRef = useRef();
 
   useEffect(() => {
     audioContextRef.current = new AudioContext();
+    trackManagerRef.current = new TrackManager(audioContextRef.current);
   }, []);
 
   useEffect(() => {
     if (!player) return;
 
     if (!player?.getName) {
-      console.log("player????", player);
       throw new Error("player get name unavailable");
     }
     dispatch({
@@ -31,6 +31,13 @@ export default function GameSoundProvider({ children }) {
       type: GAME_SOUND_ACTIONS.setMusicGain,
       payload: player.getOptions().getMusicGain(),
     });
+    if (player.getOptions().getIsMuted()) {
+      trackManagerRef.current.setIsMuted(true);
+      dispatch({
+        type: GAME_SOUND_ACTIONS.setMute,
+        payload: true,
+      });
+    }
   }, [player]);
 
   return (

@@ -9,21 +9,17 @@ export const useTipModal = () => {
    *Show tip
    * @param {React.Component} component - optional component to set as content
    */
-  const showTip = (component, options = { style: {} }) => {
-    dispatch({ type: TIP_ACTIONS.show, payload: { component, ...options } });
+  const showTip = (
+    component,
+    options = { style: {}, clickToHide: false, hideTimeout: 1500 },
+  ) => {
+    dispatch({ type: TIP_ACTIONS.show, payload: { component, options } });
   };
 
-  /**
-   * @param {Event} event
-   */
-  const hideTip = (event) => {
-    const { target } = event;
-    if (
-      target.classList.contains("tip-modal") ||
-      target.closest(".tip-modal")
-    ) {
-      console.log("hide tip", target);
-      dispatch({ type: TIP_ACTIONS.hide });
+  const hideTip = (options = { hasTimedOut: false }) => {
+    dispatch({ type: TIP_ACTIONS.hide });
+    if (options?.hasTimedOut) {
+      dispatch({ type: TIP_ACTIONS.setHasTimedOut, payload: true });
     }
   };
 

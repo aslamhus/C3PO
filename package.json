@@ -2,7 +2,8 @@
   "scripts": {
     "start": "webpack serve --config './src/build/webpack.dev.js'",
     "build": "webpack --config './src/build/webpack.prod.js'",
-    "get-images": "./bin/binary-message-images.sh"
+    "get-images": "./bin/binary-message-images.sh",
+    "deploy": "./bin/deploy.sh"
   },
   "type": "module",
   "devDependencies": {
@@ -33,10 +34,12 @@
     "fitty": "^2.3.6",
     "framer-motion": "^10.0.1",
     "gsap": "^3.11.4",
+    "is-mobile": "^5.0.0",
     "lodash": "^4.17.21",
     "path": "^0.12.7",
     "react": "*",
     "react-bootstrap": "^2.7.2",
-    "react-dom": "*"
+    "react-dom": "*",
+    "uuid": "^14.0.3"
   }
 }

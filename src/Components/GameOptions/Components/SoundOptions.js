@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo } from "react";
-import { debounce, throttle } from "lodash";
 
 import Form from "react-bootstrap/Form";
 import { useGameSound } from "../../hooks/useGameSound";
@@ -9,8 +8,6 @@ import {
   faVolumeHigh,
   faVolumeLow,
   faVolumeMedium,
-  faVolumeMute,
-  faVolumeOff,
   faVolumeXmark,
 } from "@fortawesome/free-solid-svg-icons";
 

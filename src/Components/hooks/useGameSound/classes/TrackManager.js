@@ -3,11 +3,39 @@ import MusicTrack from "./MusicTrack";
 import SoundFxTrack from "./SoundFXTrack";
 
 class TrackManager {
-  constructor() {
+  /** @type {AudioContext} */
+  ctx;
+
+  /** @type {GainNode} */
+  masterGainNode;
+
+  constructor(ctx, options = { isMuted: false }) {
+    this.ctx = ctx;
+    this.masterGainNode = this.createMasterGainNode();
+    this.isMuted = options?.isMuted ?? false;
+    if (this.isMuted) {
+      this.setIsMuted(true);
+    }
     this.tracks = {
       music: {},
       fx: {},
     };
+  }
+
+  getMasterGainNode() {
+    return this.masterGainNode;
+  }
+
+  createMasterGainNode() {
+    const masterGain = this.ctx.createGain();
+    masterGain.connect(this.ctx.destination);
+
+    return masterGain;
+  }
+
+  setIsMuted(value) {
+    this.isMuted = value;
+    this.masterGainNode.gain.value = this.isMuted ? 0 : 1;
   }
 
   setMusicGain(value) {
@@ -20,6 +48,15 @@ class TrackManager {
     Object.values(this.tracks[TRACK_TYPES.FX]).forEach((track) => {
       track.setGain(value);
     });
+  }
+
+  setIsMuted(value) {
+    this.isMuted = value;
+    this.masterGainNode.gain.value = this.isMuted ? 0 : 1;
+  }
+
+  toggleMute() {
+    this.setIsMuted(!this.isMuted);
   }
   /**
    * Find track src (if it exists)
